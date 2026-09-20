@@ -1,0 +1,301 @@
+---
+title: "Key Choices & Save Strategy"
+description: "Key decisions and advice on where to save in the Public 14.6 main story of Demons Within."
+toc: true
+toc-depth: 2
+search: false
+---
+
+This page follows selected key scenes from the first night after recovery through drinks in Garret's office, with a broad story map. For a quick lookup of each Essence Wheel's target, available actions and immediate outcomes, use the [Full Essence Wheel Choice Index](../reference/interventions.md). For viewing requirements by image group, see the [CG Scene Index](../collectibles/cg.md).
+
+Use a separate save slot at the start of a scene or before a key choice so you can replay other outcomes.
+
+## Story Map & Major Branches {#story-overview}
+
+This map shows the main path, major branches and endings relevant to this page. Many transitions are omitted. It contains spoilers for the overall story structure.
+
+**Locked Wheels require the specified action or an automatic sequence to finish. At optional Wheels, you can choose an Essence or leave it alone and advance the text: “no intervention.”**
+
+<details class="dw-story-map">
+<summary><span>Story Map</span><span class="dw-story-map-toggle" aria-hidden="true"></span></summary>
+
+<div class="dw-story-map-body">
+<p class="dw-story-map-hint" id="dw-story-map-hint">Click an underlined card to jump to its section. On mobile, swipe sideways to see the full map.</p>
+<div class="dw-story-map-scroll" role="region" aria-label="Story map, scroll horizontally" aria-describedby="dw-story-map-hint" tabindex="0">
+
+```{mermaid}
+%%{init: {"flowchart": {"curve": "linear", "nodeSpacing": 30, "rankSpacing": 20, "padding": 8}, "themeVariables": {"fontSize": "14px"}}}%%
+flowchart TD
+    accTitle: Public 14.6 story map
+    accDescr: The shared story runs down the center, with warehouse and ambush endings to the side. Bear Day and Tiger Day rejoin the main story. Linked nodes lead to sections on this page.
+    subgraph spine[" "]
+        first
+        warehouse
+        normal
+        early
+        days
+        merge
+        wolf
+        sloth
+        bath
+        reprieve
+        gunther
+        garret
+        finish
+    end
+    style spine fill:none,stroke:none
+    first["Opening / recovery<br/>First night"]
+    warehouse["First warehouse fight"]
+    normal["Lust twice<br/>Then four locked actions"]
+    captured["Captured<br/>A separate Wheel follows"]
+    endings(["No intervention → Story Ending<br/>Lust + locked sequence → Horny Ending<br/>Both end here"])
+    early["Shared story after the warehouse<br/>Early bath with Garret"]
+    days["Day off with Edwin / Ludwig<br/>Choose a day"]
+    bear["Ludwig / Bear Day<br/>Library"]
+    tiger["Edwin / Tiger Day<br/>Boris / Jayden visitor branch"]
+    merge["Rejoin the main story"]
+    wolf["Black wolf ambush"]
+    wolfEnd(["Black wolf ambush ending<br/>Ends here"])
+    sloth["Sloth awakening<br/>Main story continues"]
+    bath["Officers’ bath<br/>Who stays, then later choices"]
+    reprieve["Woodland respite · Truth or Dare<br/>A missable Codex entry"]
+    gunther["Gunther rematch after the market<br/>Branches rejoin; some changes carry over"]
+    garret["Drinks in Garret’s office<br/>Includes the Sloth sequence"]
+    finish(["End of Public 14.6"])
+
+    first --> warehouse
+    warehouse --> normal
+    warehouse -->|No intervention at either escape Wheel| captured
+    captured --> endings
+    normal --> early
+    early --> days
+    days --> bear
+    days --> tiger
+    bear --> merge
+    tiger --> merge
+    merge --> wolf
+    wolf -->|No intervention| wolfEnd
+    wolf -->|Lust| sloth
+    sloth --> bath
+    bath --> reprieve
+    reprieve --> gunther
+    gunther --> garret
+    garret --> finish
+
+    class warehouse,days,wolf branch
+    class endings,wolfEnd terminal
+    class merge,finish quiet
+
+    click first href "#first-night" "First night after recovery" _self
+    click warehouse href "#warehouse" "First warehouse fight" _self
+    click normal href "#warehouse" "Continue from the warehouse" _self
+    click captured href "#warehouse" "Warehouse capture branch" _self
+    click early href "#garret-early-bath" "Early bath with Garret" _self
+    click days href "#day-off" "Day-off branches" _self
+    click bear href "#bear-library" "Bear Day: library" _self
+    click tiger href "#boris-jayden" "Tiger Day: Boris / Jayden" _self
+    click wolf href "#black-wolf" "Black wolf ambush and Sloth awakening" _self
+    click sloth href "#black-wolf" "Sloth awakening" _self
+    click bath href "#officer-bath" "Officers’ bath" _self
+    click reprieve href "#truth-or-dare" "Truth or Dare: Sam’s Question" _self
+    click gunther href "#gunther-rematch" "Gunther rematch after the market" _self
+    click garret href "#garret-office" "Drinks in Garret’s office" _self
+```
+
+</div>
+<p class="dw-story-map-note">Boris / Jayden is a visitor branch within Tiger Day. Separate choices determine who visits and whether they join in. The map omits local variations in the baths, the Gunther rematch and Garret’s office.</p>
+<p class="dw-story-map-note">Some earlier choices still affect dialogue and presentation after branches rejoin.</p>
+</div>
+<script>
+(() => {
+  const map = document.currentScript.closest('.dw-story-map');
+  const scroller = map.querySelector('.dw-story-map-scroll');
+  let centeredWidth = 0;
+  map.addEventListener('toggle', () => {
+    if (!map.open) return;
+    // Quarto can measure excess SVG whitespace while the disclosure is closed.
+    const svg = scroller.querySelector('svg');
+    if (svg) {
+      const box = svg.getBBox();
+      if (box.width && box.height) svg.setAttribute('viewBox',
+        `${box.x - 8} ${box.y - 8} ${box.width + 16} ${box.height + 16}`);
+    }
+    if (scroller.clientWidth !== centeredWidth) {
+      scroller.scrollLeft = (scroller.scrollWidth - scroller.clientWidth) / 2;
+      centeredWidth = scroller.clientWidth;
+    }
+  });
+})();
+</script>
+</details>
+
+## First Night After Recovery {#first-night}
+
+When Resnick first returns to the bedroom after recovering, Edwin changes clothes and the narration prompts you to stir Resnick's lust. Save when they return to the room, before the tutorial begins. The opening choices teach the Essence Wheel; choices that change the scene come afterward.
+
+The first two tutorials are locked and cannot be skipped by waiting: choose **Lust** on Resnick's side, then **Lust** on Edwin's. A locked dual Wheel follows. Both sides offer Lust, with a different target:
+
+| Side chosen | Main difference |
+|---|---|
+| Resnick | Resnick takes the lead in the interaction. |
+| Edwin | Edwin takes the lead in the interaction. |
+
+Choose one side to continue. Both lead into the same intimate scene.
+
+Near the end, an optional Lust opportunity appears. **Lust** makes the ending more intense; leaving the Wheel alone and advancing the text gives a gentler ending.
+
+If you later leave both day-off invitations alone, this final choice determines which day you get. See [the day-off branches](#day-off).
+
+## First Warehouse Fight {#warehouse}
+
+1. When Gunther corners Resnick and the first optional Wheel appears, choose **Lust**. This is required to reach the next opportunity.
+2. Resnick tries to escape through a high broken window, and Gunther grabs him. At the second optional Wheel, choose **Lust** again to enter the transformation sequence.
+3. Complete four consecutive locked Wheels, choosing **Lust** each time, until the story returns to its normal continuation.
+
+::: {.callout-note collapse="true" title="Other outcomes and replay points"}
+Leaving either the first or second optional Wheel alone leads to capture. They occur at different points in the scene.
+
+A separate optional Wheel appears after capture:
+
+- Advance without selecting an Essence to reach the **Story Ending**.
+- Choose **Lust**, then complete the locked choices that follow, to reach the **Horny Ending**.
+
+Reload a save before entering the warehouse to explore the different endings. Once on the capture path, keep another save before the post-capture Wheel to compare its two outcomes.
+:::
+
+## Early Bath with Garret {#garret-early-bath}
+
+This is the early scene at the Watch House baths. When Garret talks about a gray wolf he knew when he was younger, Resnick gets an optional Lust opportunity.
+
+- If you don't intervene, Garret holds back before the conversation is interrupted.
+- Choose **Lust** to have Resnick encourage him. Garret's story and their reactions become more suggestive, but the conversation is interrupted at the same point.
+
+Choosing Lust changes a little dialogue at the start of Bear Day's research scene and in the later [officers' bath](#officer-bath). It does not change access to those scenes. Save before Garret begins talking about the young gray wolf to compare both versions.
+
+## A Day Off with Edwin or Ludwig {#day-off}
+
+After the warehouse incident, the group discusses their upcoming day off in the baths. Edwin approaches Resnick first and invites him to the tavern. Only leaving that Wheel alone lets the conversation continue to Ludwig's library invitation.
+
+Save before Edwin approaches, as the group begins discussing their plans. To choose either day directly:
+
+| Day off | Action |
+|---|---|
+| Edwin / Tiger Day | Choose **Lust** at the first optional Wheel, during Edwin's invitation. |
+| Ludwig / Bear Day | Leave the first Wheel alone. Choose **Lust** at the second optional Wheel, when Ludwig invites you. |
+
+The invitations are sequential. Choosing Lust at the first locks in Edwin's day and skips Ludwig's Wheel. Both days eventually rejoin the same main story.
+
+::: {.callout-note collapse="true" title="What happens if you leave both invitations alone?"}
+The game uses the final choice from Resnick's first night after recovery. If you left that night's final Lust opportunity alone, you get Edwin's day. If you chose Lust, you get Ludwig's.
+
+To replay the main content of both days, simply reload your save from the baths and choose each day as shown above. To compare the fallback when neither invitation is influenced, you need a save from before the first night's final Wheel.
+:::
+
+## Bear Day: The Library {#bear-library}
+
+This scene is only available on **Ludwig / Bear Day**. To compare both the solo research and the later interaction, save when Resnick enters the library alone, before he decides which books to look for.
+
+While Ludwig is away, Resnick researches the Red-eyes and his own symptoms. No intervention keeps him on that task. **Lust** draws him toward erotic reading instead and changes a few later moments that day. In either branch, Resnick waits for Ludwig to return. After choosing Lust, Resnick also takes the book home; when Russel later visits his room, he finds it under the mattress and teases him.
+
+Once the two sit at the library table, there can be up to five optional Wheels:
+
+1. **Resnick:** Lust has him move closer and opens the next opportunity. No intervention returns his attention to reading and ends this chain.
+2. **Ludwig:** Lust has him accept and respond, opening the next opportunity. Without intervention, he pulls his hand away and they return to a more restrained reading scene.
+3. **Resnick:** Lust moves the interaction under the table and opens the last two opportunities. No intervention ends it on a friendly, close note and returns to reading.
+4. **Ludwig:** Lust makes him more active in the interaction already underway. No intervention keeps his response more restrained. Both continue until someone approaches.
+5. **Resnick:** Lust keeps the interaction going despite the approaching person, creating a riskier variation. No intervention stops it there, with different reactions before the scene ends.
+
+See the [individual Wheel descriptions](../reference/interventions.md#bear-library-ludwig) for a quick reference.
+
+To compare the reading branch with the later interaction, keep a save before the first Wheel at the table. Once you reach the fourth or fifth, additional saves let you compare variations within that later branch.
+
+To get **Prank on Edwin**, don't intervene at one of the first three Wheels at the library table, then click the highlighted phrase during the conversation after they return to reading. Choosing Lust at all three leads to the later interaction, with Ludwig's corresponding sprite states unlocked according to your subsequent choices. Leaving either of the last two Wheels alone cannot return you to the Prank on Edwin passage. Replay from before the first table opportunity for both branches; see the [Memory Codex & Sprite Viewer Checklist](../collectibles/memorium.md#memorium-missables).
+
+## Tiger Day: Boris / Jayden {#boris-jayden}
+
+This branch only appears on [Edwin's day off](#day-off). After meeting Boris and Jayden in the tavern, Edwin steps away. Resnick then confronts Boris behind the tavern. The optional Wheel here determines who knocks on the door later:
+
+| Choice behind the tavern | Later visitor |
+|---|---|
+| **Lust** | Boris |
+| No intervention | Jayden |
+
+Resnick and Edwin later enter a private room. A locked dual Wheel requires you to choose one side, but it does not change the visitor. A later optional Lust opportunity controls the invitation:
+
+- Without intervention, the chosen visitor still knocks, but Resnick sends him away.
+- With Lust, Resnick opens the door and invites him in. A separate optional Wheel then targets that visitor. Choose Lust again for the extra content with him; no intervention means the invitation fails and the scene returns to Resnick and Edwin.
+
+To change visitors, save **behind the tavern, before Boris's provocation brings up the first Wheel**, and replay from there. A save near the door can only compare outcomes with the visitor already chosen. Save in the private room before the Lust opportunity that opens the door; after opening it, another save before the visitor's own Wheel lets you compare acceptance and refusal.
+
+## Black Wolf Ambush & Sloth Awakening {#black-wolf}
+
+After the day off, Resnick senses something at night and goes outside, where he spots two cloaked strangers of different heights near the Watch House. When he is discovered, the shorter stranger orders the black wolf to attack. An optional Lust opportunity appears when the wolf draws his axe and corners Resnick.
+
+Save before Resnick steps out from the corner and the strangers notice him. To continue the main story, choose **Lust** when the black wolf swings. Advancing without intervening leads to the black wolf ambush ending.
+
+::: {.callout-note collapse="true" title="The ending and the new ability sequence"}
+Without intervention, the black wolf knocks Resnick down and the story ends here. This guide calls it the “black wolf ambush ending.”
+
+With Lust, the confrontation is interrupted and the story continues to the Sloth awakening. The new ability sequence has seven locked stages: three Sloth stages advance automatically, and four require you to choose Lust. The first practical use afterward begins with a display-only Wheel, followed by a locked Sloth action. These are ability tutorials and do not depend on having chosen Bear Day.
+:::
+
+## The Officers' Bath {#officer-bath}
+
+When Resnick visits the public baths in the evening, Garret and Commander Brigham are already there. After they discuss the Red-eyes, the border and the Order's duties, the first Wheel offers Sloth. This choice determines who stays.
+
+Save as Resnick enters and recognizes the two officers to compare both branches.
+
+| First choice | Who stays with Resnick |
+|---|---|
+| No intervention | Garret leaves later; Brigham stays to talk. |
+| **Sloth** | Brigham leaves, tired; Garret stays to talk. |
+
+Both branches later display Lust, but only one is usable. On Garret's branch, another optional opportunity appears after Garret leaves and Resnick is alone in the bath. It only changes this short passage; both versions rejoin the next day's story.
+
+Brigham's later Lust option is unavailable in Public 14.6. Clicking it only displays a future-update message; it neither performs an intervention nor opens another scene. Advance the text to continue the existing conversation and reach the next day.
+
+## Truth or Dare: Sam's Question {#truth-or-dare}
+
+During the woodland respite, Edwin, Ludwig, Resnick and Sam sit together for Truth or Dare. When it is Sam's turn to ask Edwin a question, an optional Lust opportunity appears as Sam closes his eyes to think.
+
+For **Exalted Donations**, leave the Wheel alone and advance the text. Sam will ask where Edwin's money comes from. You must then click the highlighted **Exalted Donations** phrase.
+
+**Lust** makes Sam ask a more personal question, which omits that link. Save before he begins thinking to compare both questions or avoid missing the entry. In the Public 14.6 main story, this link appears only in the no-intervention passage described here.
+
+## Gunther Rematch After the Market {#gunther-rematch}
+
+Later in the main story, Resnick follows a tall cloaked figure through the market, discovers it is Gunther and chases him into a dead end in the old district. After Gunther draws his weapon and they fight for a while, an optional Wheel offers Lust and Sloth.
+
+Save when Resnick recognizes Gunther in the market, before the chase, to compare all three versions. All choices continue the fight and lead to the black wolf after Resnick briefly subdues Gunther. The differences concern the fight and Gunther's condition:
+
+| Choice | Local difference |
+|---|---|
+| No intervention | Gunther gradually tires during the ordinary fight. |
+| **Lust** | Gunther becomes distracted and restless, with a change in clothing. |
+| **Sloth** | Gunther becomes noticeably slow and exhausted, with a different clothing state. |
+
+Gunther's clothing and some reactions carry over into the next passage. Replay from the same earlier save to compare all three.
+
+## Drinks in Garret's Office {#garret-office}
+
+Late in the main story, Resnick spends an evening drinking alone with Garret in his office. Sloth has already appeared earlier in the story. An initial Lust opportunity appears as Garret opens his shirt, but both choices lead into the conversation that follows. The main branch comes when he mentions a young wolf he once knew and a Wheel offers both Lust and Sloth.
+
+Save before that three-way choice:
+
+| Choice | Outcome |
+|---|---|
+| No intervention | Garret continues talking about his past, then ends the evening. |
+| **Lust** | The conversation turns to personal attraction and hesitation; Garret eventually holds back and ends the evening. |
+| **Sloth** | Garret grows drowsy, leading to another Sloth opportunity. |
+
+To see all three images after he falls asleep:
+
+1. Choose **Sloth** at the three-way choice above.
+2. When Garret yawns again and tells Resnick to leave, choose **Sloth** at the second Wheel. No intervention ends the evening immediately.
+3. The first two images appear in order. Choose **Lust** at the third optional Wheel to see the third. No intervention gives different text before Resnick leaves.
+
+::: {.callout-note collapse="true" title="Where to save for other outcomes"}
+For all three images, follow Sloth → Sloth → Lust. You do not need to reload between the first two images.
+
+For the main dialogue branches, use an earlier save: save before the first three-way choice to compare no intervention, Lust and Sloth. On the Sloth branch, you can also save before the second Sloth opportunity and the final Lust opportunity.
+:::

@@ -1,0 +1,119 @@
+/* Choices-only map: native disclosure and SVG links, with local mobile scrolling. */
+main.content details.dw-story-map {
+  margin-block: 1.3rem 1.8rem;
+  border: 1px solid var(--dw-border-strong);
+  border-radius: .5rem;
+  background: var(--dw-surface);
+}
+.dw-story-map > summary {
+  /* Keep Quarto's following anchor-offset pseudo-element below the disclosure. */
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  list-style: none;
+  border-radius: .5rem;
+}
+.dw-story-map > summary::-webkit-details-marker { display: none; }
+.dw-story-map[open] > summary { border-radius: .5rem .5rem 0 0; }
+.dw-story-map-toggle::before { content: "+"; font-size: 1.2rem; font-weight: 400; }
+.dw-story-map[open] .dw-story-map-toggle::before { content: "−"; }
+main.content details.dw-story-map > .dw-story-map-body { margin: 0; padding: 1rem 0 .2rem; }
+main.content .dw-story-map :is(.dw-story-map-hint, .dw-story-map-note) {
+  margin: 0 1rem .85rem;
+  color: var(--dw-text-soft);
+  font-size: .88rem;
+  line-height: 1.65;
+}
+main.content .dw-story-map .dw-story-map-hint { margin-bottom: .35rem; }
+.dw-story-map-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-color: var(--dw-border-strong) var(--dw-surface);
+  padding: .125rem 1rem .35rem;
+  margin-bottom: .35rem;
+}
+.dw-story-map-scroll .cell { margin: 0; }
+.dw-story-map-scroll .cell-output-display { min-width: 760px; }
+.dw-story-map-scroll .mermaid { display: flex; justify-content: center; }
+.dw-story-map-scroll svg { display: block; width: 100%; height: auto; margin-inline: auto; max-width: 100% !important; }
+@media (min-width: 760px) {
+  .dw-story-map-scroll svg { max-width: 640px !important; }
+}
+.dw-story-map svg .node :is(rect, polygon, path) {
+  fill: var(--dw-surface-soft) !important;
+  stroke: var(--dw-border-strong) !important;
+  stroke-width: 1.2px !important;
+}
+.dw-story-map svg .node.branch :is(rect, polygon, path) {
+  fill: var(--dw-primary-soft) !important;
+  stroke: var(--dw-primary) !important;
+  stroke-width: 1.7px !important;
+}
+.dw-story-map svg .node.terminal :is(rect, polygon, path) {
+  fill: var(--dw-surface) !important;
+  stroke: var(--dw-caution) !important;
+  stroke-dasharray: 4 3;
+}
+.dw-story-map svg .node.quiet :is(rect, polygon, path) { fill: var(--dw-surface) !important; }
+.dw-story-map svg .nodeLabel,
+.dw-story-map svg .nodeLabel p {
+  color: var(--dw-text) !important;
+  font-size: 14px !important;
+  font-weight: 400;
+  line-height: 1.4 !important;
+}
+.dw-story-map svg .edgeLabel,
+.dw-story-map svg .edgeLabel p {
+  color: var(--dw-text-soft) !important;
+  background: var(--dw-surface) !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  line-height: 1.35 !important;
+}
+.dw-story-map svg .edgeLabel rect { fill: var(--dw-surface) !important; }
+.dw-story-map svg a { cursor: pointer; }
+.dw-story-map svg a .nodeLabel,
+.dw-story-map svg a .nodeLabel p {
+  font-weight: 600 !important;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.dw-story-map svg a:is(:hover, :focus-visible) .node :is(rect, polygon, path) {
+  fill: var(--dw-surface-hover) !important;
+  stroke: var(--dw-primary-hover) !important;
+  stroke-width: 2.5px !important;
+}
+.dw-story-map svg a:focus-visible { outline: 2px solid var(--dw-primary); outline-offset: 4px; }
+
+/* Keep item fragment targets clear of the fixed navbar. */
+span[id^="mem-"],
+span[id^="sprite-"] {
+  scroll-margin-top: 5rem;
+}
+
+/* Memorium slots preserve the game's row order; only the table scrolls. */
+.dw-memorium-locator {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  margin-bottom: 1.2rem;
+}
+.dw-memorium-locator table {
+  table-layout: fixed;
+  width: 100%;
+  min-width: 34rem;
+}
+.dw-memorium-locator :is(th, td):first-child { width: 3rem; }
+main.content .dw-collection-details > table { width: calc(100% - 1.6rem); }
+.dw-collection-details > summary {
+  position: relative;
+  z-index: 1;
+}
+.dw-collection-details > summary:focus-visible {
+  outline: 2px solid var(--dw-primary);
+  outline-offset: 2px;
+}

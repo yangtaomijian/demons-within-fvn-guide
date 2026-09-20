@@ -1,0 +1,27 @@
+/*-- scss:defaults --*/
+$web-font-path: false;
+$font-family-sans-serif: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Source Han Sans SC", sans-serif;
+$font-family-monospace: "SFMono-Regular", "SF Mono", "Cascadia Code", "JetBrains Mono", monospace;
+$line-height-base: 1.78;
+
+// Light defaults; dw-dark.scss overrides colors for Quarto's native dark theme.
+$body-bg: #fbfaf7 !default;
+$body-color: #30302c !default;
+$headings-color: #292824 !default;
+$primary: #806039 !default;
+$secondary: #666158 !default;
+$link-color: #806039 !default;
+$link-hover-color: #604522 !default;
+$border-color: #ded9d0 !default;
+$input-bg: #fffdfa !default;
+$input-color: #30302c !default;
+$input-border-color: #b7aea0 !default;
+$dropdown-bg: #fffdfa !default;
+$dropdown-link-hover-bg: #eee7dc !default;
+$component-active-bg: #eee7dc !default;
+$component-active-color: #604522 !default;
+$navbar-bg: #f8f6f0 !default;
+$navbar-fg: #666158 !default;
+$navbar-hl: #806039 !default;
+$code-bg: #efede6 !default;
+$code-color: #79502f !default;

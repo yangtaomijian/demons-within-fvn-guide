@@ -1,0 +1,70 @@
+#!/usr/bin/env python3
+"""Normalize generated publication artifacts that Quarto cannot express directly."""
+
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[1]
+OUTPUT = ROOT / "_site"
+ROOT_URL = "https://yangtaomijian.github.io/demons-within-fvn-guide/"
+EN_URL = ROOT_URL + "en/"
+PAGES = (
+    "index.html",
+    "guide/choices.html",
+    "guide/faq.html",
+    "reference/interventions.html",
+    "collectibles/cg.html",
+    "collectibles/memorium.html",
+)
+
+
+def page_url(root: str, page: str) -> str:
+    return root if page == "index.html" else root + page
+
+
+def add_publication_links(path: Path, canonical: str, zh_url: str, en_url: str) -> None:
+    text = path.read_text(encoding="utf-8")
+    for marker in ('property="og:url"', 'hreflang="zh-CN"', 'hreflang="en"'):
+        if marker in text:
+            raise RuntimeError(f"{path}: unexpected existing publication metadata: {marker}")
+    if text.count("</head>") != 1:
+        raise RuntimeError(f"{path}: expected exactly one closing head tag")
+    metadata = (
+        f'<meta property="og:url" content="{canonical}">\n'
+        f'<link rel="alternate" hreflang="zh-CN" href="{zh_url}">\n'
+        f'<link rel="alternate" hreflang="en" href="{en_url}">\n'
+    )
+    path.write_text(text.replace("</head>", metadata + "</head>"), encoding="utf-8")
+
+
+def normalize_home(path: Path, site_root: str) -> None:
+    text = path.read_text(encoding="utf-8")
+    old = f"<loc>{site_root}index.html</loc>"
+    new = f"<loc>{site_root}</loc>"
+    if text.count(old) != 1:
+        raise RuntimeError(f"{path}: expected exactly one generated homepage URL")
+    path.write_text(text.replace(old, new), encoding="utf-8")
+
+
+def main() -> None:
+    for page in PAGES:
+        zh_url = page_url(ROOT_URL, page)
+        en_url = page_url(EN_URL, page)
+        add_publication_links(OUTPUT / page, zh_url, zh_url, en_url)
+        add_publication_links(OUTPUT / "en" / page, en_url, zh_url, en_url)
+
+    normalize_home(OUTPUT / "sitemap.xml", ROOT_URL)
+    normalize_home(OUTPUT / "en/sitemap.xml", EN_URL)
+
+    # robots.txt is only authoritative at the origin root. This project is
+    # published below /demons-within-fvn-guide/, so Quarto's generated files
+    # would look authoritative without actually controlling crawler behavior.
+    for path in (OUTPUT / "robots.txt", OUTPUT / "en/robots.txt"):
+        if path.exists():
+            path.unlink()
+
+    print("Publication metadata finalized: 12 paired pages, normalized sitemaps, no project-local robots files.")
+
+
+if __name__ == "__main__":
+    main()

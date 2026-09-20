@@ -1,0 +1,212 @@
+/* DW navigation and TOC: PW's independent panels, without its page-specific controls. */
+:root { --dw-header-height: 64px; --dw-left-width: 220px; --dw-right-width: 190px; }
+.dw-panel-toolbar { display: none; align-items: center; justify-content: space-between; gap: .5rem; min-height: 3rem; padding: .5rem .65rem; border-bottom: 1px solid var(--dw-border); background: var(--dw-shell); color: var(--dw-text-soft); }
+.dw-panel-toolbar > span { font-size: .78rem; font-weight: 700; letter-spacing: .04em; }
+.dw-panel-toggle, .dw-edge-toggle { display: inline-grid; place-items: center; width: 2rem; height: 2rem; padding: 0; border: 1px solid var(--dw-border); border-radius: 9px; background: var(--dw-surface-soft); color: var(--dw-text-soft); cursor: pointer; font-size: 1.15rem; }
+.dw-panel-toggle:hover, .dw-edge-toggle:hover { background: var(--dw-surface-hover); color: var(--dw-heading); border-color: var(--dw-border-strong); }
+.dw-edge-toggle { display: none; position: fixed; top: calc(var(--dw-header-height) + .7rem); z-index: 1040; }
+.dw-edge-left { left: .5rem; }
+.dw-edge-right { right: .5rem; }
+.dw-edge-toggle[hidden] { display: none !important; }
+#quarto-sidebar, #quarto-margin-sidebar { color: var(--dw-text-soft); scrollbar-color: var(--dw-border-strong) var(--dw-shell); }
+#quarto-sidebar .sidebar-item-text { color: var(--dw-text-soft); }
+#quarto-sidebar .sidebar-item-container { border-radius: 10px; }
+#quarto-sidebar .sidebar-link { border-radius: 10px; padding: .48rem .7rem; text-decoration: none; font-size: .9rem; }
+#quarto-sidebar .sidebar-link:hover { background: var(--dw-surface-hover); color: var(--dw-heading); }
+#quarto-sidebar .sidebar-link.active { background: var(--dw-primary-soft); color: var(--dw-primary); font-weight: 690; }
+#quarto-sidebar .sidebar-item-section { margin-top: .75rem; }
+#quarto-sidebar .sidebar-item-section > .sidebar-item-container > .sidebar-item-text { font-weight: 700; color: var(--dw-heading); }
+#quarto-sidebar .sidebar-menu-container { padding: .8rem .7rem; }
+@media (min-width: 1100px) {
+  .dw-layout-ready #quarto-header.headroom--unpinned { transform: none; }
+  .dw-layout-ready #quarto-content { display: flow-root !important; width: 100%; max-width: none; margin: 0; padding-left: calc(var(--dw-left-width) + 1rem); padding-right: calc(var(--dw-right-width) + 1rem); }
+  .dw-left-collapsed #quarto-content, .dw-no-left #quarto-content { padding-left: 1rem; }
+  .dw-right-collapsed #quarto-content, .dw-no-right #quarto-content { padding-right: 1rem; }
+  .dw-layout-ready main.content { width: min(100%, 960px); max-width: 960px; margin-inline: auto; padding: 2.25rem 1rem 4rem; }
+  .dw-left-collapsed main.content, .dw-right-collapsed main.content, .dw-no-right main.content { max-width: 1060px; width: min(100%, 1060px); }
+  .dw-left-collapsed:is(.dw-right-collapsed, .dw-no-right) main.content { max-width: 1180px; width: min(100%, 1180px); }
+  .dw-layout-ready :is(#quarto-sidebar, #quarto-margin-sidebar) { display: block !important; position: fixed !important; top: var(--dw-header-height) !important; bottom: 0; height: auto !important; max-height: none !important; margin: 0; padding: 0 0 1rem; overflow: auto; background: var(--dw-shell); z-index: 1015; }
+  .dw-layout-ready #quarto-sidebar { left: 0; width: var(--dw-left-width); border-right: 1px solid var(--dw-border); }
+  .dw-layout-ready #quarto-margin-sidebar { right: 0; width: var(--dw-right-width); border-left: 1px solid var(--dw-border); }
+  .dw-layout-ready #quarto-sidebar .dw-panel-toolbar { display: flex; }
+  .dw-left-collapsed #quarto-sidebar, .dw-right-collapsed #quarto-margin-sidebar, .dw-no-right #quarto-margin-sidebar { visibility: hidden; pointer-events: none; }
+  .dw-left-collapsed .dw-edge-left { display: inline-grid; }
+}
+@media (min-width: 768px) {
+  .dw-layout-ready #quarto-margin-sidebar .dw-panel-toolbar { display: flex; }
+  .dw-layout-ready #TOC > h2 { display: none; }
+  .dw-layout-ready #quarto-margin-sidebar #TOC { position: static !important; padding: .7rem .6rem; margin: 0; }
+  .dw-right-collapsed .dw-edge-right { display: inline-grid; }
+}
+@media (min-width: 768px) and (max-width: 1099.98px) {
+  .dw-layout-ready #quarto-margin-sidebar { display: block !important; position: sticky !important; top: calc(var(--dw-header-height) + .5rem) !important; align-self: start; max-height: calc(100dvh - var(--dw-header-height) - 1rem); padding: 0; border: 1px solid var(--dw-border); border-radius: 10px; overflow-y: auto; background: var(--dw-shell); }
+  .dw-right-collapsed #quarto-margin-sidebar, .dw-no-right #quarto-margin-sidebar { display: none !important; }
+  .dw-right-collapsed main.content, .dw-no-right main.content { grid-column: body-content-start / page-end; max-width: none; }
+}
+@media (max-width: 767.98px) {
+  .dw-layout-ready #quarto-margin-sidebar { display: none; }
+}
+/* The same compact utility group on desktop and phone. Native Quarto search remains in charge. */
+.dw-tools-ready .quarto-navbar-tools { display:flex; align-items:center; gap:.22rem; margin-left:auto; flex:0 0 auto; }
+.dw-tools-ready .quarto-navbar-tools :is(.quarto-color-scheme-toggle,.dw-theme-auto,.dw-language-switch,.dw-search-launcher) { display:inline-grid !important; place-items:center; flex:0 0 auto; width:2.2rem; min-width:2.2rem; height:2.2rem; margin:0; padding:0; border:1px solid transparent; border-radius:9px; color:var(--dw-text-soft); background:transparent; text-decoration:none !important; cursor:pointer; }
+.dw-tools-ready .quarto-navbar-tools :is(a,button):hover { color:var(--dw-heading); background:var(--dw-surface-soft); border-color:var(--dw-border); }
+.dw-tools-ready .quarto-color-scheme-toggle .bi::before { width:1.12rem !important; height:1.12rem !important; background-image:linear-gradient(90deg,currentColor 50%,transparent 50%) !important; background-size:100% 100% !important; border:1.5px solid currentColor; border-radius:50%; filter:none !important; }
+.dw-search-launcher svg { width:1.12rem; height:1.12rem; }
+.dw-tools-ready .quarto-navbar-tools .dw-language-switch { width:auto; min-width:2.5rem; padding:0 .42rem; font-size:.76rem; font-weight:720; line-height:1; }
+.dw-theme-auto { font-size:.7rem; font-weight:720; }
+.dw-theme-auto[aria-pressed="true"] { color:var(--dw-primary) !important; }
+.dw-tools-ready #quarto-search { position:absolute !important; width:1px !important; height:1px !important; margin:-1px !important; padding:0 !important; overflow:hidden !important; clip-path:inset(50%); }
+.dw-layout-ready .navbar-toggler[data-bs-target="#navbarCollapse"] { display:none !important; }
+.dw-panel-toolbar { position:sticky; top:0; z-index:2; }
+@media (max-width: 1099.98px) {
+  .dw-layout-ready #quarto-header .quarto-secondary-nav { background:var(--dw-surface-soft); border-bottom:1px solid var(--dw-border); box-shadow:none; }
+  .dw-layout-ready .quarto-secondary-nav > .container-fluid { min-height:3rem; align-items:center; gap:.55rem; padding:.35rem .85rem; }
+  .dw-layout-ready .quarto-secondary-nav .quarto-page-breadcrumbs { min-width:0; margin:0 !important; color:var(--dw-text-soft); font-size:.82rem; line-height:1.3; }
+  .dw-layout-ready .quarto-secondary-nav .breadcrumb { min-width:0; margin:0; flex-wrap:nowrap; overflow:hidden; }
+  .dw-layout-ready .quarto-secondary-nav .breadcrumb-item { min-width:0; white-space:nowrap; }
+  .dw-layout-ready .quarto-secondary-nav .breadcrumb-item:last-child { overflow:hidden; text-overflow:ellipsis; }
+  .dw-layout-ready .quarto-secondary-nav .quarto-btn-toggle { flex:0 0 2.25rem; width:2.25rem; height:2.25rem; display:inline-flex; align-items:center; justify-content:center; padding:0; color:var(--dw-primary); background:var(--dw-surface); border:1px solid var(--dw-border); border-radius:8px; }
+}
+@media (max-width:991.98px) {
+  .dw-layout-ready #navbarCollapse { display:none !important; }
+  .dw-tools-ready .navbar > .container-fluid { flex-wrap:nowrap; gap:.5rem; }
+  .dw-tools-ready .navbar-brand-container { min-width:0; flex:1 1 auto; }
+  .dw-tools-ready .navbar-brand { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+}
+@media (max-width:767.98px) {
+  body { font-size:.97rem; }
+  main.content { padding-top:1.35rem; padding-bottom:3rem; }
+  .quarto-title h1, h1.title { font-size:1.8rem; }
+  main.content h2 { font-size:1.35rem; margin-top:2.55rem; }
+  main.content h3 { font-size:1.08rem; margin-top:1.85rem; }
+}
+.navbar { min-height:68px; }
+.quarto-title-block { margin-bottom:2.65rem !important; }
+.quarto-title { margin-bottom:0 !important; }
+.quarto-title h1, h1.title { margin-top:0; margin-bottom:.72rem !important; }
+.quarto-title-block .description { margin-top:0 !important; margin-bottom:0 !important; line-height:1.55; }
+.quarto-page-breadcrumbs { margin-bottom:1.45rem; font-size:.88rem; font-weight:600; }
+@media (max-width:1199.98px) { main.content { padding-inline:1rem; } }
+@media (max-width:767.98px) { .dw-layout-ready main.content { padding-top:0 !important; } }
+
+#quarto-sidebar .sidebar-link .menu-text { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+#quarto-sidebar .sidebar-item-text { min-width:0; }
+
+/* Keep section labels and their native toggles on one centered row. */
+#quarto-sidebar
+.sidebar-item-section
+> .sidebar-item-container {
+  display: flex !important;
+  align-items: center !important;
+
+  min-height: 2.5rem;
+}
+
+/* 一级标题链接 */
+#quarto-sidebar
+.sidebar-item-section
+> .sidebar-item-container
+> .sidebar-link {
+  display: flex !important;
+  align-items: center !important;
+
+  flex: 1 1 auto;
+  min-width: 0;
+
+  line-height: 1.35 !important;
+}
+
+/* 展开／收起按钮 */
+#quarto-sidebar
+.sidebar-item-section
+> .sidebar-item-container
+> .sidebar-item-toggle {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  align-self: center !important;
+
+  flex: 0 0 1.8rem;
+
+  width: 1.8rem;
+  height: 1.8rem;
+
+  margin: 0 0.18rem 0 0 !important;
+  padding: 0 !important;
+
+  line-height: 1 !important;
+}
+
+/* Quarto 使用的图标本身也归零偏移 */
+#quarto-sidebar
+.sidebar-item-section
+> .sidebar-item-container
+> .sidebar-item-toggle
+svg,
+
+#quarto-sidebar
+.sidebar-item-section
+> .sidebar-item-container
+> .sidebar-item-toggle
+.bi {
+  display: block;
+
+  width: 0.85rem;
+  height: 0.85rem;
+
+  margin: 0 !important;
+
+  vertical-align: middle;
+
+  transform-origin: center;
+}
+
+/* 防止旧规则造成箭头向上偏移 */
+#quarto-sidebar .sidebar-item-toggle {
+  top: auto !important;
+  bottom: auto !important;
+
+  transform: none;
+}
+
+
+body.quarto-light { --dw-panel-surface:#f1eee7; }
+body.quarto-dark { --dw-panel-surface:#201f1d; }
+body :is(#quarto-sidebar,#quarto-margin-sidebar,.dw-panel-toolbar,#quarto-header .quarto-secondary-nav) { background:var(--dw-panel-surface) !important; }
+@media (min-width:992px) { #quarto-header #navbarCollapse { flex:1 0 auto; } #quarto-header .navbar-nav { column-gap:.25rem; } }
+@media (min-width:768px) and (max-width:1099.98px) {
+  body:has(#quarto-header.headroom--unpinned) #quarto-margin-sidebar { top:0 !important; max-height:calc(100dvh - 1rem); }
+  body.dw-right-collapsed:has(#quarto-header.headroom--unpinned) .dw-edge-right { top:.7rem; }
+}
+
+/* PW's panel gutters keep labels, rules and contents off the viewport edges. */
+@media (min-width:1100px) {
+  body.dw-layout-ready #quarto-sidebar { padding:14px 0 0 20px; }
+  body.dw-layout-ready #quarto-sidebar .dw-panel-toolbar { padding:.93rem .45rem .48rem; }
+  body.dw-layout-ready #quarto-sidebar .sidebar-menu-container { padding:.8rem .7rem .8rem 0; }
+  body.dw-layout-ready #quarto-margin-sidebar { padding:0 .55rem 1.5rem .65rem; }
+  body.dw-layout-ready #quarto-margin-sidebar .dw-panel-toolbar { padding:.38rem 0 .38rem .1rem; }
+  body.dw-layout-ready #quarto-margin-sidebar #TOC { padding:.55rem 0 1rem; }
+}
+
+/* The footer stays within the reading region as either desktop panel collapses. */
+footer.footer { background:var(--dw-panel-surface); border-top:1px solid var(--dw-border); }
+footer.footer .nav-footer { display:flex; align-items:center; justify-content:center; min-height:0; padding:1rem; border:0; background:transparent; }
+footer.footer .nav-footer > div:empty { display:none; }
+footer.footer .nav-footer-center { width:100%; margin:0; text-align:center; }
+footer.footer p { margin:0 0 .65rem; color:var(--dw-text-soft); font-size:.85rem; line-height:1.6; overflow-wrap:anywhere; }
+.dw-back-to-top { display:inline-flex; align-items:center; justify-content:center; min-height:2.4rem; padding:.45rem .85rem; border:1px solid var(--dw-border); border-radius:6px; color:var(--dw-text-soft); background:var(--dw-surface); font-size:.8rem; text-decoration:none; }
+.dw-back-to-top:hover { color:var(--dw-primary); background:var(--dw-surface-soft); border-color:var(--dw-border-strong); }
+@media (min-width:1100px) {
+  body.dw-layout-ready footer.footer { padding-left:calc(var(--dw-left-width) + 1rem); padding-right:calc(var(--dw-right-width) + 1rem); }
+  body.dw-left-collapsed footer.footer, body.dw-no-left footer.footer { padding-left:1rem; }
+  body.dw-right-collapsed footer.footer, body.dw-no-right footer.footer { padding-right:1rem; }
+  footer.footer .nav-footer { max-width:960px; margin-inline:auto; }
+  body.dw-left-collapsed footer .nav-footer, body.dw-right-collapsed footer .nav-footer, body.dw-no-right footer .nav-footer { max-width:1060px; }
+  body.dw-left-collapsed:is(.dw-right-collapsed,.dw-no-right) footer .nav-footer { max-width:1180px; }
+}
+/* Quarto fills unused footer slots with nonbreaking spaces. */
+footer.footer :is(.nav-footer-left,.nav-footer-right) { display:none; }
+footer.footer .nav-footer { flex-direction:column; gap:0; }
+footer.footer .nav-footer-center { flex:0 0 auto; height:auto; }

@@ -1,0 +1,99 @@
+project:
+  type: website
+  output-dir: _site
+  resources:
+    - 404.html
+    - assets/favicon.svg
+    - assets/favicon-32x32.png
+    - assets/apple-touch-icon.png
+  post-render:
+    - python3 scripts/build-safe-search.py
+  render:
+    - index.md
+    - guide/choices.qmd
+    - guide/faq.md
+    - reference/interventions.md
+    - collectibles/cg.md
+    - collectibles/memorium.md
+
+lang: zh
+
+website:
+  favicon: assets/favicon.svg
+  site-url: "https://yangtaomijian.github.io/demons-within-fvn-guide/"
+  open-graph:
+    locale: zh_CN
+    site-name: "Demons Within 玩家攻略"
+  twitter-card:
+    card-style: summary
+  page-footer:
+    center: |
+      <p>非官方玩家攻略，适用于 Demons Within Public 14.6；后续版本可能不同。</p>
+      <a class="dw-back-to-top" href="#">↑ 返回顶部</a>
+  title: "Demons Within 玩家攻略"
+  description: "《心魔在焉（Demons Within）》Public 14.6 非官方中文玩家攻略，涵盖主线选择、结局、CG 与辞书收集。"
+  search:
+    location: navbar
+    type: overlay
+  sidebar:
+    style: docked
+    collapse-level: 1
+    search: false
+    contents:
+      - section: "首页"
+        contents:
+          - href: index.md
+            text: "首页"
+      - section: "攻略"
+        contents:
+          - href: guide/choices.qmd
+            text: "关键选择"
+          - href: reference/interventions.md
+            text: "全选项"
+          - href: guide/faq.md
+            text: "常见问题"
+      - section: "收集"
+        contents:
+          - href: collectibles/cg.md
+            text: "CG"
+          - href: collectibles/memorium.md
+            text: "辞书与立绘"
+  navbar:
+    right:
+      - href: en/index.html
+        text: EN
+    left:
+      - href: index.md
+        text: 首页
+      - text: 攻略
+        menu:
+          - href: guide/choices.qmd
+            text: 关键选择
+          - href: reference/interventions.md
+            text: 全选项
+          - href: guide/faq.md
+            text: 常见问题
+      - text: 收集
+        menu:
+          - href: collectibles/cg.md
+            text: CG
+          - href: collectibles/memorium.md
+            text: 辞书与立绘
+
+format:
+  html:
+    canonical-url: true
+    variables:
+      lang: zh-CN
+    theme:
+      light: [cosmo, assets/system-fonts.scss]
+      dark: [cosmo, assets/system-fonts.scss, assets/dw-dark.scss]
+    respect-user-color-scheme: true
+    css:
+      - assets/dw-theme.css
+      - assets/styles.css
+      - assets/dw-layout.css
+    include-after-body:
+      - assets/language-switch.html
+      - assets/dw-layout-controls.html
+    smooth-scroll: true

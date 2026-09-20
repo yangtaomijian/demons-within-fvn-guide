@@ -1,0 +1,90 @@
+project:
+  type: website
+  output-dir: _site
+  post-render:
+    - python3 scripts/build-safe-search.py
+  render:
+    - index.md
+    - guide/choices.qmd
+    - guide/faq.md
+    - reference/interventions.md
+    - collectibles/cg.md
+    - collectibles/memorium.md
+lang: en
+
+website:
+  favicon: assets/favicon.svg
+  site-url: "https://yangtaomijian.github.io/demons-within-fvn-guide/en/"
+  open-graph:
+    locale: en_US
+    site-name: "Demons Within Player Guide"
+  twitter-card:
+    card-style: summary
+  page-footer:
+    center: |
+      <p>Unofficial fan-made guide for Demons Within Public 14.6; later releases may differ.</p>
+      <a class="dw-back-to-top" href="#">↑ Back to top</a>
+  title: "Demons Within Player Guide"
+  description: "An unofficial Public 14.6 player guide for Demons Within, covering story choices, endings, CGs, and Memory Codex unlocks."
+  search:
+    location: navbar
+    type: overlay
+  sidebar:
+    style: docked
+    collapse-level: 1
+    search: false
+    contents:
+      - section: "Home"
+        contents:
+          - href: index.md
+            text: "Home"
+      - section: "Guide"
+        contents:
+          - href: guide/choices.qmd
+            text: "Key Choices"
+          - href: reference/interventions.md
+            text: "Full Choice Index"
+          - href: guide/faq.md
+            text: "FAQ"
+      - section: "Collections"
+        contents:
+          - href: collectibles/cg.md
+            text: "CG Scenes"
+          - href: collectibles/memorium.md
+            text: "Memory Codex & Sprite Viewer"
+  navbar:
+    right:
+      - href: ../index.html
+        text: 中文
+    left:
+      - href: index.md
+        text: Home
+      - text: Guide
+        menu:
+          - href: guide/choices.qmd
+            text: Key Choices
+          - href: reference/interventions.md
+            text: Full Choice Index
+          - href: guide/faq.md
+            text: FAQ
+      - text: Collections
+        menu:
+          - href: collectibles/cg.md
+            text: CG Scenes
+          - href: collectibles/memorium.md
+            text: Memory Codex & Sprite Viewer
+format:
+  html:
+    canonical-url: true
+    theme:
+      light: [cosmo, assets/system-fonts.scss]
+      dark: [cosmo, assets/system-fonts.scss, assets/dw-dark.scss]
+    respect-user-color-scheme: true
+    css:
+      - assets/dw-theme.css
+      - assets/styles.css
+      - assets/dw-layout.css
+    include-after-body:
+      - assets/language-switch.html
+      - assets/dw-layout-controls.html
+    smooth-scroll: true

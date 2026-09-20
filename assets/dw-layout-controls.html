@@ -1,0 +1,95 @@
+<script>
+(() => {
+  const start = () => {
+    const body = document.body;
+    if (body.classList.contains('dw-layout-ready')) return;
+    const english = document.documentElement.lang.startsWith('en');
+    const navbar = document.querySelector('.navbar .container-fluid');
+    const theme = document.querySelector('.quarto-color-scheme-toggle');
+    const nativeSearch = document.querySelector('#quarto-search');
+    if (navbar && theme && nativeSearch) {
+      let tools = navbar.querySelector('.quarto-navbar-tools');
+      if (!tools) { tools = document.createElement('div'); tools.className = 'quarto-navbar-tools'; navbar.append(tools); }
+      tools.append(theme);
+      const auto = document.createElement('button');
+      auto.type = 'button'; auto.className = 'dw-theme-auto'; auto.textContent = english ? 'Auto' : '自动';
+      auto.title = english ? 'Follow system appearance' : '跟随系统外观'; auto.setAttribute('aria-label', auto.title);
+      const syncTheme = () => {
+        const label = english ? (body.classList.contains('quarto-dark') ? 'Switch to light mode' : 'Switch to dark mode') : (body.classList.contains('quarto-dark') ? '切换至浅色模式' : '切换至深色模式');
+        theme.title = label; theme.setAttribute('aria-label', label);
+        try { auto.setAttribute('aria-pressed', String(localStorage.getItem('quarto-color-scheme') === null)); } catch {}
+      };
+      auto.addEventListener('click', () => { try { localStorage.removeItem('quarto-color-scheme'); location.reload(); } catch {} });
+      tools.append(auto); syncTheme();
+      new MutationObserver(syncTheme).observe(body, {attributes:true, attributeFilter:['class']});
+      const language = [...navbar.querySelectorAll('a')].find(a => a.textContent.trim() === (english ? '中文' : 'EN'));
+      if (language) { language.classList.add('dw-language-switch'); tools.append(language); }
+      const search = document.createElement('button'); search.type = 'button'; search.className = 'dw-search-launcher';
+      search.title = english ? 'Search' : '搜索'; search.setAttribute('aria-label', search.title);
+      search.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="6.75"/><path d="m16 16 4.25 4.25"/></svg>';
+      search.addEventListener('click', () => nativeSearch.querySelector('.aa-DetachedSearchButton')?.click());
+      tools.append(search); body.classList.add('dw-tools-ready');
+    }
+    // A shared sidebar spans every section; highlight the actual navbar destination.
+    const currentPath = location.pathname.replace(/index\.html$/, '');
+    document.querySelectorAll('#navbarCollapse .nav-link').forEach(link => {
+      const menu = link.closest('.nav-item')?.querySelector('.dropdown-menu');
+      const matches = [...(menu ? menu.querySelectorAll('a[href]') : [link])].some(a => new URL(a.href).pathname.replace(/index\.html$/, '') === currentPath);
+      link.classList.toggle('active', matches);
+      if (matches) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current');
+    });
+    document.querySelectorAll('main.content table').forEach(table => {
+      if (table.closest('.table-responsive, .quarto-bootstrap-table, .dw-table-scroll, .dw-memorium-locator')) return;
+      const scroll = document.createElement('div'); scroll.className = 'dw-table-scroll';
+      table.before(scroll); scroll.append(table);
+    });
+    const desktop = matchMedia('(min-width: 1100px)');
+    const tablet = matchMedia('(min-width: 768px)');
+    const read = key => { try { return localStorage.getItem(key) === '1'; } catch { return false; } };
+    const write = (key, value) => { try { localStorage.setItem(key, value ? '1' : '0'); } catch {} };
+    const panels = [];
+    for (const side of ['left', 'right']) {
+      const panel = document.getElementById(side === 'left' ? 'quarto-sidebar' : 'quarto-margin-sidebar');
+      const hasContent = panel && (side === 'left' || panel.querySelector('#TOC'));
+      if (!hasContent) { body.classList.add('dw-no-' + side); continue; }
+      const title = side === 'left' ? (english ? 'Navigation' : '导航') : (english ? 'On this page' : '本页目录');
+      const key = 'dw-guide-' + side + '-collapsed';
+      const media = side === 'left' ? desktop : tablet;
+      let collapsed = read(key);
+      const toolbar = document.createElement('div');
+      toolbar.className = 'dw-panel-toolbar';
+      const label = document.createElement('span'); label.textContent = title; toolbar.append(label);
+      const button = (open) => {
+        const b = document.createElement('button'); b.type = 'button';
+        b.className = open ? 'dw-edge-toggle dw-edge-' + side : 'dw-panel-toggle';
+        b.textContent = (side === 'left') === open ? '→' : '←';
+        b.title = english ? (open ? 'Expand ' : 'Collapse ') + (side === 'left' ? 'navigation' : 'table of contents') : (open ? '展开' : '收起') + (side === 'left' ? '左侧导航' : '本页目录');
+        b.setAttribute('aria-label', b.title); b.setAttribute('aria-controls', panel.id);
+        return b;
+      };
+      const closeButton = button(false), openButton = button(true);
+      toolbar.append(closeButton);panel.prepend(toolbar);body.append(openButton);
+      const apply = () => {
+        const hidden = media.matches && collapsed;
+        body.classList.toggle('dw-' + side + '-collapsed', hidden);
+        panel.inert = hidden;
+        if (hidden) panel.setAttribute('aria-hidden','true'); else panel.removeAttribute('aria-hidden');
+        closeButton.setAttribute('aria-expanded', String(!hidden));
+        openButton.setAttribute('aria-expanded', String(!hidden));
+        openButton.hidden = !hidden;
+      };
+      closeButton.addEventListener('click', () => { collapsed = true;write(key,collapsed);apply();openButton.focus(); });
+      openButton.addEventListener('click', () => { collapsed = false;write(key,collapsed);apply();closeButton.focus(); });
+      media.addEventListener('change', apply);
+      panels.push(apply);
+    }
+    const header = document.getElementById('quarto-header');
+    const measure = () => document.documentElement.style.setProperty('--dw-header-height', (header?.getBoundingClientRect().height || 64) + 'px');
+    measure();
+    if (header) new ResizeObserver(measure).observe(header);
+    body.classList.add('dw-layout-ready');
+    panels.forEach(apply => apply());
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
+</script>

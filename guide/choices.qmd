@@ -1,0 +1,301 @@
+---
+title: "关键选择与存档"
+description: "心魔在焉 Public 14.6 主线中关键场景的操作与存档说明。"
+toc: true
+toc-depth: 2
+search: false
+---
+
+本页按剧情顺序收录部分关键场景，目前覆盖从康复后的第一晚到 Garret 办公室喝酒之间的重点选择，并附有一份主线宏观流程草图。只想查询某次本源之轮的目标、可用操作与局部结果，可改看[全选项与干预差分](../reference/interventions.md)；按画面查找观看条件，可看[CG 场景索引](../collectibles/cg.md)。
+
+建议在场景开始或关键选择前另存一档，方便回看其他结果。
+
+## 主线流程与关键分歧 {#story-overview}
+
+以下草图只保留会影响本页查阅的主干、重大分叉和终止结果，省略了大量过渡场景。图中包含全篇结构剧透。
+
+**锁定窗口需完成指定操作或等待自动演出；非锁定窗口可选择本源，也可不选择并继续文本，即“不干预”。**
+
+<details class="dw-story-map">
+<summary><span>主线导航图</span><span class="dw-story-map-toggle" aria-hidden="true"></span></summary>
+
+<div class="dw-story-map-body">
+<p class="dw-story-map-hint" id="dw-story-map-hint">点击带下划线的卡片，跳到对应章节；手机可左右滑动查看全图。</p>
+<div class="dw-story-map-scroll" role="region" aria-label="主线导航图，可横向滚动" aria-describedby="dw-story-map-hint" tabindex="0">
+
+```{mermaid}
+%%{init: {"flowchart": {"curve": "linear", "nodeSpacing": 30, "rankSpacing": 20, "padding": 8}, "themeVariables": {"fontSize": "14px"}}}%%
+flowchart TD
+    accTitle: Public 14.6 主线导航图
+    accDescr: 共同主线居中，仓库和黑狼伏击的终止结果在侧边。Bear Day 与 Tiger Day 分开后汇回共同主线。带链接的节点跳转到本页对应章节。
+    subgraph spine[" "]
+        first
+        warehouse
+        normal
+        early
+        days
+        merge
+        wolf
+        sloth
+        bath
+        reprieve
+        gunther
+        garret
+        finish
+    end
+    style spine fill:none,stroke:none
+    first["开局 / 康复<br/>康复后的第一晚"]
+    warehouse["仓库初战"]
+    normal["两次色欲<br/>再完成四次锁定操作"]
+    captured["进入被俘段落<br/>再到被俘后的窗口"]
+    endings(["不干预 → Story Ending<br/>色欲＋后续锁定操作 → Horny Ending<br/>两种结果均在此终止"])
+    early["仓库后的共同主线<br/>前期 Garret 浴场谈话"]
+    days["Edwin / Ludwig 的休假日<br/>休假日分流"]
+    bear["Ludwig / Bear Day<br/>图书馆"]
+    tiger["Edwin / Tiger Day<br/>Boris / Jayden 访客变化"]
+    merge["回到共同主线"]
+    wolf["黑狼伏击"]
+    wolfEnd(["黑狼伏击结局<br/>在此终止"])
+    sloth["懒惰能力转折<br/>共同主线继续"]
+    bath["长官浴场<br/>先决定谁留下，再处理后续机会"]
+    reprieve["林中休整 · 真心话大冒险<br/>Sam 的条目机会"]
+    gunther["市场后的 Gunther 二次战<br/>三种操作汇入后续，局部状态保留"]
+    garret["Garret 办公室喝酒<br/>含连续懒惰分支"]
+    finish(["Public 14.6 主线内容末端"])
+
+    first --> warehouse
+    warehouse --> normal
+    warehouse -->|任一前置窗口不干预| captured
+    captured --> endings
+    normal --> early
+    early --> days
+    days --> bear
+    days --> tiger
+    bear --> merge
+    tiger --> merge
+    merge --> wolf
+    wolf -->|不干预| wolfEnd
+    wolf -->|色欲| sloth
+    sloth --> bath
+    bath --> reprieve
+    reprieve --> gunther
+    gunther --> garret
+    garret --> finish
+
+    class warehouse,days,wolf branch
+    class endings,wolfEnd terminal
+    class merge,finish quiet
+
+    click first href "#first-night" "康复后的第一晚" _self
+    click warehouse href "#warehouse" "仓库初战" _self
+    click normal href "#warehouse" "仓库正常继续" _self
+    click captured href "#warehouse" "仓库被俘分支" _self
+    click early href "#garret-early-bath" "前期 Garret 浴场谈话" _self
+    click days href "#day-off" "休假日分流" _self
+    click bear href "#bear-library" "Bear Day：图书馆" _self
+    click tiger href "#boris-jayden" "Tiger Day：Boris / Jayden" _self
+    click wolf href "#black-wolf" "黑狼伏击与懒惰转折" _self
+    click sloth href "#black-wolf" "懒惰能力转折" _self
+    click bath href "#officer-bath" "长官浴场" _self
+    click reprieve href "#truth-or-dare" "真心话大冒险：Sam 的条目机会" _self
+    click gunther href "#gunther-rematch" "市场后的 Gunther 二次战" _self
+    click garret href "#garret-office" "Garret 办公室喝酒" _self
+```
+
+</div>
+<p class="dw-story-map-note">Boris / Jayden 是 Tiger Day 内部的访客变化，谁出现与是否参与由不同窗口决定。浴场、Gunther 二次战和 Garret 办公室的局部差异未在总图中展开。</p>
+<p class="dw-story-map-note">各条路线汇回共同剧情后，之前的部分选择仍会影响后续对话和表现。</p>
+</div>
+<script>
+(() => {
+  const map = document.currentScript.closest('.dw-story-map');
+  const scroller = map.querySelector('.dw-story-map-scroll');
+  let centeredWidth = 0;
+  map.addEventListener('toggle', () => {
+    if (!map.open) return;
+    // Quarto can measure excess SVG whitespace while the disclosure is closed.
+    const svg = scroller.querySelector('svg');
+    if (svg) {
+      const box = svg.getBBox();
+      if (box.width && box.height) svg.setAttribute('viewBox',
+        `${box.x - 8} ${box.y - 8} ${box.width + 16} ${box.height + 16}`);
+    }
+    if (scroller.clientWidth !== centeredWidth) {
+      scroller.scrollLeft = (scroller.scrollWidth - scroller.clientWidth) / 2;
+      centeredWidth = scroller.clientWidth;
+    }
+  });
+})();
+</script>
+</details>
+
+## 康复后的第一晚 {#first-night}
+
+在 Resnick 第一次康复后回到卧室，Edwin 换衣服时，旁白会提示玩家尝试引导 Resnick 内心的色欲。建议在两人回到卧室、教程开始之前保存；这里先教会玩家怎样操作本源之轮，之后才出现真正会改变场景走向的选择。
+
+前两处是锁定教学，不能等待它们自行跳过：第一处在 Resnick 一侧选择 **色欲**，第二处在 Edwin 一侧选择 **色欲**。随后出现锁定的双轮选择，两侧都可以选择色欲，但目标人物不同：
+
+| 双轮选择 | 主要差异 |
+|---|---|
+| Resnick 一侧 | Resnick 主动带领接下来的互动。 |
+| Edwin 一侧 | Edwin 主动带领接下来的互动。 |
+
+锁定双轮只需要选择其中一侧，剧情便会继续。之后都会进入同一段亲密场景。
+
+临近这段互动结束时还会出现一处非锁定的色欲机会。选择 **色欲** 会把收尾推得更强烈；不选择圆盘、继续文本，则进入较温和的收尾。
+
+如果之后两次休假日邀请都不干预，这一晚的最后选择会决定进入哪一天，详见[休假日分流](#day-off)。
+
+## 仓库初战 {#warehouse}
+
+1. Gunther 将 Resnick 逼到墙角、第一次非锁定本源之轮出现时，选择 **色欲**。选择后才会进入下一处窗口。
+2. Resnick 尝试从高处的破窗逃脱、Gunther 抓住他后，第二次非锁定本源之轮出现；再次选择 **色欲**，进入后续变化链。
+3. 接下来会连续出现四个锁定窗口。每一次都选择 **色欲**，直到剧情回到正常后续。
+
+::: {.callout-note collapse="true" title="展开：其他操作与回看方式"}
+在第一处或第二处非锁定窗口不选择圆盘、继续推进文本，都会进入被俘段落；两处窗口在剧情中的位置不同。
+
+被俘后还会出现另一个非锁定窗口：
+
+- 不选择圆盘、继续推进文本，会到达 **Story Ending （普通结局）**。
+- 选择 **色欲**，再按后续锁定窗口继续操作，会到达 **Horny Ending （色欲结局）**。
+
+想体验多结局可以读取进入仓库前的存档。已经进入被俘链后，如果还想比较其中两个结果，建议在被俘后的另一个本源之轮出现前另存一档。
+:::
+
+## 前期 Garret 浴场谈话 {#garret-early-bath}
+
+这段发生在前期哨所浴场。Garret 谈起年轻时认识的一名灰狼时，Resnick 会出现一处非锁定色欲窗口。
+
+- 不选择圆盘并继续文本，Garret 会在较克制的位置收住往事，谈话随后被打断。
+- 选择 **色欲**，Resnick 会鼓励他继续，故事和两人的反应会更暧昧，之后仍回到同一个被打断的后续。
+
+选择色欲会影响 Bear Day 查资料开场和后来的[长官浴场](#officer-bath)中的少量对话。这些场景的进入条件不受本次选择影响。想比较两种谈话，建议在 Garret 开始讲年轻灰狼的往事之前保存。
+
+## Edwin / Ludwig 的休假日 {#day-off}
+
+仓库事件结束后，队伍在浴室谈到即将到来的休假日。Edwin 会先靠近 Resnick，邀请他一起去酒馆；只有在这处本源之轮不选择圆盘并继续文本，剧情才会继续到 Ludwig 提议一起去图书馆。
+
+建议在浴室开始谈论休假安排、Edwin 走近 Resnick 之前保存。想主动进入两边时，操作如下：
+
+| 想进入的休假日 | 操作 |
+|---|---|
+| Edwin / Tiger Day | 在 Edwin 邀请时出现的第一处非锁定本源之轮选择 **色欲**。 |
+| Ludwig / Bear Day | 第一处不选择圆盘并继续文本；等 Ludwig 提出邀请、第二处非锁定本源之轮出现时选择 **色欲**。 |
+
+两次邀请有先后依赖：第一处选择色欲后会直接确定 Edwin 的休假日，不再经过 Ludwig 的窗口。两个休假日各自结束后都会重新汇流进同一段后续主线。
+
+::: {.callout-note collapse="true" title="展开：两次都不干预时怎样决定"}
+如果两个邀请窗口都不选择圆盘，游戏会沿用更早那段 Resnick 康复后的夜晚结果：当时最后一处色欲窗口也未干预，会落到 Edwin 的休假日；当时选择了色欲，则会落到 Ludwig 的休假日。
+
+只想回看 Edwin 与 Ludwig 两天的主要内容，不必依赖这层历史：从浴室剧情节处保存的存档读取后，分别按上表主动选择即可。若还想比较“两次都不干预”的自动回退，则需要回到更早、尚未经过那晚最后一处窗口的存档。
+:::
+
+## Bear Day：图书馆 {#bear-library}
+
+这一节只会在休假日选择 **Ludwig / Bear Day** 后出现。若想同时比较独自查资料和后面的连续互动，建议在 Resnick 独自进入图书馆、尚未决定找哪类书之前保存。
+
+Ludwig 暂时离开时，Resnick 会先独自查找红眼怪与自身症状的资料。此处不干预会继续调查；选择 **色欲** 则会让注意力转向另一类色情读物，并改变当天后面的少量表现。两边随后都会等到 Ludwig 回来。选过色欲的话，Resnick 还会把这本书带回去；后来 Russel 到房间时会从床垫下发现它，并调侃 Resnick。
+
+两人坐到图书馆的桌边后，最多会出现五处非锁定窗口，操作与结果如下：
+
+1. **Resnick 一侧：**选择色欲会让 Resnick 主动靠近并开启下一处窗口；不干预则把注意力拉回读书，结束这条连续互动。
+2. **Ludwig 一侧：**选择色欲后，Ludwig 接受并回应，开启下一处窗口；不干预时，他会明确抽回手，双方回到较克制的读书段落。
+3. **Resnick 一侧：**选择色欲会将互动推进到桌下，之后才会出现余下两处窗口；不干预则停在友好而亲近的交流，回到读书段落。
+4. **Ludwig 一侧：**选择色欲会让 Ludwig 在已经开始的互动中更主动；不干预会保持较克制的回应，两种结果都会继续到有人接近。
+5. **Resnick 一侧：**在有人靠近时选择色欲，会形成更冒险的差分；不干预则当下停住，进入另一组反应后再收束场景。
+
+逐窗口说明见[全选项与干预差分](../reference/interventions.md#bear-library-ludwig)。
+
+若要比较完整的克制路线与后半段差分，最稳妥的是保留桌边第一次本源之轮之前的存档；已经走到第四或第五处时，再分别留档即可比较同一条后半链中的变化。
+
+若目标是补 **捉弄Edwin** 的条目，前三处桌边窗口中任一处不干预，随后在阅读收尾点击对应高亮词。前三处都选色欲会进入后半段互动，并按后续操作解锁 Ludwig 的对应立绘状态；一旦进入该方向，最后两处即使不干预也不会回到捉弄Edwin 所在的收尾。两边需要从桌边第一处窗口前分支回看，详见[辞书与 Sprite Viewer 查漏](../collectibles/memorium.md#memorium-missables)。
+
+## Tiger Day：Boris / Jayden {#boris-jayden}
+
+这段变化只出现在 [Edwin 的休假日](#day-off)。在酒馆里见过 Boris 与 Jayden 后，Edwin 会暂时走开；Resnick 随后到酒馆后方与 Boris 对峙。这里出现的非锁定本源之轮，才是决定稍后谁来敲门的那个较早选择：
+
+| 酒馆后方的操作 | 稍后出现的人 |
+|---|---|
+| 选择 **色欲** | Boris |
+| 不选择圆盘并继续文本 | Jayden |
+
+之后 Resnick 与 Edwin 进入酒馆的私人房间。中途的锁定双轮必须选择一侧才能继续，但它不负责更换访客。再往后还有一处非锁定的色欲窗口：
+
+- 不干预时，先前确定的人仍会来敲门，但 Resnick 会让对方离开。
+- 选择色欲后，Resnick 会开门邀请对方，并进入针对该访客的另一处非锁定窗口。这里再次选择色欲，会进入访客参与的额外内容；不干预则是邀请未成，随后回到 Resnick 与 Edwin 的段落。
+
+想更换来访者，应在**酒馆后方、Boris 挑衅引出第一处本源之轮之前**保存并重走后续。门口附近的存档只能比较已经确定的同一位访客：较稳妥的做法是在私人房间里、开门前的色欲窗口之前保存；若已经选择色欲开门，可再在访客自己的窗口前另存一档，比较邀请成功与未成的两种互动。
+
+## 黑狼伏击与懒惰转折 {#black-wolf}
+
+休假日结束后，Resnick 夜晚会心有所感，出门后在哨所附近发现一高一矮的两名披风陌生人。行踪暴露后，较矮者命令黑狼动手；等黑狼拔出斧头并将 Resnick 逼入险境，就会出现一处非锁定的色欲窗口。
+
+建议在 Resnick 尚未从墙角现身、两名陌生人还没有发现他时保存。只想继续主线，应在黑狼挥斧攻击时选择 **色欲**；不选择圆盘并继续文本，会进入黑狼伏击结局。
+
+::: {.callout-note collapse="true" title="展开：终止结果与后续能力段"}
+不干预时，Resnick 会被黑狼击倒，这一结果在此终止，不会接回后续主线。本页将这一结果称为“黑狼伏击结局”。
+
+选择色欲后，现场会被打断，剧情继续，并在稍后的共同主线中进入懒惰本源显现片段。取得新能力的一段共有七个锁定阶段：三次懒惰由界面自动推进，另外四次需要手动选择色欲。稍后首次实际运用时，会先出现非锁定的观察窗口，再由锁定的懒惰操作推进结果。它们都是能力引导的一部分，和之前是否选择 Bear Day 无关。
+:::
+
+## 长官浴场 {#officer-bath}
+
+Resnick 晚间去公共浴场时，会发现 Garret 与 Brigham 指挥官 已经在里面。三人谈到红眼怪、边境和骑士团的职责后，会出现同时显示懒惰的第一处本源之轮；这处窗口决定谁留下。
+
+想比较两边，建议在 Resnick 刚进入浴场、认出两名军官时保存。
+
+| 第一处操作 | 接下来的同场人物 |
+|---|---|
+| 不干预并继续文本 | Garret 稍后离开，Resnick 与 Brigham 留下继续谈话。 |
+| 选择 **懒惰** | Brigham 因疲倦先离开，Resnick 与 Garret 留下继续谈话。 |
+
+两边随后都会各自显示色欲，但可执行性不同。Garret 一侧是在 Garret 离开、Resnick 独自在浴池时出现另一处非锁定窗口；是否选择只改变这一小段表现，之后回到共同的次日剧情。
+
+Brigham 一侧稍后也会显示色欲，但这一项在 Public 14.6 尚未开放。点击只会提示未来更新，不会执行干预或开启其他剧情；继续推进文本即可沿现有谈话进入次日共同剧情。
+
+## 真心话大冒险：Sam 的条目机会 {#truth-or-dare}
+
+林中休整的夜晚，Edwin、Ludwig、Resnick 与 Sam 会围坐玩真心话大冒险。轮到 Sam 向 Edwin 提问、Sam 闭眼思考问题时，会出现一处非锁定色欲窗口。
+
+如果要收集 **崇高之捐赠** 条目，在这里不要选择圆盘，继续文本。Sam 随后会问起 Edwin 的钱从哪里来；看到 **崇高之捐赠** 高亮词后，还需要主动点击它。
+
+选择 **色欲** 会让 Sam 改问更私人的问题，这一分支不会显示该高亮词。想比较两段提问，或避免错过条目，建议在 Sam 开始思考问题之前保存。在 Public 14.6 主线中，这个高亮词只在上述不干预文本里出现。
+
+## 市场后的 Gunther 二次战 {#gunther-rematch}
+
+目前版本主线较后段，Resnick 会在市场追查一名高大的披风人物，发现对方其实是 Gunther，并一路追进旧城区的死巷。Gunther 再次拿起武器、双方交战一段时间后，会出现同时提供色欲与懒惰的非锁定本源之轮。
+
+若要比较三种表现，建议在市场认出 Gunther、追逐开始之前保存。三种操作都会让战斗继续，并在 Resnick 暂时制服 Gunther 后遇到黑狼；差别主要在交手过程以及 Gunther 当时的状态：
+
+| 操作 | 局部差异 |
+|---|---|
+| 不干预并继续文本 | Gunther 按普通交战过程逐渐体力不支。 |
+| 选择 **色欲** | Gunther 更容易分心、动作变得躁动，衣着表现随之改变。 |
+| 选择 **懒惰** | Gunther 明显迟缓、疲惫，呈现另一组衣着状态。 |
+
+Gunther 的衣着和部分反应会随本次选择延续到下一段。想比较三种表现，从同一个较早存档分别回看即可。
+
+## Garret 办公室喝酒 {#garret-office}
+
+主线推进到较后段，Resnick 会在夜里与 Garret 单独留在办公室喝酒。懒惰此时已经在更早的主线中出现。Garret 解开衬衫时会先出现一处色欲窗口，但无论是否尝试，都会汇入后面的谈话；要比较本节的主要分支，应认准他提起一位过去认识的年轻狼、随后出现同时可用色欲与懒惰的本源之轮。
+
+建议在这次谈话、三种操作分开之前保存：
+
+| 操作 | 内容方向 |
+|---|---|
+| 不干预并继续文本 | Garret 继续谈自己的过去，随后结束这次夜谈。 |
+| 选择 **色欲** | 谈话转向更私人的吸引与犹豫，Garret 最终收住并结束会面。 |
+| 选择 **懒惰** | Garret 明显困倦，剧情继续到下一处懒惰窗口。 |
+
+想连续看到 Garret 睡着后的三种画面，依次操作：
+
+1. 在上述三分支窗口选择 **懒惰**。
+2. Garret 再次打哈欠、让 Resnick 离开时，第二处窗口继续选择 **懒惰**；不干预会直接结束这一晚。
+3. 剧情会顺序展示前两种状态。之后出现第三处非锁定窗口时选择 **色欲**，才会显示第三种状态；不干预会进入另一段文字差分并离开。
+
+::: {.callout-note collapse="true" title="展开：按回看目标安排存档"}
+想把三种相关画面都看完，按懒惰 → 懒惰 → 色欲走即可，中间不需要为了前两种状态回档。
+
+如果还想比较主要文字分支，则需要从更早的存档回看：第一次三分支窗口前的存档用于比较不干预、色欲与懒惰；进入懒惰后，可在第二次懒惰窗口和最后的色欲窗口前分别留档。
+:::
