@@ -24,10 +24,34 @@
       new MutationObserver(syncTheme).observe(body, {attributes:true, attributeFilter:['class']});
       const language = [...navbar.querySelectorAll('a')].find(a => a.textContent.trim() === (english ? '中文' : 'EN'));
       if (language) { language.classList.add('dw-language-switch'); tools.append(language); }
+      let nativeSearchButton;
+      const prepareNativeSearch = () => {
+        nativeSearchButton = nativeSearch.querySelector('.aa-DetachedSearchButton');
+        if (!nativeSearchButton) return false;
+        nativeSearchButton.tabIndex = -1;
+        nativeSearchButton.setAttribute('aria-hidden', 'true');
+        return true;
+      };
+      if (!prepareNativeSearch()) requestAnimationFrame(prepareNativeSearch);
       const search = document.createElement('button'); search.type = 'button'; search.className = 'dw-search-launcher';
       search.title = english ? 'Search' : '搜索'; search.setAttribute('aria-label', search.title);
       search.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="6.75"/><path d="m16 16 4.25 4.25"/></svg>';
-      search.addEventListener('click', () => nativeSearch.querySelector('.aa-DetachedSearchButton')?.click());
+      let restoreSearchFocus = false;
+      const restoreSearchLauncher = () => requestAnimationFrame(() => {
+        if (restoreSearchFocus && !document.querySelector('.aa-DetachedContainer')) {
+          restoreSearchFocus = false;
+          search.focus();
+        }
+      });
+      search.addEventListener('click', () => {
+        if (!nativeSearchButton?.isConnected) prepareNativeSearch();
+        restoreSearchFocus = true;
+        nativeSearchButton?.click();
+      });
+      document.addEventListener('keydown', event => { if (event.key === 'Escape') restoreSearchLauncher(); });
+      document.addEventListener('click', event => {
+        if (event.target.closest?.('.aa-DetachedCancelButton')) restoreSearchLauncher();
+      });
       tools.append(search); body.classList.add('dw-tools-ready');
     }
     // A shared sidebar spans every section; highlight the actual navbar destination.
