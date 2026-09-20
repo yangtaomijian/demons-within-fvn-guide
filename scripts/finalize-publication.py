@@ -46,12 +46,26 @@ def normalize_home(path: Path, site_root: str) -> None:
     path.write_text(text.replace(old, new), encoding="utf-8")
 
 
+def normalize_giscus_loading(path: Path) -> None:
+    text = path.read_text(encoding="utf-8")
+    loading = '    script.dataset.loading = "lazy";\n'
+    if text.count(loading) == 1:
+        return
+    marker = '    script.dataset.inputPosition = "top";\n'
+    if text.count('script.src = "https://giscus.app/client.js";') != 1 or text.count(marker) != 1:
+        raise RuntimeError(f"{path}: expected exactly one native Quarto Giscus embed")
+    path.write_text(text.replace(marker, marker + loading), encoding="utf-8")
+
+
 def main() -> None:
     for page in PAGES:
         zh_url = page_url(ROOT_URL, page)
         en_url = page_url(EN_URL, page)
         add_publication_links(OUTPUT / page, zh_url, zh_url, en_url)
         add_publication_links(OUTPUT / "en" / page, en_url, zh_url, en_url)
+        if page != "index.html":
+            normalize_giscus_loading(OUTPUT / page)
+            normalize_giscus_loading(OUTPUT / "en" / page)
 
     normalize_home(OUTPUT / "sitemap.xml", ROOT_URL)
     normalize_home(OUTPUT / "en/sitemap.xml", EN_URL)
@@ -63,7 +77,7 @@ def main() -> None:
         if path.exists():
             path.unlink()
 
-    print("Publication metadata finalized: 12 paired pages, normalized sitemaps, no project-local robots files.")
+    print("Publication metadata finalized: 12 paired pages, 10 lazy Giscus embeds, normalized sitemaps, no project-local robots files.")
 
 
 if __name__ == "__main__":

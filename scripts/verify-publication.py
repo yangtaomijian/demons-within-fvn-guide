@@ -306,6 +306,33 @@ def verify_404(pages: dict[Path, Page]) -> None:
             raise AssertionError(f"404.html escapes the project subpath: {value}")
 
 
+def verify_giscus() -> None:
+    common = (
+        'script.src = "https://giscus.app/client.js";',
+        'script.dataset.repo = "yangtaomijian/demons-within-fvn-guide";',
+        'script.dataset.repoId = "R_kgDOUinN_Q";',
+        'script.dataset.category = "Guide Feedback";',
+        'script.dataset.categoryId = "DIC_kwDOUinN_c4DGBwW";',
+        'script.dataset.mapping = "pathname";',
+        'script.dataset.reactionsEnabled = "1";',
+        'script.dataset.inputPosition = "top";',
+        'script.dataset.loading = "lazy";',
+        '<input type="hidden" id="giscus-base-theme" value="light">',
+        '<input type="hidden" id="giscus-alt-theme" value="dark_dimmed">',
+        'script.dataset.theme = getTheme();',
+    )
+    for root, language in ((SITE, "zh-CN"), (SITE / "en", "en")):
+        home = (root / "index.html").read_text(encoding="utf-8")
+        if "giscus.app/client.js" in home or '<input type="hidden" id="giscus-base-theme"' in home:
+            raise AssertionError(f"{root / 'index.html'}: homepage must not contain Giscus")
+        for logical in PAGES - {"index.html"}:
+            path = root / logical
+            text = path.read_text(encoding="utf-8")
+            for marker in (*common, f'script.dataset.lang = "{language}";'):
+                if text.count(marker) != 1:
+                    raise AssertionError(f"{path}: expected one Giscus marker {marker!r}")
+
+
 def verify_public_docs() -> None:
     for path, description in (
         (ROOT / "_quarto.yml", ZH_SITE_DESCRIPTION),
@@ -335,6 +362,7 @@ def main() -> None:
     verify_links_and_assets(pages)
     verify_search(pages)
     verify_404(pages)
+    verify_giscus()
     verify_public_docs()
     print("Indexable HTML pages: 12/12 (6 Chinese + 6 English)")
     print("Canonical, description, language, OG, Twitter: 12/12")
@@ -342,6 +370,7 @@ def main() -> None:
     print("Sitemap URLs: 6 Chinese + 6 English; home URLs normalized")
     print("Internal links, anchors, assets, favicons, and search targets: PASS")
     print("Project-local robots.txt omitted; project-safe noindex 404 present: PASS")
+    print("Giscus: 10 content pages configured; 2 homepages excluded; bilingual UI and lazy loading: PASS")
     print("Site descriptions and future GitHub Issues URL: PASS")
 
 

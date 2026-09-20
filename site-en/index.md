@@ -3,6 +3,7 @@ title: "Demons Within Player Guide"
 description: "An unofficial guide to the Public 14.6 main story of Demons Within."
 toc: false
 body-classes: dw-home
+comments: false
 ---
 
 An unofficial guide to the **Public 14.6** main story of *Demons Within*. Find key choices by scene, or look up the requirements for CGs, Memory Codex entries and Sprite Viewer states.

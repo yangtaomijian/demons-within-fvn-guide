@@ -4,6 +4,7 @@ pagetitle: "Demons Within 玩家攻略"
 description: "面向心魔在焉 Public 14.6 主线的非官方中文玩家攻略。"
 toc: false
 body-classes: dw-home
+comments: false
 ---
 
 这里是 *心魔在焉* **Public 14.6** 主线的非官方中文玩家攻略。你可以按场景查看关键选择，或查找 CG、辞书与 Sprite Viewer 的条件。
