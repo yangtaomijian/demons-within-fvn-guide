@@ -1,0 +1,68 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          version: "1.9.38"
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Build bilingual site
+        run: bash scripts/build-bilingual.sh
+
+      - name: Verify publication contract
+        run: python3 scripts/verify-publication.py
+
+      - name: Run Chinese search regressions
+        run: python3 scripts/test-safe-search.py
+
+      - name: Run English search regressions
+        run: python3 scripts/test-english-search.py
+
+      - name: Check Pages artifact
+        run: |
+          test -f _site/index.html
+          test -f _site/en/index.html
+          test -f _site/404.html
+          test -f _site/sitemap.xml
+          test -f _site/en/sitemap.xml
+          test -f _site/assets/favicon.svg
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
