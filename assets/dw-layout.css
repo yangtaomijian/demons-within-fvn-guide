@@ -45,6 +45,22 @@
 }
 @media (max-width: 767.98px) {
   .dw-layout-ready #quarto-margin-sidebar { display: none; }
+  .dw-mobile-toc-enabled #quarto-margin-sidebar { display: block !important; position: fixed !important; top: var(--dw-header-height) !important; right: 0 !important; bottom: 0 !important; left: auto !important; width: min(86vw, 320px); height: calc(100dvh - var(--dw-header-height)) !important; max-height: none !important; margin: 0; padding: 0 0 1rem; overflow-y: auto; overscroll-behavior: contain; border-left: 1px solid var(--dw-border); background: var(--dw-panel-surface); box-shadow: -12px 0 28px rgba(0,0,0,.18); transform: translateX(100%); visibility: hidden; pointer-events: none; transition: transform .18s ease, visibility 0s linear .18s; z-index: 1055; }
+  .dw-mobile-toc-open #quarto-margin-sidebar { transform: translateX(0); visibility: visible; pointer-events: auto; transition: transform .18s ease; }
+  .dw-mobile-toc-enabled #quarto-margin-sidebar .dw-panel-toolbar { display: flex; }
+  .dw-mobile-toc-enabled #quarto-margin-sidebar .dw-panel-toggle { display: none; }
+  .dw-mobile-toc-enabled #quarto-margin-sidebar #TOC { display: block !important; position: static !important; margin: 0; padding: .7rem .8rem 1rem; }
+  .dw-mobile-toc-enabled #quarto-margin-sidebar #TOC > h2 { display: none; }
+  .dw-mobile-toc-enabled #quarto-margin-sidebar #TOC > ul.collapse { display: block; }
+}
+.dw-mobile-toc-toggle, .dw-mobile-toc-close { display: none; }
+.dw-mobile-toc-backdrop { position: fixed; top: var(--dw-header-height); right: 0; bottom: 0; left: 0; background: rgba(10,10,10,.28); z-index: 1050; }
+.dw-mobile-toc-backdrop[hidden] { display: none !important; }
+@media (max-width: 767.98px) {
+  .dw-mobile-toc-toggle, .dw-mobile-toc-close { display: inline-grid; place-items: center; flex: 0 0 2.25rem; width: 2.25rem; height: 2.25rem; padding: 0; color: var(--dw-primary); background: var(--dw-surface); border: 1px solid var(--dw-border); border-radius: 8px; cursor: pointer; }
+  .dw-mobile-toc-toggle:hover, .dw-mobile-toc-close:hover { color: var(--dw-heading); background: var(--dw-surface-hover); border-color: var(--dw-border-strong); }
+  .dw-mobile-toc-toggle svg, .dw-mobile-toc-close svg { width: 1.05rem; height: 1.05rem; }
+  .dw-mobile-toc-toggle[hidden] { display: none !important; }
 }
 /* The same compact utility group on desktop and phone. Native Quarto search remains in charge. */
 .dw-tools-ready .quarto-navbar-tools { display:flex; align-items:center; gap:.22rem; margin-left:auto; flex:0 0 auto; }

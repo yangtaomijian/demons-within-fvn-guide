@@ -69,6 +69,7 @@
     });
     const desktop = matchMedia('(min-width: 1100px)');
     const tablet = matchMedia('(min-width: 768px)');
+    const mobile = matchMedia('(max-width: 767.98px)');
     const read = key => { try { return localStorage.getItem(key) === '1'; } catch { return false; } };
     const write = (key, value) => { try { localStorage.setItem(key, value ? '1' : '0'); } catch {} };
     const panels = [];
@@ -107,12 +108,80 @@
       media.addEventListener('change', apply);
       panels.push(apply);
     }
+    let applyMobileToc;
+    const marginSidebar = document.getElementById('quarto-margin-sidebar');
+    const toc = marginSidebar?.querySelector('#TOC');
+    const tocLinks = [...(toc?.querySelectorAll('a[data-scroll-target^="#"]') || [])];
+    const secondaryNav = document.querySelector('.quarto-secondary-nav > .container-fluid');
+    if (marginSidebar && tocLinks.length && secondaryNav) {
+      const title = english ? 'On this page' : '本页目录';
+      const toggle = document.createElement('button');
+      toggle.type = 'button'; toggle.className = 'dw-mobile-toc-toggle'; toggle.hidden = true;
+      toggle.title = title; toggle.setAttribute('aria-label', title);
+      toggle.setAttribute('aria-controls', marginSidebar.id); toggle.setAttribute('aria-expanded', 'false');
+      toggle.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r=".8" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r=".8" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r=".8" fill="currentColor" stroke="none"/></svg>';
+      secondaryNav.append(toggle);
+      const toolbar = marginSidebar.querySelector('.dw-panel-toolbar');
+      const close = document.createElement('button');
+      close.type = 'button'; close.className = 'dw-mobile-toc-close';
+      close.title = english ? 'Close table of contents' : '关闭本页目录';
+      close.setAttribute('aria-label', close.title); close.setAttribute('aria-controls', marginSidebar.id);
+      close.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="m6 6 12 12M18 6 6 18"/></svg>';
+      toolbar?.append(close);
+      const backdrop = document.createElement('div');
+      backdrop.className = 'dw-mobile-toc-backdrop'; backdrop.hidden = true; backdrop.setAttribute('aria-hidden', 'true');
+      body.append(backdrop); body.classList.add('dw-mobile-toc-enabled');
+      let open = false;
+      const restoreToggleFocus = () => requestAnimationFrame(() => toggle.focus({preventScroll:true}));
+      applyMobileToc = () => {
+        if (!mobile.matches) {
+          open = false; toggle.hidden = true; backdrop.hidden = true;
+          body.classList.remove('dw-mobile-toc-open');
+          marginSidebar.removeAttribute('role'); marginSidebar.removeAttribute('aria-modal'); marginSidebar.removeAttribute('aria-label');
+          return;
+        }
+        toggle.hidden = false; toggle.setAttribute('aria-expanded', String(open)); backdrop.hidden = !open;
+        body.classList.toggle('dw-mobile-toc-open', open);
+        marginSidebar.inert = !open;
+        if (open) {
+          marginSidebar.removeAttribute('aria-hidden');
+          marginSidebar.setAttribute('role', 'dialog'); marginSidebar.setAttribute('aria-modal', 'true'); marginSidebar.setAttribute('aria-label', title);
+        } else {
+          marginSidebar.setAttribute('aria-hidden', 'true');
+          marginSidebar.removeAttribute('role'); marginSidebar.removeAttribute('aria-modal'); marginSidebar.removeAttribute('aria-label');
+        }
+      };
+      const openToc = () => {
+        if (!mobile.matches || open) return;
+        open = true; applyMobileToc(); requestAnimationFrame(() => (close.offsetParent ? close : tocLinks[0]).focus());
+      };
+      const closeToc = (restoreFocus = true) => {
+        if (!open) return;
+        open = false; applyMobileToc(); if (restoreFocus) restoreToggleFocus();
+      };
+      toggle.addEventListener('click', () => open ? closeToc() : openToc());
+      close.addEventListener('click', () => closeToc());
+      backdrop.addEventListener('click', () => closeToc());
+      toc.addEventListener('click', event => { if (event.target.closest('a[data-scroll-target^="#"]')) closeToc(); });
+      document.addEventListener('keydown', event => {
+        if (!open || !mobile.matches) return;
+        if (event.key === 'Escape') { event.preventDefault(); closeToc(); return; }
+        if (event.key !== 'Tab') return;
+        const focusable = [close, ...tocLinks].filter(element => element.offsetParent !== null);
+        if (!focusable.length) return;
+        const first = focusable[0], last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+      });
+      mobile.addEventListener('change', () => requestAnimationFrame(() => { panels.forEach(apply => apply()); applyMobileToc(); }));
+    }
     const header = document.getElementById('quarto-header');
     const measure = () => document.documentElement.style.setProperty('--dw-header-height', (header?.getBoundingClientRect().height || 64) + 'px');
     measure();
     if (header) new ResizeObserver(measure).observe(header);
     body.classList.add('dw-layout-ready');
     panels.forEach(apply => apply());
+    applyMobileToc?.();
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 })();
