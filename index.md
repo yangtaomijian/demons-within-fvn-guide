@@ -1,13 +1,14 @@
 ---
-title: "心魔在焉玩家攻略"
-pagetitle: "Demons Within 玩家攻略"
-description: "面向心魔在焉 Public 14.6 主线的非官方中文玩家攻略。"
+title: "心魔在焉（Demons Within）Public 14.6 中文攻略"
+pagetitle: "心魔在焉（Demons Within）Public 14.6 中文攻略"
+title-prefix: "心魔在焉（Demons Within）Public 14.6 中文攻略"
+description: "《心魔在焉（Demons Within）》Public 14.6 FVN 中文攻略，涵盖本源之轮选择、分支与结局、CG、辞书和 Sprite Viewer 解锁条件。"
 toc: false
 body-classes: dw-home
 comments: false
 ---
 
-这里是 *心魔在焉* **Public 14.6** 主线的非官方中文玩家攻略。你可以按场景查看关键选择，或查找 CG、辞书与 Sprite Viewer 的条件。
+《心魔在焉（Demons Within）》是 Sleth 创作的 FVN（Furry Visual Novel，兽人视觉小说）。本站是面向 **Public 14.6** 主线的非官方中文攻略，整理本源之轮选择、分支结果与结局，以及 CG、辞书和 Sprite Viewer 的解锁条件。
 
 暂不包含与 *庇护所* 的联动内容。本站仅维护公开发布（Public）版本，不跟进 Patreon／支持者提前版本，内容更新可能晚于官方公开发布。
 

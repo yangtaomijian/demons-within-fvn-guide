@@ -1,12 +1,13 @@
 ---
-title: "Demons Within Player Guide"
-description: "An unofficial guide to the Public 14.6 main story of Demons Within."
+title: "Demons Within Public 14.6 Player Guide"
+title-prefix: "Demons Within Public 14.6 Player Guide"
+description: "An unofficial Public 14.6 guide for the furry visual novel Demons Within, covering Essence Wheel choices, branch outcomes, endings, CG scenes, Memory Codex entries and Sprite Viewer unlocks."
 toc: false
 body-classes: dw-home
 comments: false
 ---
 
-An unofficial guide to the **Public 14.6** main story of *Demons Within*. Find key choices by scene, or look up the requirements for CGs, Memory Codex entries and Sprite Viewer states.
+*Demons Within* is a furry visual novel (FVN) by Sleth. This unofficial **Public 14.6** guide covers Essence Wheel choices, branch outcomes and endings, CG scenes, Memory Codex entries, and Sprite Viewer unlocks.
 
 The *Shelter* crossover is not covered. This guide follows Public releases only, not Patreon or other supporter previews. Updates may lag behind the game's public releases.
 

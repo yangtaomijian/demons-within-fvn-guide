@@ -30,10 +30,12 @@ PAGES = {
 GOOGLE_VERIFICATION_FILE = "googlef0776754787f4a8e.html"
 CLOUDFLARE_ANALYTICS_SRC = "https://static.cloudflareinsights.com/beacon.min.js"
 CLOUDFLARE_ANALYTICS_TOKEN = "ffdbb2df0096481c8eda339206a91164"
-ZH_TITLE = "Demons Within 玩家攻略"
-EN_TITLE = "Demons Within Player Guide"
-ZH_DESCRIPTION = "面向心魔在焉 Public 14.6 主线的非官方中文玩家攻略。"
-EN_DESCRIPTION = "An unofficial guide to the Public 14.6 main story of Demons Within."
+ZH_SITE_NAME = "Demons Within 玩家攻略"
+EN_SITE_NAME = "Demons Within Player Guide"
+ZH_HOME_TITLE = "心魔在焉（Demons Within）Public 14.6 中文攻略"
+EN_HOME_TITLE = "Demons Within Public 14.6 Player Guide"
+ZH_HOME_DESCRIPTION = "《心魔在焉（Demons Within）》Public 14.6 FVN 中文攻略，涵盖本源之轮选择、分支与结局、CG、辞书和 Sprite Viewer 解锁条件。"
+EN_HOME_DESCRIPTION = "An unofficial Public 14.6 guide for the furry visual novel Demons Within, covering Essence Wheel choices, branch outcomes, endings, CG scenes, Memory Codex entries and Sprite Viewer unlocks."
 ZH_SITE_DESCRIPTION = "《心魔在焉（Demons Within）》Public 14.6 非官方中文玩家攻略，涵盖主线选择、结局、CG 与辞书收集。"
 EN_SITE_DESCRIPTION = "An unofficial Public 14.6 player guide for Demons Within, covering story choices, endings, CGs, and Memory Codex unlocks."
 ISSUES_URL = "https://github.com/yangtaomijian/demons-within-fvn-guide/issues"
@@ -155,7 +157,7 @@ def verify_metadata() -> dict[Path, Page]:
             ("og:description", description),
             ("og:url", canonical),
             ("og:locale", locale),
-            ("og:site_name", EN_TITLE if language == "en" else ZH_TITLE),
+            ("og:site_name", EN_SITE_NAME if language == "en" else ZH_SITE_NAME),
         ):
             if one_meta(page, key, path, property_key=True) != expected_value:
                 raise AssertionError(f"{path}: {key} mismatch")
@@ -184,8 +186,8 @@ def verify_metadata() -> dict[Path, Page]:
             raise AssertionError(f"{path}: unexpected x-default")
 
         if logical == "index.html":
-            expected_title = EN_TITLE if language == "en" else ZH_TITLE
-            expected_description = EN_DESCRIPTION if language == "en" else ZH_DESCRIPTION
+            expected_title = EN_HOME_TITLE if language == "en" else ZH_HOME_TITLE
+            expected_description = EN_HOME_DESCRIPTION if language == "en" else ZH_HOME_DESCRIPTION
             if page.title != expected_title or description != expected_description:
                 raise AssertionError(f"{path}: homepage title or description mismatch")
 
