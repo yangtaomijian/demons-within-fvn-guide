@@ -39,6 +39,7 @@ main.content .dw-story-map .dw-story-map-hint { margin-bottom: .35rem; }
 .dw-story-map-scroll .cell { margin: 0; }
 .dw-story-map-scroll .cell-output-display { min-width: 760px; }
 .dw-story-map-scroll .mermaid { display: flex; justify-content: center; }
+.dw-story-map-scroll pre.mermaid.mermaid-js { visibility: hidden; }
 .dw-story-map-scroll svg { display: block; width: 100%; height: auto; margin-inline: auto; max-width: 100% !important; }
 @media (min-width: 760px) {
   .dw-story-map-scroll svg { max-width: 640px !important; }
