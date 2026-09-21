@@ -27,6 +27,7 @@ PAGES = {
     "collectibles/cg.html",
     "collectibles/memorium.html",
 }
+GOOGLE_VERIFICATION_FILE = "googlef0776754787f4a8e.html"
 ZH_TITLE = "Demons Within 玩家攻略"
 EN_TITLE = "Demons Within Player Guide"
 ZH_DESCRIPTION = "面向心魔在焉 Public 14.6 主线的非官方中文玩家攻略。"
@@ -126,7 +127,9 @@ def verify_metadata() -> dict[Path, Page]:
     actual = {
         path
         for path in SITE.rglob("*.html")
-        if "site_libs" not in path.parts and path.name != "404.html"
+        if "site_libs" not in path.parts
+        and path != SITE / "404.html"
+        and path != SITE / GOOGLE_VERIFICATION_FILE
     }
     if actual != set(expected):
         raise AssertionError(f"content page set mismatch: {sorted(str(p.relative_to(SITE)) for p in actual)}")

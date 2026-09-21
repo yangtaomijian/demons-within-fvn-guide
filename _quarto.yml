@@ -3,6 +3,7 @@ project:
   output-dir: _site
   resources:
     - 404.html
+    - googlef0776754787f4a8e.html
     - assets/favicon.svg
     - assets/favicon-32x32.png
     - assets/apple-touch-icon.png

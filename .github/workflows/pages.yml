@@ -47,6 +47,7 @@ jobs:
           test -f _site/index.html
           test -f _site/en/index.html
           test -f _site/404.html
+          test -f _site/googlef0776754787f4a8e.html
           test -f _site/sitemap.xml
           test -f _site/en/sitemap.xml
           test -f _site/assets/favicon.svg
