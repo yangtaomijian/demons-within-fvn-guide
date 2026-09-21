@@ -28,6 +28,8 @@ PAGES = {
     "collectibles/memorium.html",
 }
 GOOGLE_VERIFICATION_FILE = "googlef0776754787f4a8e.html"
+CLOUDFLARE_ANALYTICS_SRC = "https://static.cloudflareinsights.com/beacon.min.js"
+CLOUDFLARE_ANALYTICS_TOKEN = "ffdbb2df0096481c8eda339206a91164"
 ZH_TITLE = "Demons Within 玩家攻略"
 EN_TITLE = "Demons Within Player Guide"
 ZH_DESCRIPTION = "面向心魔在焉 Public 14.6 主线的非官方中文玩家攻略。"
@@ -336,6 +338,20 @@ def verify_giscus() -> None:
                     raise AssertionError(f"{path}: expected one Giscus marker {marker!r}")
 
 
+def verify_web_analytics() -> None:
+    for path in expected_content_pages():
+        text = path.read_text(encoding="utf-8")
+        for marker in (CLOUDFLARE_ANALYTICS_SRC, CLOUDFLARE_ANALYTICS_TOKEN):
+            if text.count(marker) != 1:
+                raise AssertionError(f"{path}: expected one Cloudflare Web Analytics marker {marker!r}")
+
+    for path in (SITE / "404.html", SITE / GOOGLE_VERIFICATION_FILE):
+        text = path.read_text(encoding="utf-8")
+        for marker in (CLOUDFLARE_ANALYTICS_SRC, CLOUDFLARE_ANALYTICS_TOKEN):
+            if marker in text:
+                raise AssertionError(f"{path}: unexpected Cloudflare Web Analytics marker {marker!r}")
+
+
 def verify_public_docs() -> None:
     for path, description in (
         (ROOT / "_quarto.yml", ZH_SITE_DESCRIPTION),
@@ -366,6 +382,7 @@ def main() -> None:
     verify_search(pages)
     verify_404(pages)
     verify_giscus()
+    verify_web_analytics()
     verify_public_docs()
     print("Indexable HTML pages: 12/12 (6 Chinese + 6 English)")
     print("Canonical, description, language, OG, Twitter: 12/12")
@@ -374,6 +391,7 @@ def main() -> None:
     print("Internal links, anchors, assets, favicons, and search targets: PASS")
     print("Project-local robots.txt omitted; project-safe noindex 404 present: PASS")
     print("Giscus: 10 content pages configured; 2 homepages excluded; bilingual UI and lazy loading: PASS")
+    print("Cloudflare Web Analytics: 12/12 content pages; excluded from 404 and verification HTML")
     print("Site descriptions and future GitHub Issues URL: PASS")
 
 

@@ -101,4 +101,5 @@ format:
     include-after-body:
       - assets/language-switch.html
       - assets/dw-layout-controls.html
+      - assets/cloudflare-web-analytics.html
     smooth-scroll: true
