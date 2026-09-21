@@ -125,6 +125,7 @@ flowchart TD
       centeredWidth = scroller.clientWidth;
     }
   });
+  map.open = window.matchMedia('(min-width: 768px)').matches;
 })();
 </script>
 </details>
