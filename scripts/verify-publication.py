@@ -32,6 +32,10 @@ CLOUDFLARE_ANALYTICS_SRC = "https://static.cloudflareinsights.com/beacon.min.js"
 CLOUDFLARE_ANALYTICS_TOKEN = "ffdbb2df0096481c8eda339206a91164"
 ZH_SITE_NAME = "Demons Within 玩家攻略"
 EN_SITE_NAME = "Demons Within Player Guide"
+SOCIAL_IMAGES = {
+    "zh-CN": "assets/social/demons-within-public-14.6-zh.png",
+    "en": "assets/social/demons-within-public-14.6-en.png",
+}
 ZH_HOME_TITLE = "心魔在焉（Demons Within）Public 14.6 中文攻略"
 EN_HOME_TITLE = "Demons Within Public 14.6 Player Guide"
 ZH_HOME_DESCRIPTION = "《心魔在焉（Demons Within）》Public 14.6 FVN 中文攻略，涵盖本源之轮选择、分支与结局、CG、辞书和 Sprite Viewer 解锁条件。"
@@ -164,17 +168,29 @@ def verify_metadata() -> dict[Path, Page]:
             if one_meta(page, key, path, property_key=True) != expected_value:
                 raise AssertionError(f"{path}: {key} mismatch")
         for key, expected_value in (
-            ("twitter:card", "summary"),
+            ("twitter:card", "summary_large_image" if logical == "index.html" else "summary"),
             ("twitter:title", page.title),
             ("twitter:description", description),
         ):
             if one_meta(page, key, path) != expected_value:
                 raise AssertionError(f"{path}: {key} mismatch")
 
-        if any(item.get("property") == "og:image" for item in page.meta):
-            raise AssertionError(f"{path}: unexpected Open Graph image")
-        if any(item.get("name") == "twitter:image" for item in page.meta):
-            raise AssertionError(f"{path}: unexpected Twitter image")
+        if logical == "index.html":
+            image = SOCIAL_IMAGES[language]
+            image_url = root + image
+            if one_meta(page, "og:image", path, property_key=True) != image_url:
+                raise AssertionError(f"{path}: Open Graph image mismatch")
+            if one_meta(page, "twitter:image", path) != image_url:
+                raise AssertionError(f"{path}: Twitter image mismatch")
+            source_image = ROOT / ("site-en" if language == "en" else "") / image
+            published_image = SITE / ("en" if language == "en" else "") / image
+            if not source_image.is_file() or not published_image.is_file() or source_image.read_bytes() != published_image.read_bytes():
+                raise AssertionError(f"{path}: social image missing or changed in publication output")
+        else:
+            if any(item.get("property") == "og:image" for item in page.meta):
+                raise AssertionError(f"{path}: unexpected Open Graph image")
+            if any(item.get("name") == "twitter:image" for item in page.meta):
+                raise AssertionError(f"{path}: unexpected Twitter image")
 
         alternates = rel_links(page, "alternate")
         actual_alternates = {item.get("hreflang"): item.get("href") for item in alternates if item.get("hreflang")}
