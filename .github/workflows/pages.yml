@@ -22,6 +22,11 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
         with:
@@ -42,6 +47,9 @@ jobs:
       - name: Run English search regressions
         run: python3 scripts/test-english-search.py
 
+      - name: Run DW Search v2 regressions
+        run: node scripts/test-search.mjs
+
       - name: Check Pages artifact
         run: |
           test -f _site/index.html
@@ -51,6 +59,8 @@ jobs:
           test -f _site/sitemap.xml
           test -f _site/en/sitemap.xml
           test -f _site/assets/favicon.svg
+          test -f _site/assets/dw-search-core.js
+          test -f _site/en/assets/dw-search-core.js
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5

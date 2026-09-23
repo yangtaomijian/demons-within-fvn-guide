@@ -1,0 +1,126 @@
+<script>
+(() => {
+  'use strict';
+  if (window.__dwSearchAdapter) return;
+  const state = { status: 'loading' };
+  window.__dwSearchAdapter = state;
+
+  const offset = document.querySelector('meta[name="quarto:offset"]')?.content;
+  const nativeRead = window.readSearchData;
+  const nativeSearch = window.fuseSearch;
+  if (!offset || typeof nativeRead !== 'function' || typeof nativeSearch !== 'function') {
+    state.status = 'native';
+    return;
+  }
+
+  const root = new URL(offset, document.baseURI);
+  const lang = document.documentElement.lang.toLowerCase().startsWith('en') ? 'en' : 'zh';
+  const escapeHTML = text => String(text).replace(/[&<>"']/g, char => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[char]);
+  const decodeEntities = text => String(text).replace(/&(#(?:x[0-9a-f]+|[0-9]+)|amp|lt|gt|quot|apos);/gi, (match, entity) => {
+    const named = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'" };
+    if (!entity.startsWith('#')) return named[entity.toLowerCase()] ?? match;
+    const value = entity[1].toLowerCase() === 'x' ? parseInt(entity.slice(2), 16) : parseInt(entity.slice(1), 10);
+    return value > 0 && value <= 0x10FFFF && !(value >= 0xD800 && value <= 0xDFFF)
+      ? String.fromCodePoint(value) : match;
+  });
+
+  function visibleHighlight(rawText, query, core) {
+    const text = decodeEntities(rawText);
+    const parsed = core.parseQuery(query, lang);
+    const full = String(query).normalize('NFKC').trim();
+    const pieces = parsed.normalized.match(/[\p{Script=Han}]+|[a-z0-9]+/giu) || [];
+    const meaningfulPieces = pieces.filter(part => {
+      const unit = core.parseQuery(part, lang);
+      return unit.concepts.length || unit.tokens.length;
+    });
+    const needles = [full, ...parsed.tokens, ...meaningfulPieces].filter(Boolean);
+    let match = null;
+    for (const needle of needles) {
+      const at = text.toLowerCase().indexOf(needle.toLowerCase());
+      if (at < 0) continue;
+      // Do not paint a prefix of a different Latin word, such as pass in Passing.
+      const before = text[at - 1] || '';
+      const after = text[at + needle.length] || '';
+      const latinStart = /^[a-z0-9]/i.test(needle);
+      const latinEnd = /[a-z0-9]$/i.test(needle);
+      if ((latinStart && /[a-z0-9]/i.test(before)) || (latinEnd && /[a-z0-9]/i.test(after))) continue;
+      match = { at, length: needle.length };
+      break;
+    }
+    if (!match) return escapeHTML(text);
+    const { at, length } = match;
+    const start = Math.max(0, at - 50);
+    const end = Math.min(text.length, at + length + 200);
+    const prefix = start ? '…' : '';
+    const suffix = end < text.length ? '…' : '';
+    return prefix + escapeHTML(text.slice(start, at)) +
+      '<mark class="search-match">' + escapeHTML(text.slice(at, at + length)) + '</mark>' +
+      escapeHTML(text.slice(at + length, end)) + suffix;
+  }
+
+  function install(core) {
+    if (!core || typeof core.prepare !== 'function' || typeof core.search !== 'function' || typeof core.parseQuery !== 'function') {
+      state.status = 'native';
+      return;
+    }
+    let prepared;
+    let pending;
+    const preparedIndexes = new WeakSet();
+    window.readSearchData = async function () {
+      if (prepared) return prepared;
+      if (!pending) {
+        pending = fetch(new URL('search.json', root), { credentials: 'same-origin' })
+          .then(response => {
+            if (!response.ok) throw new Error('Search index HTTP ' + response.status);
+            return response.json();
+          })
+          .then(records => core.prepare(records, lang))
+          .then(index => {
+            preparedIndexes.add(index);
+            prepared = index;
+            return index;
+          })
+          .finally(() => { pending = undefined; });
+      }
+      try {
+        return await pending;
+      } catch (_) {
+        // The next query retries v2; this query can still use native Quarto.
+        return nativeRead();
+      }
+    };
+    window.fuseSearch = async function (query, index, options) {
+      if (!Array.isArray(index) || !preparedIndexes.has(index)) {
+        return nativeSearch(query, index, options);
+      }
+      try {
+        const results = core.search(query, index, lang);
+        const limit = Number.isFinite(options?.limit) ? options.limit : results.length;
+        return results.slice(0, limit).map(result => ({
+          title: result.title,
+          section: result.section,
+          href: result.href,
+          text: visibleHighlight(result.text, query, core),
+        }));
+      } catch (_) {
+        return nativeSearch(query, await nativeRead(), options);
+      }
+    };
+    state.status = 'ready';
+  }
+
+  if (window.DWSearchCore) {
+    install(window.DWSearchCore);
+    return;
+  }
+  const script = document.createElement('script');
+  script.src = new URL('assets/dw-search-core.js', root).href;
+  script.async = true;
+  script.dataset.dwSearchCore = '';
+  script.onload = () => install(window.DWSearchCore);
+  script.onerror = () => { state.status = 'native'; };
+  document.head.appendChild(script);
+})();
+</script>

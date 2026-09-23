@@ -41,6 +41,8 @@ EN_SITE_DESCRIPTION = "An unofficial Public 14.6 player guide for Demons Within,
 ISSUES_URL = "https://github.com/yangtaomijian/demons-within-fvn-guide/issues"
 FORBIDDEN_URL_PARTS = ("localhost", "file://", "/dw-guide", "\\Users\\", "/Users/")
 NS = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+SEARCH_CORE_SOURCE = ROOT / "assets/dw-search-core.js"
+SEARCH_ADAPTER_MARKER = "__dwSearchAdapter"
 
 
 class Page(HTMLParser):
@@ -296,6 +298,25 @@ def verify_search(pages: dict[Path, Page]) -> None:
             raise AssertionError(f"{path}: search page set mismatch: {sorted(found_pages)}")
 
 
+def verify_search_v2() -> None:
+    core_paths = (
+        SEARCH_CORE_SOURCE,
+        SITE / "assets/dw-search-core.js",
+        SITE / "en/assets/dw-search-core.js",
+    )
+    for path in core_paths:
+        if not path.is_file():
+            raise AssertionError(f"missing Search v2 core: {path}")
+    source = SEARCH_CORE_SOURCE.read_bytes()
+    for path in core_paths[1:]:
+        if path.read_bytes() != source:
+            raise AssertionError(f"Search v2 core differs from source: {path}")
+
+    for path in expected_content_pages():
+        if SEARCH_ADAPTER_MARKER not in path.read_text(encoding="utf-8"):
+            raise AssertionError(f"Search v2 adapter missing from guide page: {path}")
+
+
 def verify_404(pages: dict[Path, Page]) -> None:
     path = SITE / "404.html"
     page = pages.setdefault(path, parse(path))
@@ -382,6 +403,7 @@ def main() -> None:
     verify_sitemaps()
     verify_links_and_assets(pages)
     verify_search(pages)
+    verify_search_v2()
     verify_404(pages)
     verify_giscus()
     verify_web_analytics()
@@ -391,6 +413,7 @@ def main() -> None:
     print("Reciprocal hreflang pairs: 6/6")
     print("Sitemap URLs: 6 Chinese + 6 English; home URLs normalized")
     print("Internal links, anchors, assets, favicons, and search targets: PASS")
+    print(f"Search v2 core identity and adapter coverage: 3 cores + {len(expected_content_pages())} guide pages: PASS")
     print("Project-local robots.txt omitted; project-safe noindex 404 present: PASS")
     print("Giscus: 10 content pages configured; 2 homepages excluded; bilingual UI and lazy loading: PASS")
     print("Cloudflare Web Analytics: 12/12 content pages; excluded from 404 and verification HTML")

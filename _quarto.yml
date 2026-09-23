@@ -7,6 +7,7 @@ project:
     - assets/favicon.svg
     - assets/favicon-32x32.png
     - assets/apple-touch-icon.png
+    - assets/dw-search-core.js
   post-render:
     - python3 scripts/build-safe-search.py
   render:
@@ -112,4 +113,5 @@ format:
       - assets/language-switch.html
       - assets/dw-layout-controls.html
       - assets/cloudflare-web-analytics.html
+      - assets/dw-search.html
     smooth-scroll: true
