@@ -1,0 +1,59 @@
+<!-- V2A prototype: compact masthead, homepage title, and shortcuts to existing pages. -->
+<script>
+(() => {
+  const start = () => {
+    const english = document.documentElement.lang.startsWith('en');
+    const brand = document.querySelector('.navbar-brand');
+    const title = brand?.querySelector('.navbar-title');
+    if (title && !title.querySelector('.dw-masthead-name')) {
+      brand.setAttribute('aria-label', title.textContent.trim());
+      title.replaceChildren();
+      const name = document.createElement('span');
+      name.className = 'dw-masthead-name';
+      name.textContent = english ? 'Demons Within' : '心魔在焉';
+      const edition = document.createElement('span');
+      edition.className = 'dw-masthead-edition';
+      edition.textContent = english ? 'PLAYER GUIDE · PUBLIC 14.6' : '玩家攻略 · PUBLIC 14.6';
+      edition.setAttribute('aria-hidden', 'true');
+      title.append(name, edition);
+    }
+    if (!document.body.classList.contains('dw-home')) return;
+    const titleBlock = document.querySelector('main.content #title-block-header');
+    if (!titleBlock) return;
+    const heading = titleBlock.querySelector('h1.title');
+    if (heading && !heading.querySelector('.dw-title-phrase')) {
+      const eyebrow = document.createElement('p');
+      eyebrow.className = 'dw-publication-eyebrow';
+      eyebrow.textContent = english
+        ? 'UNOFFICIAL PLAYER GUIDE · PUBLIC 14.6'
+        : '非官方中文玩家攻略 · PUBLIC 14.6';
+      heading.before(eyebrow);
+      const phrase = document.createElement('span');
+      phrase.className = 'dw-title-phrase';
+      phrase.textContent = 'Demons Within';
+      heading.replaceChildren();
+      if (english) heading.append(phrase, document.createTextNode(' Player Guide'));
+      else heading.append(document.createTextNode('心魔在焉 ('), phrase, document.createTextNode(')'));
+    }
+    if (document.querySelector('.dw-home-fast-path')) return;
+    const nav = document.createElement('nav');
+    nav.className = 'dw-home-fast-path';
+    nav.setAttribute('aria-label', english ? 'Find an answer' : '快速查找');
+    const label = document.createElement('span');
+    label.textContent = english ? 'FIND AN ANSWER' : '快速查找';
+    nav.append(label);
+    const links = english
+      ? [['Key choices', 'guide/choices.html'], ['Full index', 'reference/interventions.html'], ['FAQ', 'guide/faq.html']]
+      : [['关键选择', 'guide/choices.html'], ['全选项', 'reference/interventions.html'], ['常见问题', 'guide/faq.html']];
+    for (const [text, href] of links) {
+      const link = document.createElement('a');
+      link.href = href;
+      link.textContent = text;
+      nav.append(link);
+    }
+    titleBlock.after(nav);
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+  else start();
+})();
+</script>

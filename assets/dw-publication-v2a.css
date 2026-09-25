@@ -1,0 +1,239 @@
+/* Carambi publication direction, V2A local prototype. Remove this file and its
+   two Quarto includes to return to the current production visual treatment. */
+@font-face {
+  font-family: 'DW Newsreader';
+  src: url('fonts/newsreader-latin-standard-normal.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+}
+
+body.quarto-light {
+  --dw-panel-surface: var(--dw-bg);
+  --dw-shell: var(--dw-bg);
+}
+body.quarto-dark {
+  --dw-panel-surface: var(--dw-bg);
+  --dw-shell: var(--dw-bg);
+}
+
+/* One compact identity line; utility and navigation remain in their native places. */
+.navbar { border-bottom-color: var(--dw-border-strong); }
+.navbar .navbar-brand { display: inline-flex; align-items: center; margin: 0; text-decoration: none; }
+.navbar .navbar-title { display: flex; flex-direction: column; gap: .04rem; line-height: 1; }
+.dw-masthead-name {
+  color: var(--dw-heading);
+  font-family: 'DW Newsreader', Georgia, serif;
+  font-optical-sizing: auto;
+  font-size: 1.33rem;
+  font-weight: 500;
+  letter-spacing: -.015em;
+}
+html[lang^='zh'] .dw-masthead-name {
+  font-family: 'Songti SC', 'STSong', 'Noto Serif CJK SC', serif;
+  font-size: 1.22rem;
+  letter-spacing: .015em;
+}
+.dw-masthead-edition {
+  color: var(--dw-text-faint);
+  font-family: system-ui, sans-serif;
+  font-size: .62rem;
+  font-weight: 650;
+  letter-spacing: .09em;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+.navbar .nav-link { background: transparent !important; border-radius: 0; }
+.navbar .nav-link:is(:hover, :focus-visible) { color: var(--dw-primary-hover); }
+.navbar .nav-link.active {
+  color: var(--dw-heading);
+  box-shadow: inset 0 -2px var(--dw-accent);
+}
+@media (min-width: 992px) {
+  .navbar .navbar-container > .navbar-brand-container { margin-right: 2rem !important; }
+}
+
+/* Side navigation reads as furniture around the article, with a strong rule at
+   the active destination instead of a filled pill. */
+body :is(#quarto-sidebar, #quarto-margin-sidebar, .dw-panel-toolbar) { background: var(--dw-panel-surface) !important; }
+.dw-panel-toolbar { border-bottom-color: var(--dw-border); }
+.dw-panel-toolbar > span { color: var(--dw-text-faint); font-size: .7rem; letter-spacing: .11em; }
+#quarto-sidebar .sidebar-item-container,
+#quarto-sidebar .sidebar-link { border-radius: 0; }
+#quarto-sidebar .sidebar-link { border-left: 3px solid transparent; padding-left: .55rem; }
+#quarto-sidebar .sidebar-link:hover { background: color-mix(in srgb, var(--dw-accent) 6%, transparent); }
+#quarto-sidebar .sidebar-link.active {
+  color: var(--dw-heading);
+  background: color-mix(in srgb, var(--dw-accent) 7%, transparent);
+  border-left-color: var(--dw-accent);
+  font-weight: 720;
+}
+#quarto-margin-sidebar #TOC .nav-link { border-radius: 0; padding-left: .75rem; }
+#quarto-margin-sidebar #TOC .nav-link::before { display: none; }
+#quarto-margin-sidebar #TOC .nav-link.active {
+  color: var(--dw-heading) !important;
+  background: transparent;
+  border-left-color: var(--dw-accent);
+  font-weight: 700;
+}
+#quarto-margin-sidebar #TOC ul ul .nav-link { color: var(--dw-text-faint); }
+
+/* Editorial title, precise reference headings. All body and interface copy
+   keeps the existing sans-serif stack and reading metrics. */
+main.content h1.title {
+  font-family: 'DW Newsreader', Georgia, serif;
+  font-optical-sizing: auto;
+  font-size: clamp(2.25rem, 3vw, 2.8rem);
+  font-weight: 470;
+  letter-spacing: -.02em;
+  line-height: 1.16;
+}
+html[lang^='zh'] main.content h1.title {
+  font-family: 'Songti SC', 'STSong', 'Noto Serif CJK SC', serif;
+  font-size: clamp(2rem, 2.75vw, 2.5rem);
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 1.32;
+}
+main.content .quarto-title-block { padding-bottom: 1.3rem; border-bottom: 1px solid var(--dw-border); }
+main.content .quarto-page-breadcrumbs { color: var(--dw-text-faint); font-size: .76rem; letter-spacing: .035em; }
+main.content h2 { padding-left: .85rem; border-bottom-color: var(--dw-border-strong); }
+main.content h2::before { left: 0; top: .1em; bottom: .65em; width: 2px; border-radius: 0; }
+main.content h3 {
+  border-bottom: 0;
+  padding-bottom: 0;
+  font-size: 1.12rem;
+  font-weight: 700;
+  letter-spacing: .005em;
+}
+
+/* The same four entry destinations become an editorial index, without cards. */
+.dw-home .quarto-title .dw-publication-eyebrow {
+  margin: 0 0 .8rem;
+  color: var(--dw-accent);
+  font-family: system-ui, sans-serif;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .13em;
+  line-height: 1.35;
+}
+html[lang^='zh'] .dw-home .dw-publication-eyebrow { letter-spacing: .08em; }
+.dw-home main.content .quarto-title-block { margin-bottom: 1.35rem !important; }
+.dw-home main.content h1.title { max-width: none; }
+.dw-home h1.title .dw-title-phrase { white-space: nowrap; }
+html[lang^='zh'] .dw-home h1.title .dw-title-phrase { font-family: 'DW Newsreader', Georgia, serif; font-optical-sizing: auto; }
+.dw-home .dw-entry-grid { gap: 0 !important; margin-block: 1.7rem 2.4rem; }
+.dw-home .dw-entry {
+  position: relative;
+  background: transparent !important;
+  border: 0;
+  border-top: 1px solid var(--dw-border-strong);
+  border-radius: 0;
+  padding: 1.05rem 2.35rem 1.2rem 0;
+}
+.dw-home .dw-entry:nth-child(even) { padding-left: 1.25rem; }
+.dw-home .dw-entry::after {
+  content: '→';
+  position: absolute;
+  top: 1.05rem;
+  right: .45rem;
+  z-index: 2;
+  color: var(--dw-accent);
+  font-size: 1.1rem;
+  line-height: 1.2;
+  pointer-events: none;
+}
+.dw-home .dw-entry:is(:hover, :focus-within)::after { color: var(--dw-primary-hover); }
+.dw-home .dw-entry h2 { font-size: 1.12rem; margin-bottom: .4rem; }
+.dw-home .dw-entry h2 a:not(.anchorjs-link)::after { border-radius: 0; }
+.dw-home .dw-entry:is(:hover, :focus-within) { background: color-mix(in srgb, var(--dw-accent) 5%, transparent) !important; }
+.dw-home .dw-entry p { line-height: 1.6; }
+.dw-home-fast-path {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  column-gap: 1.25rem;
+  row-gap: .25rem;
+  margin: 0 0 1.4rem;
+  padding: .7rem 0 .8rem;
+  border-bottom: 1px solid var(--dw-border);
+}
+.dw-home-fast-path > span {
+  color: var(--dw-text-faint);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .09em;
+  white-space: nowrap;
+}
+.dw-home-fast-path a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  color: var(--dw-primary);
+  font-size: .88rem;
+  font-weight: 650;
+  text-decoration: underline;
+  text-underline-offset: .25em;
+}
+
+/* A compact colophon shares the article's reading axis. Feedback is a visible
+   future slot, intentionally disabled until a real destination exists. */
+footer.footer { background: var(--dw-bg); border-top-color: var(--dw-border-strong); }
+footer.footer .nav-footer { padding: 1.15rem 1rem 1.35rem; }
+.dw-publication-footer { display: flex; flex-direction: column; align-items: center; gap: .35rem; }
+footer.footer .dw-publication-footer > p { margin: 0; }
+.dw-publication-footer-links { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; column-gap: 1.1rem; row-gap: .2rem; color: var(--dw-text-soft); font-size: .8rem; }
+.dw-publication-footer-links > span { min-height: 2.75rem; display: inline-flex; align-items: center; gap: .3em; }
+.dw-carambi-link { color: var(--dw-heading); font-family: 'DW Newsreader', Georgia, serif; font-size: 1.04rem; text-decoration: none; }
+.dw-carambi-link:hover { text-decoration: underline; }
+.dw-feedback-slot, .dw-back-to-top {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: .4rem .25rem;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--dw-text-soft);
+  font: inherit;
+  text-decoration: none;
+}
+.dw-feedback-slot { opacity: .68; cursor: not-allowed; }
+.dw-back-to-top:hover { background: transparent; color: var(--dw-primary-hover); text-decoration: underline; }
+
+@media (min-width: 1100px) {
+  body.dw-layout-ready #quarto-sidebar { border-right-color: var(--dw-border); }
+  body.dw-layout-ready #quarto-margin-sidebar { border-left-color: var(--dw-border); }
+}
+@media (max-width: 767.98px) {
+  .dw-masthead-edition { display: none; }
+  .dw-masthead-name { font-size: 1.12rem; }
+  html[lang^='zh'] .dw-masthead-name { font-size: 1.05rem; }
+  .dw-tools-ready .quarto-navbar-tools { gap: 0; }
+  .dw-tools-ready .quarto-navbar-tools :is(.quarto-color-scheme-toggle, .dw-theme-auto, .dw-language-switch, .dw-search-launcher) {
+    width: 2.75rem;
+    min-width: 2.75rem;
+    height: 2.75rem;
+  }
+  .dw-tools-ready .quarto-navbar-tools .dw-language-switch { min-width: 2.75rem; }
+  .dw-tools-ready .navbar > .container-fluid { gap: 0; padding-inline: .5rem; }
+  .dw-mobile-toc-toggle, .dw-mobile-toc-close,
+  .dw-layout-ready .quarto-secondary-nav .quarto-btn-toggle { width: 2.75rem; height: 2.75rem; flex-basis: 2.75rem; }
+  main.content h1.title { font-size: 2.1rem; }
+  html[lang^='zh'] main.content h1.title { font-size: 1.9rem; }
+  main.content .quarto-title-block { padding-bottom: 1rem; margin-bottom: 1.5rem !important; }
+  .dw-home .dw-entry { padding: .95rem 2.1rem 1.05rem 0; }
+  .dw-home .dw-entry:nth-child(even) { padding-left: 0; }
+  .dw-home .dw-entry::after { top: .95rem; right: .15rem; }
+  footer.footer .nav-footer { padding-inline: .8rem; }
+}
+@media (max-width: 359.98px) {
+  .dw-masthead-name { font-size: 1.03rem; }
+  html[lang^='en'] .dw-masthead-name { max-width: 4.65rem; line-height: .88; white-space: normal; }
+  .dw-home .dw-publication-eyebrow { font-size: .65rem; }
+  .dw-publication-footer-links { column-gap: .6rem; }
+}
+@media (min-width: 360px) and (max-width: 375px) {
+  html[lang^='en'] .dw-masthead-name { font-size: 1.03rem; }
+}

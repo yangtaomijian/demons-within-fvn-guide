@@ -8,6 +8,7 @@ project:
     - assets/favicon-32x32.png
     - assets/apple-touch-icon.png
     - assets/dw-search-core.js
+    - assets/fonts/Newsreader-OFL.txt
   post-render:
     - python3 scripts/build-safe-search.py
   render:
@@ -30,8 +31,7 @@ website:
     card-style: summary
   page-footer:
     center: |
-      <p>非官方玩家攻略，适用于 Demons Within Public 14.6；后续版本可能不同。</p>
-      <a class="dw-back-to-top" href="#">↑ 返回顶部</a>
+      <div class="dw-publication-footer"><p>非官方玩家攻略，适用于 Demons Within Public 14.6；后续版本可能不同。</p><div class="dw-publication-footer-links"><span>由 <a class="dw-carambi-link" href="https://carambi.com/">Carambi</a> 维护</span><button class="dw-feedback-slot" type="button" disabled title="反馈入口将在后续版本开放">反馈 · 即将开放</button><a class="dw-back-to-top" href="#">↑ 返回顶部</a></div></div>
   title: "Demons Within 玩家攻略"
   description: "《心魔在焉（Demons Within）》Public 14.6 非官方中文玩家攻略，涵盖主线选择、结局、CG 与辞书收集。"
   search:
@@ -110,9 +110,11 @@ format:
       - assets/dw-theme.css
       - assets/styles.css
       - assets/dw-layout.css
+      - assets/dw-publication-v2a.css
     include-after-body:
       - assets/language-switch.html
       - assets/dw-layout-controls.html
+      - assets/dw-publication-v2a.html
       - assets/cloudflare-web-analytics.html
       - assets/dw-search.html
     smooth-scroll: true

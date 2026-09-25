@@ -1,6 +1,8 @@
 project:
   type: website
   output-dir: _site
+  resources:
+    - Newsreader-OFL.txt
   post-render:
     - python3 scripts/build-safe-search.py
   render:
@@ -22,8 +24,7 @@ website:
     card-style: summary
   page-footer:
     center: |
-      <p>Unofficial fan-made guide for Demons Within Public 14.6; later releases may differ.</p>
-      <a class="dw-back-to-top" href="#">↑ Back to top</a>
+      <div class="dw-publication-footer"><p>Unofficial fan-made guide for Demons Within Public 14.6; later releases may differ.</p><div class="dw-publication-footer-links"><span>Maintained by <a class="dw-carambi-link" href="https://carambi.com/">Carambi</a></span><button class="dw-feedback-slot" type="button" disabled title="Feedback form planned for a later phase">Feedback · soon</button><a class="dw-back-to-top" href="#">↑ Back to top</a></div></div>
   title: "Demons Within Player Guide"
   description: "An unofficial Public 14.6 player guide for Demons Within, covering story choices, endings, CGs, and Memory Codex unlocks."
   search:
@@ -99,9 +100,11 @@ format:
       - assets/dw-theme.css
       - assets/styles.css
       - assets/dw-layout.css
+      - assets/dw-publication-v2a.css
     include-after-body:
       - assets/language-switch.html
       - assets/dw-layout-controls.html
+      - assets/dw-publication-v2a.html
       - assets/cloudflare-web-analytics.html
       - ../assets/dw-search.html
     smooth-scroll: true
