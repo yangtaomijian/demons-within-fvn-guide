@@ -90,6 +90,7 @@ website:
 format:
   html:
     canonical-url: true
+    include-in-header: ../assets/google-site-verification.html
     theme:
       light: [cosmo, assets/system-fonts.scss]
       dark: [cosmo, assets/system-fonts.scss, assets/dw-dark.scss]

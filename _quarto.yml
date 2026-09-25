@@ -99,6 +99,7 @@ website:
 format:
   html:
     canonical-url: true
+    include-in-header: assets/google-site-verification.html
     variables:
       lang: zh-CN
     theme:
