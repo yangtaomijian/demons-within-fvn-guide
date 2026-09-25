@@ -6,7 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "_site"
-ROOT_URL = "https://yangtaomijian.github.io/demons-within-fvn-guide/"
+ROOT_URL = "https://demons-within.carambi.com/"
 EN_URL = ROOT_URL + "en/"
 PAGES = (
     "index.html",
@@ -70,14 +70,12 @@ def main() -> None:
     normalize_home(OUTPUT / "sitemap.xml", ROOT_URL)
     normalize_home(OUTPUT / "en/sitemap.xml", EN_URL)
 
-    # robots.txt is only authoritative at the origin root. This project is
-    # published below /demons-within-fvn-guide/, so Quarto's generated files
-    # would look authoritative without actually controlling crawler behavior.
-    for path in (OUTPUT / "robots.txt", OUTPUT / "en/robots.txt"):
-        if path.exists():
-            path.unlink()
+    # Only the origin-root robots.txt is authoritative.
+    en_robots = OUTPUT / "en/robots.txt"
+    if en_robots.exists():
+        en_robots.unlink()
 
-    print("Publication metadata finalized: 12 paired pages, 10 lazy Giscus embeds, normalized sitemaps, no project-local robots files.")
+    print("Publication metadata finalized: 12 paired pages, 10 lazy Giscus embeds, normalized sitemaps, origin-root robots.txt retained.")
 
 
 if __name__ == "__main__":

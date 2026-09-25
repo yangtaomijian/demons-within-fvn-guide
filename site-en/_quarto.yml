@@ -14,7 +14,7 @@ lang: en
 
 website:
   favicon: assets/favicon.svg
-  site-url: "https://yangtaomijian.github.io/demons-within-fvn-guide/en/"
+  site-url: "https://demons-within.carambi.com/en/"
   open-graph:
     locale: en_US
     site-name: "Demons Within Player Guide"

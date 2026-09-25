@@ -1,6 +1,6 @@
 # Demons Within 玩家攻略 / Player Guide
 
-[中文站](https://yangtaomijian.github.io/demons-within-fvn-guide/) · [English site](https://yangtaomijian.github.io/demons-within-fvn-guide/en/)
+[中文站](https://demons-within.carambi.com/) · [English site](https://demons-within.carambi.com/en/)
 
 这是《心魔在焉（Demons Within）》**Public 14.6** 的非官方双语玩家攻略，由 [@yangtaomijian](https://github.com/yangtaomijian) 维护。
 

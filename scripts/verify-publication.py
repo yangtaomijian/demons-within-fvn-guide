@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify the assembled bilingual GitHub Pages publication contract."""
+"""Verify the assembled bilingual custom-domain publication contract."""
 
 from __future__ import annotations
 
@@ -15,9 +15,9 @@ from urllib.parse import unquote, urljoin, urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
 SITE = ROOT / "_site"
-ORIGIN = "https://yangtaomijian.github.io"
-PREFIX = "/demons-within-fvn-guide/"
-ZH_ROOT = ORIGIN + PREFIX
+ORIGIN = "https://demons-within.carambi.com"
+SITE_HOST = urlsplit(ORIGIN).netloc
+ZH_ROOT = ORIGIN + "/"
 EN_ROOT = ZH_ROOT + "en/"
 PAGES = {
     "index.html",
@@ -29,7 +29,7 @@ PAGES = {
 }
 GOOGLE_VERIFICATION_FILE = "googlef0776754787f4a8e.html"
 CLOUDFLARE_ANALYTICS_SRC = "https://static.cloudflareinsights.com/beacon.min.js"
-CLOUDFLARE_ANALYTICS_TOKEN = "ffdbb2df0096481c8eda339206a91164"
+CLOUDFLARE_ANALYTICS_TOKEN = "b77469ef6c8b4b17af4a9f17ffdd8a65"
 ZH_SITE_NAME = "Demons Within 玩家攻略"
 EN_SITE_NAME = "Demons Within Player Guide"
 SOCIAL_IMAGES = {
@@ -43,7 +43,7 @@ EN_HOME_DESCRIPTION = "An unofficial Public 14.6 guide for the furry visual nove
 ZH_SITE_DESCRIPTION = "《心魔在焉（Demons Within）》Public 14.6 非官方中文玩家攻略，涵盖主线选择、结局、CG 与辞书收集。"
 EN_SITE_DESCRIPTION = "An unofficial Public 14.6 player guide for Demons Within, covering story choices, endings, CGs, and Memory Codex unlocks."
 ISSUES_URL = "https://github.com/yangtaomijian/demons-within-fvn-guide/issues"
-FORBIDDEN_URL_PARTS = ("localhost", "file://", "/dw-guide", "\\Users\\", "/Users/")
+FORBIDDEN_URL_PARTS = ("localhost", "file://", "/dw-guide", "/demons-within-fvn-guide/", "\\Users\\", "/Users/")
 NS = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
 SEARCH_CORE_SOURCE = ROOT / "assets/dw-search-core.js"
 SEARCH_ADAPTER_MARKER = "__dwSearchAdapter"
@@ -227,8 +227,16 @@ def verify_sitemaps() -> None:
             raise AssertionError(f"{path}: sitemap URL set mismatch")
         for url in urls:
             assert_clean_url(url, str(path))
-    if list(SITE.rglob("robots.txt")):
-        raise AssertionError("project-local robots.txt must be omitted")
+    robots = SITE / "robots.txt"
+    if set(SITE.rglob("robots.txt")) != {robots}:
+        raise AssertionError("expected only origin-root robots.txt")
+    sitemap_lines = [
+        line.strip()
+        for line in robots.read_text(encoding="utf-8").splitlines()
+        if line.strip().casefold().startswith("sitemap:")
+    ]
+    if sitemap_lines != [f"Sitemap: {ZH_ROOT}sitemap.xml"]:
+        raise AssertionError(f"{robots}: sitemap directive mismatch: {sitemap_lines}")
 
 
 def public_url_for(path: Path) -> str:
@@ -238,11 +246,11 @@ def public_url_for(path: Path) -> str:
 
 def output_target(url: str) -> tuple[Path, str]:
     parsed = urlsplit(url)
-    if parsed.netloc and parsed.netloc != "yangtaomijian.github.io":
+    if parsed.netloc and parsed.netloc != SITE_HOST:
         raise ValueError("external")
-    if not parsed.path.startswith(PREFIX):
-        raise AssertionError(f"same-origin URL escapes project subpath: {url}")
-    relative = unquote(parsed.path[len(PREFIX):])
+    if not parsed.path.startswith("/"):
+        raise AssertionError(f"same-origin URL is not root-relative: {url}")
+    relative = unquote(parsed.path.lstrip("/"))
     if not relative or relative.endswith("/"):
         relative += "index.html"
     return SITE / relative, unquote(parsed.fragment)
@@ -255,7 +263,7 @@ def verify_reference(source: Path, source_url: str, value: str, pages: dict[Path
     parsed = urlsplit(absolute)
     if parsed.scheme not in ("http", "https"):
         raise AssertionError(f"{source}: unsupported local reference {value}")
-    if parsed.netloc != "yangtaomijian.github.io":
+    if parsed.netloc != SITE_HOST:
         return
     assert_clean_url(absolute, str(source))
     target, fragment = output_target(absolute)
@@ -341,13 +349,18 @@ def verify_404(pages: dict[Path, Page]) -> None:
     robots = one_meta(page, "robots", path).casefold()
     if "noindex" not in robots:
         raise AssertionError("404.html must be noindex")
-    expected_hrefs = {PREFIX, PREFIX + "en/"}
+    expected_hrefs = {"/", "/en/"}
     actual_hrefs = {value for tag, value in page.references if tag == "a"}
     if actual_hrefs != expected_hrefs:
         raise AssertionError(f"404.html homepage links mismatch: {actual_hrefs}")
-    for _, value in page.references:
-        if value.startswith("/") and not value.startswith(PREFIX):
-            raise AssertionError(f"404.html escapes the project subpath: {value}")
+    expected_references = expected_hrefs | {
+        "/assets/favicon.svg",
+        "/assets/favicon-32x32.png",
+        "/assets/apple-touch-icon.png",
+    }
+    actual_references = {value for _, value in page.references}
+    if actual_references != expected_references:
+        raise AssertionError(f"404.html root-relative references mismatch: {actual_references}")
 
 
 def verify_giscus() -> None:
@@ -430,7 +443,7 @@ def main() -> None:
     print("Sitemap URLs: 6 Chinese + 6 English; home URLs normalized")
     print("Internal links, anchors, assets, favicons, and search targets: PASS")
     print(f"Search v2 core identity and adapter coverage: 3 cores + {len(expected_content_pages())} guide pages: PASS")
-    print("Project-local robots.txt omitted; project-safe noindex 404 present: PASS")
+    print("Origin-root robots.txt points to the sitemap; no /en/robots.txt; noindex 404 present: PASS")
     print("Giscus: 10 content pages configured; 2 homepages excluded; bilingual UI and lazy loading: PASS")
     print("Cloudflare Web Analytics: 12/12 content pages; excluded from 404 and verification HTML")
     print("Site descriptions and future GitHub Issues URL: PASS")

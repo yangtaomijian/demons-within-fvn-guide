@@ -22,7 +22,7 @@ lang: zh
 
 website:
   favicon: assets/favicon.svg
-  site-url: "https://yangtaomijian.github.io/demons-within-fvn-guide/"
+  site-url: "https://demons-within.carambi.com/"
   open-graph:
     locale: zh_CN
     site-name: "Demons Within 玩家攻略"
