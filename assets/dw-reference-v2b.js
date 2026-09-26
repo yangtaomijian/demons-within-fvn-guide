@@ -90,6 +90,36 @@
       [...targets.values()].every(hash => document.getElementById(hash.slice(1)));
     if (!valid) { console.error('Story overview no longer matches the source graph.'); return; }
 
+    // The mobile overview replaces a tall Mermaid graph after Quarto's async
+    // render. An initial native heading landing can move with that swap.
+    const initialHash = location.hash;
+    let initialId = '';
+    try { initialId = decodeURIComponent(initialHash.slice(1)); } catch {}
+    const initialTarget = document.getElementById(initialId);
+    const isHistoryRestore = performance.getEntriesByType('navigation')[0]?.type === 'back_forward';
+    const initialHeading = matchMedia('(max-width: 767.98px)').matches &&
+      initialTarget?.matches('main.content section[id]') ?
+      initialTarget.querySelector(':scope > h1, :scope > h2, :scope > h3, :scope > h4') : null;
+    let initialChecked = false;
+    let userInteracted = false;
+    const markInteraction = () => { userInteracted = true; };
+    const inputEvents = ['wheel', 'touchstart', 'pointerdown', 'keydown'];
+    if (initialHeading && !isHistoryRestore) inputEvents.forEach(type =>
+      addEventListener(type, markInteraction, {passive:true}));
+    const checkInitialHeading = () => {
+      if (initialChecked || !initialHeading || isHistoryRestore) return;
+      initialChecked = true;
+      requestAnimationFrame(() => {
+        inputEvents.forEach(type => removeEventListener(type, markInteraction));
+        if (userInteracted || location.hash !== initialHash || !initialTarget.isConnected) return;
+        const top = initialHeading.getBoundingClientRect().top;
+        const clearance = parseFloat(getComputedStyle(initialTarget).scrollMarginTop) || 0;
+        const usefulBottom = Math.max(clearance + 160, innerHeight * .45);
+        if (top >= clearance - 2 && top <= usefulBottom) return;
+        initialTarget.scrollIntoView({block:'start', behavior:'auto'});
+      });
+    };
+
     const overview = el('section', 'dw-story-overview');
     overview.setAttribute('aria-label', words.overview);
     const list = el('ol', 'dw-story-overview-list');
@@ -252,11 +282,19 @@
       const hash = link.getAttribute('href') || link.getAttribute('xlink:href');
       if (!hash?.startsWith('#')) return;
       event.preventDefault();
+      const keyboardNavigation = event.detail === 0;
       closeViewer(false).then(() => requestAnimationFrame(() => {
         const target = document.getElementById(hash.slice(1));
         if (location.hash === hash) target?.scrollIntoView();
         else location.hash = hash;
-        if (target) { target.tabIndex = -1; target.focus({preventScroll:true}); }
+        if (keyboardNavigation && target) {
+          const heading = target.querySelector(':scope > h1, :scope > h2, :scope > h3, :scope > h4') || target;
+          if (!heading.hasAttribute('tabindex')) {
+            heading.tabIndex = -1;
+            heading.addEventListener('blur', () => heading.removeAttribute('tabindex'), {once:true});
+          }
+          heading.focus({preventScroll:true});
+        }
       }));
     });
     const attachGestures = (surface, viewer) => {
@@ -418,6 +456,7 @@
       map.classList.add('dw-map-enhanced');
       overview.classList.add('dw-story-overview-ready');
       syncMobile();
+      checkInitialHeading();
       return true;
     };
     if (!ready()) {
@@ -583,7 +622,7 @@
       const bounds = detail.getBoundingClientRect();
       if (bounds.bottom < 0 || bounds.top > innerHeight) detail.scrollIntoView({block:'nearest'});
     }
-    function selectRecord(id, updateUrl = false) {
+    function selectRecord(id, updateUrl = false, fromFragment = false) {
       const slot = slotMap.get(id);
       const record = records.get(id);
       if (!slot || !record) return false;
@@ -599,24 +638,60 @@
       detail.replaceChildren(heading, meta, body);
       selectedId = id;
       if (updateUrl && location.hash !== `#${id}`) history.replaceState(null, '', `#${id}`);
-      requestAnimationFrame(() => revealMinimum(detail));
+      if (!fromFragment) requestAnimationFrame(() => revealMinimum(detail));
       return true;
     }
+    // A revealed panel can move its target during the next few layout frames.
+    // Compare document coordinates, then make at most one positioning scroll.
+    let revealVersion = 0;
+    async function positionRevealed(id, version) {
+      let previous;
+      let stable = 0;
+      for (let frame = 0; frame < 8; frame++) {
+        await new Promise(resolve => {
+          const fallback = setTimeout(resolve, 80); // Background tabs may pause animation frames.
+          requestAnimationFrame(() => { clearTimeout(fallback); resolve(); });
+        });
+        if (version !== revealVersion) return;
+        const target = document.getElementById(id);
+        if (!target || !target.getClientRects().length) return;
+        const bounds = target.getBoundingClientRect();
+        const geometry = [bounds.top + scrollY, bounds.height];
+        stable = previous && geometry.every((value, i) => Math.abs(value - previous[i]) < 1) ? stable + 1 : 0;
+        previous = geometry;
+        if (stable >= 2) break;
+      }
+      if (version !== revealVersion) return;
+      const target = document.getElementById(id);
+      if (!target) return;
+      const bounds = target.getBoundingClientRect();
+      const clearance = parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
+      // Native Back/Forward may already have restored a comfortable viewport.
+      if (bounds.top >= clearance - 2 &&
+          bounds.top <= Math.max(clearance + 96, innerHeight * .4) &&
+          bounds.bottom <= innerHeight - 8) return;
+      target.scrollIntoView({block:'start', behavior:'instant'});
+    }
     function revealHash() {
-      const id = decodeURIComponent(location.hash.slice(1));
+      const version = ++revealVersion;
+      let id;
+      try { id = decodeURIComponent(location.hash.slice(1)); }
+      catch { return; }
       if (slotMap.has(id)) {
-        selectRecord(id);
-        requestAnimationFrame(() => document.getElementById(id)?.scrollIntoView({block:'nearest'}));
+        selectRecord(id, false, true);
+        positionRevealed(id, version);
         return;
       }
       const target = document.getElementById(id);
       const panel = target?.closest('.dw-viewer-tabs > .dw-tab-panel');
-      if (panel) viewerTabs.select([...viewer.children].filter(x => x.classList?.contains('dw-tab-panel')).indexOf(panel));
+      if (panel) {
+        viewerTabs.select(viewerTabs.panels.indexOf(panel));
+        positionRevealed(id, version);
+      }
     }
     const viewerTabs = initTabs(viewer);
     document.querySelectorAll('.dw-viewer-tabs table, .dw-condition-tabs table').forEach(initAdaptiveTable);
     window.addEventListener('hashchange', revealHash);
-    window.addEventListener('popstate', revealHash);
     revealHash();
   }
 

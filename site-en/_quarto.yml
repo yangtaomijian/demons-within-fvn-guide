@@ -109,4 +109,4 @@ format:
       - assets/dw-reference-v2b.html
       - assets/cloudflare-web-analytics.html
       - ../assets/dw-search.html
-    smooth-scroll: true
+    smooth-scroll: false

@@ -1,5 +1,5 @@
 /* DW navigation and TOC: PW's independent panels, without its page-specific controls. */
-:root { --dw-header-height: 64px; --dw-left-width: 220px; --dw-right-width: 190px; }
+:root { --dw-header-height: 64px; --dw-scroll-offset: calc(var(--dw-header-height) + .75rem); --dw-left-width: 220px; --dw-right-width: 190px; }
 .dw-panel-toolbar { display: none; align-items: center; justify-content: space-between; gap: .5rem; min-height: 3rem; padding: .5rem .65rem; border-bottom: 1px solid var(--dw-border); background: var(--dw-shell); color: var(--dw-text-soft); }
 .dw-panel-toolbar > span { font-size: .78rem; font-weight: 700; letter-spacing: .04em; }
 .dw-panel-toggle, .dw-edge-toggle { display: inline-grid; place-items: center; width: 2rem; height: 2rem; padding: 0; border: 1px solid var(--dw-border); border-radius: 9px; background: var(--dw-surface-soft); color: var(--dw-text-soft); cursor: pointer; font-size: 1.15rem; }

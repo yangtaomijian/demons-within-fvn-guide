@@ -90,11 +90,8 @@ main.content .dw-story-map .dw-story-map-hint { margin-bottom: .35rem; }
 }
 .dw-story-map svg a:focus-visible { outline: 2px solid var(--dw-primary); outline-offset: 4px; }
 
-/* Keep item fragment targets clear of the fixed navbar. */
-span[id^="mem-"],
-span[id^="sprite-"] {
-  scroll-margin-top: 5rem;
-}
+/* All semantic fragments share the measured sticky-header clearance. */
+main.content [id] { scroll-margin-top: var(--dw-scroll-offset); }
 
 /* Memorium slots preserve the game's row order; only the table scrolls. */
 .dw-memorium-locator {

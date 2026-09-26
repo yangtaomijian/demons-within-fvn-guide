@@ -124,3 +124,64 @@
   document.head.appendChild(script);
 })();
 </script>
+<script>
+(() => {
+  'use strict';
+  // Quarto consumes ?q= and replaces the URL before this body include runs.
+  // The navigation entry retains the original URL without changing history.
+  const entry = performance.getEntriesByType('navigation')[0];
+  let query;
+  try { query = new URL(entry?.name || location.href).searchParams.get('q'); }
+  catch { return; }
+  if (!query) return;
+
+  const start = () => {
+    const main = document.querySelector('main');
+    if (!main) return;
+    // Quarto inserts plain <mark> elements for destination matches.
+    const marks = [...main.querySelectorAll('mark')].filter(mark => !mark.attributes.length);
+    if (!marks.length) return;
+
+    const interactive = 'a, button, input, select, textarea, summary, label, [data-bs-toggle], [contenteditable]:not([contenteditable="false"]), [role="button"], [role="link"], [role="tab"], [role="checkbox"], [role="radio"], [role="switch"], [role="menuitem"], [role="combobox"]';
+    const ordinary = target => target instanceof Element && main.contains(target) && !target.closest(interactive);
+    let press = null;
+    let dismissed = false;
+    const dismiss = () => {
+      if (dismissed) return;
+      dismissed = true;
+      for (const mark of marks) {
+        if (!mark.isConnected) continue;
+        const parent = mark.parentNode;
+        mark.replaceWith(...mark.childNodes);
+        parent.normalize();
+      }
+      document.removeEventListener('pointerdown', onDown);
+      document.removeEventListener('pointerup', onUp);
+      document.removeEventListener('pointercancel', onCancel);
+      document.removeEventListener('keydown', onKey);
+    };
+    const onDown = event => {
+      press = event.isPrimary && ordinary(event.target) ?
+        {id:event.pointerId, x:event.clientX, y:event.clientY,
+          scrollX, scrollY, time:event.timeStamp} : null;
+    };
+    const onUp = event => {
+      if (!press || event.pointerId !== press.id) return;
+      const tap = ordinary(event.target) &&
+        Math.hypot(event.clientX - press.x, event.clientY - press.y) <= 8 &&
+        Math.abs(scrollX - press.scrollX) <= 2 && Math.abs(scrollY - press.scrollY) <= 2 &&
+        event.timeStamp - press.time < 700;
+      press = null;
+      if (tap) dismiss();
+    };
+    const onCancel = () => { press = null; };
+    const onKey = event => { if (event.key === 'Escape') dismiss(); };
+    document.addEventListener('pointerdown', onDown);
+    document.addEventListener('pointerup', onUp);
+    document.addEventListener('pointercancel', onCancel);
+    document.addEventListener('keydown', onKey);
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, {once:true});
+  else start();
+})();
+</script>

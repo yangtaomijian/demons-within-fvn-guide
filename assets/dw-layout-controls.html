@@ -162,7 +162,25 @@
       toggle.addEventListener('click', () => open ? closeToc() : openToc());
       close.addEventListener('click', () => closeToc());
       backdrop.addEventListener('click', () => closeToc());
-      toc.addEventListener('click', event => { if (event.target.closest('a[data-scroll-target^="#"]')) closeToc(); });
+      toc.addEventListener('click', event => {
+        const link = event.target.closest('a[data-scroll-target^="#"]');
+        if (!link || !open) return;
+        closeToc(false);
+        // Keyboard activation leaves the now-inert drawer; continue at its destination.
+        if (event.detail === 0) requestAnimationFrame(() => {
+          let id;
+          try { id = decodeURIComponent(link.hash.slice(1)); }
+          catch { return; }
+          const target = document.getElementById(id);
+          const heading = target?.querySelector(':scope > h1, :scope > h2, :scope > h3, :scope > h4') || target;
+          if (!heading) return;
+          if (!heading.hasAttribute('tabindex')) {
+            heading.tabIndex = -1;
+            heading.addEventListener('blur', () => heading.removeAttribute('tabindex'), {once: true});
+          }
+          heading.focus({preventScroll: true});
+        });
+      });
       document.addEventListener('keydown', event => {
         if (!open || !mobile.matches) return;
         if (event.key === 'Escape') { event.preventDefault(); closeToc(); return; }
