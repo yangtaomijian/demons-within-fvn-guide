@@ -20,7 +20,7 @@ search: false
 <summary><span>主线导航图</span><span class="dw-story-map-toggle" aria-hidden="true"></span></summary>
 
 <div class="dw-story-map-body">
-<p class="dw-story-map-hint" id="dw-story-map-hint">点击带下划线的卡片，跳到对应章节；手机可左右滑动查看全图。</p>
+<p class="dw-story-map-hint" id="dw-story-map-hint">点击带下划线的节点跳到对应章节；拖动地图平移，触控板双指捏合缩放。也可打开完整互动图。</p>
 <div class="dw-story-map-scroll" role="region" aria-label="主线导航图，可横向滚动" aria-describedby="dw-story-map-hint" tabindex="0">
 
 ```{mermaid}
@@ -110,6 +110,7 @@ flowchart TD
 (() => {
   const map = document.currentScript.closest('.dw-story-map');
   const scroller = map.querySelector('.dw-story-map-scroll');
+  map.storySource = scroller.querySelector('pre.mermaid')?.textContent || '';
   let centeredWidth = 0;
   map.addEventListener('toggle', () => {
     if (!map.open) return;
@@ -125,7 +126,8 @@ flowchart TD
       centeredWidth = scroller.clientWidth;
     }
   });
-  map.open = window.matchMedia('(min-width: 768px)').matches;
+  // Mermaid needs measurable geometry on narrow screens before the V2B overview takes over.
+  map.open = true;
 })();
 </script>
 </details>

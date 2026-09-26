@@ -20,7 +20,7 @@ This map shows the main path, major branches and endings relevant to this page. 
 <summary><span>Story Map</span><span class="dw-story-map-toggle" aria-hidden="true"></span></summary>
 
 <div class="dw-story-map-body">
-<p class="dw-story-map-hint" id="dw-story-map-hint">Click an underlined card to jump to its section. On mobile, swipe sideways to see the full map.</p>
+<p class="dw-story-map-hint" id="dw-story-map-hint">Select an underlined node to jump to its section. Drag to pan and pinch on a trackpad to zoom. You can also open the full interactive map.</p>
 <div class="dw-story-map-scroll" role="region" aria-label="Story map, scroll horizontally" aria-describedby="dw-story-map-hint" tabindex="0">
 
 ```{mermaid}
@@ -110,6 +110,7 @@ flowchart TD
 (() => {
   const map = document.currentScript.closest('.dw-story-map');
   const scroller = map.querySelector('.dw-story-map-scroll');
+  map.storySource = scroller.querySelector('pre.mermaid')?.textContent || '';
   let centeredWidth = 0;
   map.addEventListener('toggle', () => {
     if (!map.open) return;
@@ -125,7 +126,8 @@ flowchart TD
       centeredWidth = scroller.clientWidth;
     }
   });
-  map.open = window.matchMedia('(min-width: 768px)').matches;
+  // Mermaid needs measurable geometry on narrow screens before the V2B overview takes over.
+  map.open = true;
 })();
 </script>
 </details>

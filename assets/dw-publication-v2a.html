@@ -45,12 +45,15 @@
     const links = english
       ? [['Key choices', 'guide/choices.html'], ['Full index', 'reference/interventions.html'], ['FAQ', 'guide/faq.html']]
       : [['关键选择', 'guide/choices.html'], ['全选项', 'reference/interventions.html'], ['常见问题', 'guide/faq.html']];
+    const linkGroup = document.createElement('span');
+    linkGroup.className = 'dw-home-fast-links';
     for (const [text, href] of links) {
       const link = document.createElement('a');
       link.href = href;
       link.textContent = text;
-      nav.append(link);
+      linkGroup.append(link);
     }
+    nav.append(linkGroup);
     titleBlock.after(nav);
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);

@@ -101,10 +101,12 @@ format:
       - assets/styles.css
       - assets/dw-layout.css
       - assets/dw-publication-v2a.css
+      - assets/dw-reference-v2b.css
     include-after-body:
       - assets/language-switch.html
       - assets/dw-layout-controls.html
       - assets/dw-publication-v2a.html
+      - assets/dw-reference-v2b.html
       - assets/cloudflare-web-analytics.html
       - ../assets/dw-search.html
     smooth-scroll: true
