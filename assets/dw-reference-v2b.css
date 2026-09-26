@@ -1,4 +1,4 @@
-/* V2B-A reference components, with a narrow V2B-A.2 homepage link-wrap fix. */
+/* Responsive reference components for maps, tables, and collection lookups. */
 .dw-home-fast-path .dw-home-fast-links { display: flex; align-items: baseline; flex: 0 0 auto; gap: 1.25rem; white-space: nowrap; }
 @media (max-width: 575px) { .dw-home-fast-path .dw-home-fast-links { gap: .7rem; } }
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Small source consistency gate for the V2B-A reference prototype."""
+"""Source consistency checks for DW reference components."""
 from pathlib import Path
 import re
 

@@ -1,6 +1,6 @@
 // Start the local preview: python3 -m http.server 8765 --directory _site
 // Run against it with:
-// playwright_cli.sh -s=dw-v2a run-code --filename=scripts/check-story-map-gestures.js
+// playwright_cli.sh -s=dw-guide run-code --filename=scripts/check-story-map-gestures.js
 async (page) => {
   const results = [];
   const valid = async (svg, label) => {

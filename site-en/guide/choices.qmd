@@ -126,7 +126,7 @@ flowchart TD
       centeredWidth = scroller.clientWidth;
     }
   });
-  // Mermaid needs measurable geometry on narrow screens before the V2B overview takes over.
+  // Mermaid needs measurable geometry on narrow screens before the mobile story overview takes over.
   map.open = true;
 })();
 </script>

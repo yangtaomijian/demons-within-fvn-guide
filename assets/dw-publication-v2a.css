@@ -1,5 +1,4 @@
-/* Carambi publication direction, V2A local prototype. Remove this file and its
-   two Quarto includes to return to the current production visual treatment. */
+/* Carambi publication styles for the Demons Within guide. */
 @font-face {
   font-family: 'DW Newsreader';
   src: url('fonts/newsreader-latin-standard-normal.woff2') format('woff2');

@@ -1,4 +1,5 @@
-/* V2B-A reference UX prototype. Source facts remain in Mermaid and source tables. */
+/* Reference UX for Story Map, adaptive tables, Memory Codex, and Sprite Viewer.
+   Source facts remain in Mermaid and source tables. */
 (() => {
   'use strict';
 

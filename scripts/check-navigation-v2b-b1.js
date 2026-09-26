@@ -1,5 +1,5 @@
 // Run after build-bilingual.sh and a local server on port 8765:
-// playwright_cli.sh -s=dw-b1 run-code --filename=scripts/check-navigation-v2b-b1.js
+// playwright_cli.sh -s=dw-navigation run-code --filename=scripts/check-navigation-v2b-b1.js
 async (page) => {
   const base = 'http://127.0.0.1:8765/';
   const results = [];
