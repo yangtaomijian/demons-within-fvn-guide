@@ -91,15 +91,14 @@
       [...targets.values()].every(hash => document.getElementById(hash.slice(1)));
     if (!valid) { console.error('Story overview no longer matches the source graph.'); return; }
 
-    // The mobile overview replaces a tall Mermaid graph after Quarto's async
-    // render. An initial native heading landing can move with that swap.
+    // The overview and graph settle after Quarto's async render. An initial
+    // native heading landing can move with that layout change at any width.
     const initialHash = location.hash;
     let initialId = '';
     try { initialId = decodeURIComponent(initialHash.slice(1)); } catch {}
     const initialTarget = document.getElementById(initialId);
     const isHistoryRestore = performance.getEntriesByType('navigation')[0]?.type === 'back_forward';
-    const initialHeading = matchMedia('(max-width: 767.98px)').matches &&
-      initialTarget?.matches('main.content section[id]') ?
+    const initialHeading = initialTarget?.matches('main.content section[id]') ?
       initialTarget.querySelector(':scope > h1, :scope > h2, :scope > h3, :scope > h4') : null;
     let initialChecked = false;
     let userInteracted = false;
@@ -109,16 +108,20 @@
       addEventListener(type, markInteraction, {passive:true}));
     const checkInitialHeading = () => {
       if (initialChecked || !initialHeading || isHistoryRestore) return;
+      if (document.readyState !== 'complete') {
+        addEventListener('load', checkInitialHeading, {once:true});
+        return;
+      }
       initialChecked = true;
-      requestAnimationFrame(() => {
+      requestAnimationFrame(() => requestAnimationFrame(() => {
         inputEvents.forEach(type => removeEventListener(type, markInteraction));
         if (userInteracted || location.hash !== initialHash || !initialTarget.isConnected) return;
-        const top = initialHeading.getBoundingClientRect().top;
+        const top = initialTarget.getBoundingClientRect().top;
         const clearance = parseFloat(getComputedStyle(initialTarget).scrollMarginTop) || 0;
         const usefulBottom = Math.max(clearance + 160, innerHeight * .45);
         if (top >= clearance - 2 && top <= usefulBottom) return;
         initialTarget.scrollIntoView({block:'start', behavior:'auto'});
-      });
+      }));
     };
 
     const overview = el('section', 'dw-story-overview');

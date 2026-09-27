@@ -1,4 +1,4 @@
-<!-- Staging-only private Feedback and comment Report dialog. -->
+<!-- Host-selected private Feedback and comment Report dialog. -->
 <script>
 (() => {
   'use strict';
@@ -8,8 +8,9 @@
   const context = runtime?.getContext();
   const transport = runtime?.transport;
   const trigger = document.querySelector('footer.footer .dw-feedback-slot');
-  if (location.hostname !== 'dw-staging.carambi.com' || runtime?.mode !== 'staging-read' ||
-      !context || typeof transport?.sendFeedback !== 'function' || !trigger) return;
+  const remoteHost = (location.hostname === 'dw-staging.carambi.com' && runtime?.mode === 'staging-read') ||
+    (location.hostname === 'demons-within.carambi.com' && runtime?.mode === 'production');
+  if (!remoteHost || !context || typeof transport?.sendFeedback !== 'function' || !trigger) return;
 
   const en = context.locale === 'en';
   const words = en ? {

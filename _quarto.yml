@@ -37,20 +37,6 @@ website:
   search:
     location: navbar
     type: overlay
-  comments:
-    giscus:
-      repo: yangtaomijian/demons-within-fvn-guide
-      repo-id: R_kgDOUinN_Q
-      category: Guide Feedback
-      category-id: DIC_kwDOUinN_c4DGBwW
-      mapping: pathname
-      reactions-enabled: true
-      input-position: top
-      loading: lazy
-      theme:
-        light: light
-        dark: dark_dimmed
-      language: zh-CN
   sidebar:
     style: docked
     collapse-level: 1
@@ -99,7 +85,9 @@ website:
 format:
   html:
     canonical-url: true
-    include-in-header: assets/google-site-verification.html
+    include-in-header:
+      - assets/google-site-verification.html
+      - assets/dw-discussion-config.html
     variables:
       lang: zh-CN
     theme:

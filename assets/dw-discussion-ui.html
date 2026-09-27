@@ -5,7 +5,7 @@
   const runtime = window.__dwDiscussionRuntime;
   const context = runtime?.getContext();
   const mount = document.getElementById('dw-public-discussion');
-  if (!mount || !context?.pageKey || !['fixture', 'staging-read'].includes(runtime.mode) || !runtime.transport) return;
+  if (!mount || !context?.pageKey || !['fixture', 'staging-read', 'production'].includes(runtime.mode) || !runtime.transport) return;
 
   const words = context.locale === 'en' ? {
     title: 'Discussion', explainer: 'Public comments and replies about this guide page.',
@@ -97,8 +97,9 @@
   mount.append(section);
   mount.hidden = false;
 
-  const writeEnabled = runtime.mode === 'staging-read' && typeof runtime.transport.postComment === 'function';
-  const reportEnabled = runtime.mode === 'staging-read' && typeof runtime.transport.sendFeedback === 'function';
+  const remoteMode = runtime.mode === 'staging-read' || runtime.mode === 'production';
+  const writeEnabled = remoteMode && typeof runtime.transport.postComment === 'function';
+  const reportEnabled = remoteMode && typeof runtime.transport.sendFeedback === 'function';
   const state = { activeVersion: context.guideVersion, pages: new Map(), index: [], pending: false,
     drafts: new Map(), activeTarget: null, opener: null, posting: false, threadLocked: false };
   const requestFor = (guideVersion, cursor = null) => ({

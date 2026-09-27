@@ -118,8 +118,8 @@ async (page) => {
   await go('en/guide/choices.html?b11=desktop#day-off', 1440);
   await page.locator('.dw-map-enhanced').waitFor();
   const desktopDayOff = await checkLanding('Desktop day-off native', 'day-off');
-  if (desktopDayOff.scrollCalls !== 0) fail('Desktop heading was custom-scrolled', desktopDayOff);
-  results.push('desktop day-off remains native');
+  if (desktopDayOff.scrollCalls > 1) fail('Desktop heading was corrected more than once', desktopDayOff);
+  results.push('desktop day-off uses native history with at most one layout correction');
   await go('en/collectibles/memorium.html', 390, 844);
   const dayOffLink = page.locator('main.content a[href$="#day-off"]').first();
   if (!((await dayOffLink.getAttribute('href')) || '').endsWith('#day-off'))

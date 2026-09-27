@@ -36,10 +36,12 @@
 
   const localHost = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
   const stagingHost = location.hostname === 'dw-staging.carambi.com';
+  const productionHost = location.hostname === 'demons-within.carambi.com';
   const transport = localHost ? window.__dwDiscussionFixtureTransport ?? null :
-    stagingHost ? window.__dwDiscussionRemoteTransport ?? null : null;
+    (stagingHost || productionHost) ? window.__dwDiscussionRemoteTransport ?? null : null;
   window.__dwDiscussionRuntime = Object.freeze({
-    getContext, transport, mode: transport ? (localHost ? 'fixture' : 'staging-read') : 'inactive',
+    getContext, transport, mode: transport ?
+      (localHost ? 'fixture' : stagingHost ? 'staging-read' : 'production') : 'inactive',
   });
   const context = getContext();
   if (!context?.pageKey) return;

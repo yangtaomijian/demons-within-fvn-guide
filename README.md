@@ -2,9 +2,9 @@
 
 [中文站](https://demons-within.carambi.com/) · [English site](https://demons-within.carambi.com/en/)
 
-这是《心魔在焉（Demons Within）》**Public 14.6** 的非官方双语玩家攻略，由 [@yangtaomijian](https://github.com/yangtaomijian) 维护。
+这是《心魔在焉（Demons Within）》**Public 14.6** 的非官方双语玩家攻略，由 [Carambi](https://carambi.com/zh/)（[@yangtaomijian](https://github.com/yangtaomijian)）维护。
 
-This is an unofficial bilingual player guide for *Demons Within* **Public 14.6**, maintained by [@yangtaomijian](https://github.com/yangtaomijian).
+This is an unofficial bilingual player guide for *Demons Within* **Public 14.6**, maintained by [Carambi](https://carambi.com/) ([@yangtaomijian](https://github.com/yangtaomijian)).
 
 ## 收录内容 / Coverage
 
@@ -22,6 +22,16 @@ Demons Within is created by Sleth. This is an unofficial guide and is not affili
 
 官方资源 / Official resources: [itch.io](https://sleths.itch.io/demons-within) · [Sleth Patreon](https://www.patreon.com/sleth) · [Official Discord](https://discord.gg/demonswithinvn)
 
-如发现攻略内容、链接或页面功能有误，欢迎通过 [GitHub Issues](https://github.com/yangtaomijian/demons-within-fvn-guide/issues) 反馈。
+## 讨论与反馈 / Discussion & feedback
 
-If you find an error in the guide, a broken link, or a site issue, please report it through GitHub Issues. Issues in this repository are for guide and website feedback, not official game support.
+正文攻略页底部提供**公开讨论区**，无需账号即可发表评论和回复；其中的内容会对其他访客公开显示。
+
+如需私下反馈攻略错误、表述不清、网站问题或其他建议，请使用页面底部的**「私下反馈」**。私下反馈只会发送给维护者，不会显示在讨论区。
+
+Public guide pages include a **Discussion** section where visitors can post comments and replies without an account. Discussion posts are visible to other visitors.
+
+For errors, unclear guidance, site problems, or other notes you would rather send privately, use **Private feedback** in the page footer. Private feedback is sent only to the maintainer and does not appear in Discussion.
+
+如站内反馈无法正常使用，或问题涉及仓库本身，也可以使用 [GitHub Issues](https://github.com/yangtaomijian/demons-within-fvn-guide/issues)。
+
+If the on-site feedback tools are unavailable, or the issue concerns the repository itself, you can also use [GitHub Issues](https://github.com/yangtaomijian/demons-within-fvn-guide/issues).

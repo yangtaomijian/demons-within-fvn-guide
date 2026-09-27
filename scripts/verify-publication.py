@@ -363,31 +363,93 @@ def verify_404(pages: dict[Path, Page]) -> None:
         raise AssertionError(f"404.html root-relative references mismatch: {actual_references}")
 
 
-def verify_giscus() -> None:
-    common = (
-        'script.src = "https://giscus.app/client.js";',
-        'script.dataset.repo = "yangtaomijian/demons-within-fvn-guide";',
-        'script.dataset.repoId = "R_kgDOUinN_Q";',
-        'script.dataset.category = "Guide Feedback";',
-        'script.dataset.categoryId = "DIC_kwDOUinN_c4DGBwW";',
-        'script.dataset.mapping = "pathname";',
-        'script.dataset.reactionsEnabled = "1";',
-        'script.dataset.inputPosition = "top";',
-        'script.dataset.loading = "lazy";',
-        '<input type="hidden" id="giscus-base-theme" value="light">',
-        '<input type="hidden" id="giscus-alt-theme" value="dark_dimmed">',
-        'script.dataset.theme = getTheme();',
-    )
-    for root, language in ((SITE, "zh-CN"), (SITE / "en", "en")):
-        home = (root / "index.html").read_text(encoding="utf-8")
-        if "giscus.app/client.js" in home or '<input type="hidden" id="giscus-base-theme"' in home:
-            raise AssertionError(f"{root / 'index.html'}: homepage must not contain Giscus")
-        for logical in PAGES - {"index.html"}:
-            path = root / logical
-            text = path.read_text(encoding="utf-8")
-            for marker in (*common, f'script.dataset.lang = "{language}";'):
-                if text.count(marker) != 1:
-                    raise AssertionError(f"{path}: expected one Giscus marker {marker!r}")
+def verify_discussion_cutover(pages: dict[Path, Page]) -> None:
+    runtime = (ROOT / "assets/dw-discussion-runtime.html").read_text(encoding="utf-8")
+    remote = (ROOT / "assets/dw-discussion-remote.html").read_text(encoding="utf-8")
+    discussion_ui = (ROOT / "assets/dw-discussion-ui.html").read_text(encoding="utf-8")
+    feedback_ui = (ROOT / "assets/dw-feedback-ui.html").read_text(encoding="utf-8")
+    staging_prep = (ROOT / "scripts/prepare-staging-assets.py").read_text(encoding="utf-8")
+    if runtime.count("mount.id = 'dw-public-discussion';") != 1 or "if (!context?.pageKey) return;" not in runtime:
+        raise AssertionError("Discussion mount must be created once only for mapped article pages")
+    page_keys = dict(re.findall(r"'(/(?:en/)?(?:guide|reference|collectibles)/[^']+\.html)': '([^']+)'", runtime))
+    expected_keys = {
+        f"/{prefix}{logical}": key
+        for prefix in ("", "en/")
+        for logical, key in (
+            ("guide/choices.html", "guide.choices"), ("guide/faq.html", "guide.faq"),
+            ("reference/interventions.html", "reference.interventions"),
+            ("collectibles/cg.html", "collectibles.cg"),
+            ("collectibles/memorium.html", "collectibles.memorium"),
+        )
+    }
+    if page_keys != expected_keys:
+        raise AssertionError("Discussion page-key map must contain exactly ten article paths and no homepages")
+    for marker in (
+        "location.hostname === 'dw-staging.carambi.com' ? 'staging'",
+        "location.hostname === 'demons-within.carambi.com' ? 'production'",
+        "meta('dw-discussion-environment') !== environment",
+        "origin !== `https://${expectedApiHost}`",
+    ):
+        if marker not in remote:
+            raise AssertionError(f"Remote transport environment guard missing: {marker}")
+    if ("['fixture', 'staging-read', 'production']" not in discussion_ui
+            or "runtime.mode === 'production'" not in discussion_ui):
+        raise AssertionError("Production Discussion mode is not enabled")
+    for marker in (
+        "location.hostname === 'demons-within.carambi.com' && runtime?.mode === 'production'",
+        "trigger.disabled = false;", "privateFeedback: 'Private feedback'", "privateFeedback: '私下反馈'",
+        "action: active.mode === 'report' ? 'report_comment' : 'feedback_send'",
+    ):
+        if marker not in feedback_ui:
+            raise AssertionError(f"Production Feedback activation missing: {marker}")
+    if "action: 'discussion_post'" not in discussion_ui:
+        raise AssertionError("Discussion Turnstile action mismatch")
+    for marker in ("https://discussion-staging.carambi.com", "0x4AAAAAAFEW58ENHynCclX5"):
+        if marker not in staging_prep:
+            raise AssertionError("Staging-only config missing from staging asset preparation")
+
+    for path, page in pages.items():
+        if path == SITE / "404.html":
+            continue
+        logical = path.relative_to(SITE).as_posix()
+        is_home = logical in ("index.html", "en/index.html")
+        text = path.read_text(encoding="utf-8")
+        # Quarto emits a dormant theme helper even when Giscus is not configured.
+        # Reject the actual embed, configuration, or container instead.
+        if any(marker in text for marker in (
+            'script.src = "https://giscus.app/client.js";',
+            '<input type="hidden" id="giscus-base-theme"',
+            'class="giscus"',
+            'script.dataset.category = "Guide Feedback";',
+        )):
+            raise AssertionError(f"{path}: active Giscus integration must not appear")
+        for name, expected in (
+            ("dw-discussion-environment", "production"),
+            ("dw-discussion-api", "https://discussion.carambi.com"),
+            ("dw-discussion-turnstile-sitekey", "0x4AAAAAAFE9bmYvoR54zpRe"),
+        ):
+            if one_meta(page, name, path) != expected:
+                raise AssertionError(f"{path}: incorrect production {name}")
+        if (text.count("mount.id = 'dw-public-discussion';") != 1
+                or text.count("window.__dwDiscussionRuntime = Object.freeze") != 1):
+            raise AssertionError(f"{path}: expected one Discussion runtime/mount factory")
+        if text.count("window.__dwDiscussionRemoteTransport = Object.freeze") != 1:
+            raise AssertionError(f"{path}: expected one production-capable remote transport")
+        if not is_home and f"'{('/' + logical)}':" not in text:
+            raise AssertionError(f"{path}: article path is not in Discussion map")
+        footer_slots = re.findall(r'<button class="dw-feedback-slot"[^>]*>.*?</button>', text)
+        if (len(footer_slots) != 1 or "disabled" not in footer_slots[0]
+                or text.count("trigger.disabled = false;") != 1):
+            raise AssertionError(f"{path}: Feedback must have one fail-closed slot with runtime activation")
+        if re.search(r'<meta[^>]+name="robots"[^>]+noindex', text, re.I):
+            raise AssertionError(f"{path}: staging noindex must not enter production HTML")
+    if (SITE / "_headers").exists():
+        raise AssertionError("staging-only _headers leaked into production output")
+    for path in SITE.rglob("*"):
+        if path.is_file():
+            data = path.read_bytes()
+            if b"https://discussion-staging.carambi.com" in data or b"0x4AAAAAAFEW58ENHynCclX5" in data:
+                raise AssertionError(f"{path}: staging API or sitekey leaked into production output")
 
 
 def verify_web_analytics() -> None:
@@ -434,7 +496,7 @@ def main() -> None:
     verify_search(pages)
     verify_search_v2()
     verify_404(pages)
-    verify_giscus()
+    verify_discussion_cutover(pages)
     verify_web_analytics()
     verify_public_docs()
     print("Indexable HTML pages: 12/12 (6 Chinese + 6 English)")
@@ -444,7 +506,8 @@ def main() -> None:
     print("Internal links, anchors, assets, favicons, and search targets: PASS")
     print(f"Search v2 core identity and adapter coverage: 3 cores + {len(expected_content_pages())} guide pages: PASS")
     print("Origin-root robots.txt points to the sitemap; no /en/robots.txt; noindex 404 present: PASS")
-    print("Giscus: 10 content pages configured; 2 homepages excluded; bilingual UI and lazy loading: PASS")
+    print("Carambi Discussion: ten mapped articles, two excluded homepages; Giscus absent; production API/sitekey and Feedback wiring: PASS")
+    print("Staging API/sitekey absent from generated production output; no staging noindex header: PASS")
     print("Cloudflare Web Analytics: 12/12 content pages; excluded from 404 and verification HTML")
     print("Site descriptions and future GitHub Issues URL: PASS")
 
