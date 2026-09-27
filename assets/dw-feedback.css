@@ -1,0 +1,107 @@
+/* Staging Feedback and Report share one native modal dialog. */
+html.dw-feedback-open,
+body.dw-feedback-open { overflow: hidden; }
+.dw-feedback-slot:not(:disabled) { opacity: 1; cursor: pointer; color: var(--dw-primary); }
+.dw-feedback-slot:not(:disabled):hover { color: var(--dw-primary-hover); text-decoration: underline; }
+.dw-feedback-slot:focus-visible,
+.dw-feedback-dialog :is(button, select, input, textarea):focus-visible {
+  outline: 2px solid var(--dw-primary);
+  outline-offset: 2px;
+}
+.dw-feedback-dialog {
+  box-sizing: border-box;
+  width: min(calc(100% - 1.5rem), 560px);
+  max-width: none;
+  max-height: calc(100dvh - 1.5rem);
+  margin: auto;
+  padding: 1.25rem;
+  overflow: auto;
+  border: 1px solid var(--dw-border-strong);
+  border-radius: 10px;
+  background: var(--dw-bg);
+  color: var(--dw-text);
+  box-shadow: 0 14px 48px rgba(0, 0, 0, .25);
+}
+.dw-feedback-dialog::backdrop { background: rgba(0, 0, 0, .68); }
+.dw-feedback-dialog [hidden] { display: none !important; }
+.dw-feedback-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.dw-feedback-header h2 { margin: 0; color: var(--dw-heading); font-size: 1.5rem; }
+.dw-feedback-close {
+  flex: none;
+  min-height: 2.75rem;
+  padding: .45rem .7rem;
+  border: 1px solid var(--dw-border-strong);
+  border-radius: 7px;
+  background: var(--dw-surface);
+  color: var(--dw-primary);
+  font: inherit;
+  cursor: pointer;
+}
+.dw-feedback-intro { margin: .75rem 0 1rem; color: var(--dw-text-soft); line-height: 1.6; }
+.dw-feedback-status:not(:empty) { margin: 0 0 .75rem; line-height: 1.5; }
+.dw-feedback-status:empty { display: none; }
+.dw-feedback-form { display: grid; gap: .85rem; min-width: 0; }
+.dw-feedback-field { display: grid; gap: .3rem; min-width: 0; }
+.dw-feedback-field label { color: var(--dw-heading); font-weight: 650; }
+.dw-feedback-input {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  padding: .6rem .7rem;
+  border: 1px solid var(--dw-border-strong);
+  border-radius: 7px;
+  background: var(--dw-surface);
+  color: var(--dw-text);
+  font: inherit;
+}
+.dw-feedback-input[aria-invalid='true'] { border-color: var(--dw-primary); }
+.dw-feedback-dialog textarea { resize: vertical; }
+.dw-feedback-help { margin: 0; color: var(--dw-text-soft); font-size: .84rem; }
+.dw-feedback-field-error { margin: 0; color: var(--dw-primary); font-size: .84rem; }
+.dw-feedback-field-error:empty { display: none; }
+.dw-feedback-turnstile { min-width: 0; min-height: 65px; overflow: hidden; }
+.dw-feedback-actions { display: flex; flex-wrap: wrap; gap: .55rem; }
+.dw-feedback-action {
+  min-height: 2.75rem;
+  padding: .55rem .85rem;
+  border: 1px solid var(--dw-border-strong);
+  border-radius: 8px;
+  background: var(--dw-surface);
+  color: var(--dw-primary);
+  font: inherit;
+  cursor: pointer;
+}
+.dw-feedback-action:hover,
+.dw-feedback-close:hover { background: var(--dw-surface-hover); }
+.dw-feedback-action:disabled,
+.dw-feedback-close:disabled { opacity: .6; cursor: wait; }
+.dw-feedback-honeypot {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  clip-path: inset(50%);
+  pointer-events: none;
+}
+#dw-public-discussion .dw-discussion-report-action {
+  margin: .25rem 0 .5rem .6rem;
+  padding-inline: .4rem;
+  border-color: transparent;
+  background: transparent;
+  color: var(--dw-text-soft);
+  font-size: .82rem;
+}
+#dw-public-discussion .dw-discussion-report-action:hover {
+  background: transparent;
+  color: var(--dw-primary);
+  text-decoration: underline;
+}
+@media (max-width: 767.98px) {
+  .dw-feedback-dialog {
+    width: calc(100% - 1rem);
+    max-height: calc(100dvh - 1rem);
+    padding: 1rem;
+  }
+}

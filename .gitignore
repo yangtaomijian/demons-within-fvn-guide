@@ -1,4 +1,5 @@
 /.quarto/
+/.wrangler/
 /_site/
 .DS_Store
 

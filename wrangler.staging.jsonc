@@ -1,0 +1,13 @@
+{
+  "name": "carambi-dw-staging",
+  "compatibility_date": "2026-09-26",
+  "workers_dev": false,
+  "assets": {
+    "directory": "./_site",
+    "html_handling": "none",
+    "not_found_handling": "404-page"
+  },
+  "routes": [
+    { "pattern": "dw-staging.carambi.com", "custom_domain": true }
+  ]
+}

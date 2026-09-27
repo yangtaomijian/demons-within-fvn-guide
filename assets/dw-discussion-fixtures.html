@@ -1,0 +1,121 @@
+<!-- Local-only API-shaped data. Never expose fixtures on a published origin. -->
+<script>
+(() => {
+  'use strict';
+  if (!['localhost', '127.0.0.1', '[::1]'].includes(location.hostname)) return;
+
+  const id = number => `00000000-0000-4000-8000-${String(number).padStart(12, '0')}`;
+  const stamp = minute => `2026-09-20T12:${String(minute).padStart(2, '0')}:00.000Z`;
+  const choose = (locale, english, chinese) => locale === 'en' ? english : chinese;
+  const historicalVersion = 'Public 14.5';
+  let failNextRead = false;
+
+  function comment(number, version, options = {}) {
+    const published = (options.status ?? 'published') === 'published';
+    return {
+      id: id(number), parentCommentId: options.parentCommentId ?? null,
+      authorKind: options.authorKind ?? 'guest', status: options.status ?? 'published',
+      displayName: published ? options.displayName ?? null : null,
+      body: published ? options.body ?? '' : null,
+      guideVersion: version, pageHash: published ? options.pageHash ?? null : null,
+      pinnedAt: published ? options.pinnedAt ?? null : null,
+      createdAt: stamp(options.minute ?? 0),
+    };
+  }
+  const root = (number, version, options = {}, replies = []) => ({ ...comment(number, version, options), replies });
+  const reply = (number, parent, version, options = {}) => comment(number, version, {
+    ...options, parentCommentId: id(parent), pageHash: null, pinnedAt: null,
+  });
+
+  function fixture(request) {
+    const { pageKey, locale, guideVersion, cursor = null } = request;
+    if (request.site !== 'demons-within' || !['en', 'zh-CN'].includes(locale)) throw Error('FIXTURE_CONTEXT_INVALID');
+    const currentVersion = window.__dwDiscussionRuntime?.getContext()?.guideVersion;
+    if (!currentVersion) throw Error('FIXTURE_CONTEXT_INVALID');
+    let roots = [], nextCursor = null, status = 'open', threadId = null, earlierVersions = [];
+
+    if (pageKey === 'guide.choices') {
+      threadId = id(101);
+      if (guideVersion === historicalVersion) {
+        if (cursor) throw Error('FIXTURE_CURSOR_INVALID');
+        roots = [root(9, historicalVersion, {
+          displayName: 'ArchiveReader', minute: 8,
+          body: choose(locale, 'An earlier guide-version note.', '较早攻略版本的一条留言。'),
+        }, [reply(10, 9, currentVersion, { minute: 9, authorKind: 'maintainer', displayName: 'Carambi',
+          body: choose(locale, 'The reply keeps its own version.', '回复保留自己的攻略版本。') })])];
+        earlierVersions = [{ guideVersion: currentVersion, commentCount: 8 }];
+      } else if (guideVersion === currentVersion && cursor === null) {
+        roots = [
+          root(1, currentVersion, { authorKind: 'maintainer', displayName: 'Carambi', minute: 10,
+            pinnedAt: stamp(50), body: choose(locale, 'Guide note: keep a save before the warehouse choice.', '攻略提示：仓库选择前建议留存档。') }),
+          root(2, currentVersion, { displayName: 'River', minute: 45, pageHash: '#warehouse',
+            body: choose(locale, 'The warehouse route worked for me.\nI saved before entering.', '仓库路线对我有效。\n我在进入前留了存档。') }, [
+            reply(3, 2, currentVersion, { displayName: 'Fox', minute: 46,
+              body: choose(locale, 'Thanks, that helped.', '谢谢，这条建议有用。') }),
+            reply(4, 2, currentVersion, { authorKind: 'maintainer', displayName: 'Carambi', minute: 47,
+              body: choose(locale, 'The guide now calls out that save point.', '攻略现在已经标出这个存档点。') }),
+          ]),
+          root(5, currentVersion, { minute: 40,
+            body: choose(locale, 'A note from an unnamed reader.\nSecond line stays visible.', '一位未署名读者的留言。\n第二行仍应显示。') }),
+        ];
+        nextCursor = 'fixture-choices-2';
+        earlierVersions = [{ guideVersion: historicalVersion, commentCount: 2 }];
+      } else if (guideVersion === currentVersion && cursor === 'fixture-choices-2') {
+        roots = [
+          root(6, currentVersion, { authorKind: 'maintainer', displayName: 'Carambi', minute: 35,
+            body: choose(locale, 'A second maintainer note without a pin.', '另一条没有置顶的维护者留言。') }),
+          root(7, currentVersion, { displayName: 'VeryLongGuestDisplayNameWithoutSpaces123', minute: 30,
+            body: 'LongUnbrokenText'.repeat(18) }),
+          root(8, currentVersion, { displayName: 'LiteralTextReader', minute: 25,
+            body: '<img src=x onerror=alert(1)>\n**bold** [link](https://example.com) & plain text' }),
+        ];
+        earlierVersions = [{ guideVersion: historicalVersion, commentCount: 2 }];
+      } else if (cursor) throw Error('FIXTURE_CURSOR_INVALID');
+    } else if (pageKey === 'guide.faq') {
+      if (cursor) throw Error('FIXTURE_CURSOR_INVALID');
+    } else if (pageKey === 'reference.interventions') {
+      if (cursor) throw Error('FIXTURE_CURSOR_INVALID');
+      threadId = id(102); status = 'locked';
+      if (guideVersion === currentVersion) roots = [root(11, currentVersion, { displayName: 'BranchReader', minute: 20,
+        body: choose(locale, 'I can still read this locked thread.', '锁定后，我仍可阅读这条讨论。') }, [
+        reply(12, 11, currentVersion, { authorKind: 'maintainer', displayName: 'Carambi', minute: 21,
+          body: choose(locale, 'Existing replies remain available.', '现有回复仍然可以查看。') }),
+      ])];
+    } else if (pageKey === 'collectibles.cg') {
+      if (cursor) throw Error('FIXTURE_CURSOR_INVALID');
+      threadId = id(103);
+      if (guideVersion === currentVersion) roots = [
+        root(13, currentVersion, { status: 'hidden', minute: 20 }),
+        root(14, currentVersion, { displayName: 'Collector', minute: 15,
+          body: choose(locale, 'The CG checklist was useful.', 'CG 清单很有帮助。') }),
+      ];
+    } else if (pageKey === 'collectibles.memorium') {
+      if (cursor) throw Error('FIXTURE_CURSOR_INVALID');
+      threadId = id(104);
+      if (guideVersion === currentVersion) roots = [
+        root(15, currentVersion, { status: 'deleted', minute: 20 }),
+        root(16, currentVersion, { displayName: 'CodexReader', minute: 15,
+          body: choose(locale, 'I found the missing record.', '我找到了缺少的辞书条目。') }),
+      ];
+    } else throw Error('FIXTURE_PAGE_UNKNOWN');
+
+    return {
+      ok: true, requestId: id(900), receivedAt: stamp(55),
+      thread: { id: threadId, status },
+      currentVersion: { guideVersion, comments: roots, nextCursor }, earlierVersions,
+    };
+  }
+
+  window.__dwDiscussionFixtureTransport = Object.freeze({
+    readDiscussion(request) {
+      return new Promise((resolve, reject) => setTimeout(() => {
+        if (failNextRead) { failNextRead = false; reject(Error('FIXTURE_READ_FAILED')); return; }
+        try { resolve(fixture(request)); } catch (error) { reject(error); }
+      }, 80));
+    },
+    postComment() { return Promise.reject(Error('FIXTURE_ONLY')); },
+    sendFeedback() { return Promise.reject(Error('FIXTURE_ONLY')); },
+    failNextRead() { failNextRead = true; },
+  });
+})();
+</script>

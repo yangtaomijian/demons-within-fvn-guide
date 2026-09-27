@@ -225,7 +225,11 @@ footer.footer .dw-publication-footer > p { margin: 0; }
   .dw-home .dw-entry { padding: .95rem 2.1rem 1.05rem 0; }
   .dw-home .dw-entry:nth-child(even) { padding-left: 0; }
   .dw-home .dw-entry::after { top: .95rem; right: .15rem; }
-  footer.footer .nav-footer { padding-inline: .8rem; }
+  /* Let the final links scroll above persistent mobile browser chrome. */
+  footer.footer .nav-footer {
+    padding-inline: .8rem;
+    padding-bottom: calc(1.35rem + 5.5rem + env(safe-area-inset-bottom, 0px));
+  }
 }
 @media (max-width: 359.98px) {
   .dw-masthead-name { font-size: 1.03rem; }

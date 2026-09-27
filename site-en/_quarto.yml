@@ -102,6 +102,8 @@ format:
       - assets/dw-layout.css
       - assets/dw-publication-v2a.css
       - assets/dw-reference-v2b.css
+      - assets/dw-discussion.css
+      - assets/dw-feedback.css
     include-after-body:
       - assets/language-switch.html
       - assets/dw-layout-controls.html
@@ -109,4 +111,9 @@ format:
       - assets/dw-reference-v2b.html
       - assets/cloudflare-web-analytics.html
       - ../assets/dw-search.html
+      - ../assets/dw-discussion-fixtures.html
+      - ../assets/dw-discussion-remote.html
+      - ../assets/dw-discussion-runtime.html
+      - ../assets/dw-discussion-ui.html
+      - ../assets/dw-feedback-ui.html
     smooth-scroll: false

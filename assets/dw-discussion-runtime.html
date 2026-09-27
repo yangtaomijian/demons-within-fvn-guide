@@ -1,0 +1,55 @@
+<!-- Shared page context and transport boundary for Discussion and Feedback. -->
+<script>
+(() => {
+  'use strict';
+  if (window.__dwDiscussionRuntime) return;
+
+  const guideVersion = 'Public 14.6';
+  const pageKeys = Object.freeze({
+    '/guide/choices.html': 'guide.choices',
+    '/guide/faq.html': 'guide.faq',
+    '/reference/interventions.html': 'reference.interventions',
+    '/collectibles/cg.html': 'collectibles.cg',
+    '/collectibles/memorium.html': 'collectibles.memorium',
+    '/en/guide/choices.html': 'guide.choices',
+    '/en/guide/faq.html': 'guide.faq',
+    '/en/reference/interventions.html': 'reference.interventions',
+    '/en/collectibles/cg.html': 'collectibles.cg',
+    '/en/collectibles/memorium.html': 'collectibles.memorium',
+  });
+
+  function getContext() {
+    const locale = document.documentElement.lang;
+    if (locale !== 'en' && locale !== 'zh-CN') return null;
+    const pagePath = location.pathname;
+    if ((locale === 'en') !== pagePath.startsWith('/en/')) return null;
+    return Object.freeze({
+      site: 'demons-within',
+      locale,
+      pageKey: Object.hasOwn(pageKeys, pagePath) ? pageKeys[pagePath] : null,
+      guideVersion,
+      pagePath,
+      pageHash: location.hash,
+      viewportClass: matchMedia('(min-width: 768px)').matches ? 'desktop' : 'mobile',
+    });
+  }
+
+  const localHost = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
+  const stagingHost = location.hostname === 'dw-staging.carambi.com';
+  const transport = localHost ? window.__dwDiscussionFixtureTransport ?? null :
+    stagingHost ? window.__dwDiscussionRemoteTransport ?? null : null;
+  window.__dwDiscussionRuntime = Object.freeze({
+    getContext, transport, mode: transport ? (localHost ? 'fixture' : 'staging-read') : 'inactive',
+  });
+  const context = getContext();
+  if (!context?.pageKey) return;
+  const main = document.querySelector('#quarto-content > main#quarto-document-content');
+  if (!main || document.getElementById('dw-public-discussion')) return;
+  const mount = document.createElement('div');
+  mount.id = 'dw-public-discussion';
+  mount.hidden = true;
+  mount.setAttribute('data-dw-discussion-mount', '');
+  mount.dataset.pageKey = context.pageKey;
+  main.after(mount);
+})();
+</script>
