@@ -54,7 +54,7 @@
       });
       tools.append(search); body.classList.add('dw-tools-ready');
     }
-    // A shared sidebar spans every section; highlight the actual navbar destination.
+    // Highlight the actual navbar destination across the shared navigation.
     const currentPath = location.pathname.replace(/index\.html$/, '');
     document.querySelectorAll('#navbarCollapse .nav-link').forEach(link => {
       const menu = link.closest('.nav-item')?.querySelector('.dropdown-menu');
@@ -68,18 +68,28 @@
       table.before(scroll); scroll.append(table);
     });
     const desktop = matchMedia('(min-width: 1100px)');
-    const tablet = matchMedia('(min-width: 768px)');
     const mobile = matchMedia('(max-width: 767.98px)');
     const read = key => { try { return localStorage.getItem(key) === '1'; } catch { return false; } };
     const write = (key, value) => { try { localStorage.setItem(key, value ? '1' : '0'); } catch {} };
+    // Desktop uses the navbar for site navigation and the left rail for the TOC.
+    // Keep Quarto's site sidebar available on narrower screens.
+    const siteSidebar = document.getElementById('quarto-sidebar');
+    const applySiteSidebar = () => {
+      if (!siteSidebar) return;
+      siteSidebar.inert = desktop.matches;
+      if (desktop.matches) siteSidebar.setAttribute('aria-hidden', 'true');
+      else siteSidebar.removeAttribute('aria-hidden');
+    };
+    desktop.addEventListener('change', applySiteSidebar);
+    applySiteSidebar();
     const panels = [];
-    for (const side of ['left', 'right']) {
-      const panel = document.getElementById(side === 'left' ? 'quarto-sidebar' : 'quarto-margin-sidebar');
-      const hasContent = panel && (side === 'left' || panel.querySelector('#TOC'));
+    for (const side of ['right']) {
+      const panel = document.getElementById('quarto-margin-sidebar');
+      const hasContent = panel?.querySelector('#TOC');
       if (!hasContent) { body.classList.add('dw-no-' + side); continue; }
-      const title = side === 'left' ? (english ? 'Navigation' : '导航') : (english ? 'On this page' : '本页目录');
+      const title = english ? 'On this page' : '本页目录';
       const key = 'dw-guide-' + side + '-collapsed';
-      const media = side === 'left' ? desktop : tablet;
+      const media = matchMedia('(min-width: 768px) and (max-width: 1099.98px)');
       let collapsed = read(key);
       const toolbar = document.createElement('div');
       toolbar.className = 'dw-panel-toolbar';
@@ -87,8 +97,8 @@
       const button = (open) => {
         const b = document.createElement('button'); b.type = 'button';
         b.className = open ? 'dw-edge-toggle dw-edge-' + side : 'dw-panel-toggle';
-        b.textContent = (side === 'left') === open ? '→' : '←';
-        b.title = english ? (open ? 'Expand ' : 'Collapse ') + (side === 'left' ? 'navigation' : 'table of contents') : (open ? '展开' : '收起') + (side === 'left' ? '左侧导航' : '本页目录');
+        b.textContent = open ? '←' : '→';
+        b.title = english ? (open ? 'Expand ' : 'Collapse ') + 'table of contents' : (open ? '展开' : '收起') + '本页目录';
         b.setAttribute('aria-label', b.title); b.setAttribute('aria-controls', panel.id);
         return b;
       };

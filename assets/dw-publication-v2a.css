@@ -203,7 +203,7 @@ footer.footer .dw-publication-footer > p { margin: 0; }
 
 @media (min-width: 1100px) {
   body.dw-layout-ready #quarto-sidebar { border-right-color: var(--dw-border); }
-  body.dw-layout-ready #quarto-margin-sidebar { border-left-color: var(--dw-border); }
+  body.dw-layout-ready #quarto-margin-sidebar { border-left: 0; border-right-color: var(--dw-border); }
 }
 @media (max-width: 767.98px) {
   .dw-masthead-edition { display: none; }
