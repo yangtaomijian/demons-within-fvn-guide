@@ -74,6 +74,51 @@
     // Desktop uses the navbar for site navigation and the left rail for the TOC.
     // Keep Quarto's site sidebar available on narrower screens.
     const siteSidebar = document.getElementById('quarto-sidebar');
+
+    // Remember explicit navigation-group choices across pages and languages.
+    // Keep Quarto's active-section default until a group has a saved preference.
+    if (siteSidebar) {
+      const key = "dw-navigation-groups-v1";
+      const groups = [...siteSidebar.querySelectorAll(".sidebar-section[id]")];
+      const identities = new Map(groups.map(group => {
+        const link = group.querySelector("a[href]");
+        return [group, link ? new URL(link.href).pathname.replace(/\/en\//, "/") : null];
+      }));
+      const preferences = Object.create(null);
+      const restoreGroups = () => {
+        try {
+          const saved = JSON.parse(localStorage.getItem(key));
+          for (const identity of identities.values()) {
+            if (identity && saved && typeof saved[identity] === "boolean") preferences[identity] = saved[identity];
+          }
+        } catch { /* Navigation remains usable when storage is unavailable. */ }
+        for (const group of groups) {
+          const expanded = preferences[identities.get(group)];
+          if (typeof expanded !== "boolean") continue;
+          group.classList.toggle("show", expanded);
+          for (const toggle of siteSidebar.querySelectorAll(`[data-bs-target="#${group.id}"]`)) {
+            toggle.classList.toggle("collapsed", !expanded);
+            toggle.setAttribute("aria-expanded", String(expanded));
+          }
+        }
+      };
+      restoreGroups();
+      siteSidebar.addEventListener("show.bs.collapse", event => {
+        if (event.target === siteSidebar) restoreGroups();
+      });
+      // Bootstrap's delegated click handler updates aria-expanded before this
+      // sidebar listener. Save that actual state, including ignored rapid clicks.
+      // Drawer close and breakpoint/programmatic changes never write preferences.
+      siteSidebar.addEventListener("click", event => {
+        if (desktop.matches) return;
+        const toggle = event.target.closest('[data-bs-toggle="collapse"]');
+        const group = groups.find(group => toggle?.getAttribute("data-bs-target") === `#${group.id}`);
+        const identity = identities.get(group);
+        if (!identity) return;
+        preferences[identity] = toggle.getAttribute("aria-expanded") === "true";
+        try { localStorage.setItem(key, JSON.stringify(preferences)); } catch {}
+      });
+    }
     const applySiteSidebar = () => {
       if (!siteSidebar) return;
       siteSidebar.inert = desktop.matches;
