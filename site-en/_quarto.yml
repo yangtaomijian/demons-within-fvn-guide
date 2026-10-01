@@ -35,10 +35,8 @@ website:
     collapse-level: 1
     search: false
     contents:
-      - section: "Home"
-        contents:
-          - href: index.md
-            text: "Home"
+      - href: index.md
+        text: "Home"
       - section: "Guide"
         contents:
           - href: guide/choices.qmd

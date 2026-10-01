@@ -1,5 +1,71 @@
 <script>
 (() => {
+
+  // Move the existing link, preserving its URL/fragment listeners and identity.
+  const placeLanguageSwitch = (link, tools) => {
+    const sidebar = document.getElementById("quarto-sidebar");
+    if (!sidebar) return;
+    // Quarto toggles Headroom on opener clicks, but backdrop and API closes
+    // bypass that click. Freeze from the actual top-level collapse lifecycle.
+    const header = document.getElementById("quarto-header");
+    const navigationPanels = [sidebar, document.getElementById("navbarCollapse")].filter(Boolean);
+    const openPanels = new Set(navigationPanels.filter(panel => panel.classList.contains("show")));
+    const syncHeadroom = () => {
+      const frozen = header?.classList.contains("headroom--frozen");
+      if (header && frozen !== (openPanels.size > 0)) window.quartoToggleHeadroom?.();
+    };
+    header?.querySelectorAll('[onclick*="quartoToggleHeadroom"]').forEach(control => control.removeAttribute("onclick"));
+    for (const eventName of ["show.bs.collapse", "shown.bs.collapse", "hidden.bs.collapse"]) {
+      document.addEventListener(eventName, event => {
+        if (!navigationPanels.includes(event.target)) return;
+        if (eventName === "hidden.bs.collapse") openPanels.delete(event.target);
+        else openPanels.add(event.target);
+        syncHeadroom();
+      });
+    }
+    const restoreHeadroom = () => {
+      openPanels.clear();
+      navigationPanels.filter(panel => panel.classList.contains("show")).forEach(panel => openPanels.add(panel));
+      syncHeadroom();
+    };
+    window.addEventListener("pageshow", restoreHeadroom);
+    window.addEventListener("load", restoreHeadroom);
+    syncHeadroom();
+    const narrow = matchMedia("(max-width: 991.98px)");
+    const footer = document.createElement("div");
+    footer.className = "dw-nav-language";
+    sidebar.append(footer);
+    const label = link.textContent.trim();
+    link.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18"/></svg>';
+    link.append(document.createTextNode(label));
+    const closeDesktopDrawer = () => {
+      if (narrow.matches) return;
+      document.querySelectorAll(".quarto-sidebar-collapse-item.show").forEach(panel => {
+        window.bootstrap?.Collapse.getInstance(panel)?.hide();
+      });
+    };
+    document.addEventListener("shown.bs.collapse", event => {
+      if (event.target.matches(".quarto-sidebar-collapse-item")) closeDesktopDrawer();
+    });
+    const place = () => {
+      const target = narrow.matches ? footer : tools;
+      const focused = document.activeElement === link;
+      footer.hidden = !narrow.matches;
+      closeDesktopDrawer();
+      if (link.parentElement === target) return;
+      if (narrow.matches) target.append(link);
+      else target.insertBefore(link, tools.querySelector(".dw-search-launcher"));
+      if (focused) {
+        const focusTarget = !narrow.matches || sidebar.classList.contains("show")
+          ? link : document.querySelector("#quarto-header .quarto-btn-toggle");
+        focusTarget?.focus({preventScroll: true});
+      }
+    };
+    narrow.addEventListener("change", place);
+    window.addEventListener("pageshow", place);
+    place();
+  };
+
   const start = () => {
     const body = document.body;
     if (body.classList.contains('dw-layout-ready')) return;
@@ -23,7 +89,7 @@
       tools.append(auto); syncTheme();
       new MutationObserver(syncTheme).observe(body, {attributes:true, attributeFilter:['class']});
       const language = [...navbar.querySelectorAll('a')].find(a => a.textContent.trim() === (english ? '中文' : 'EN'));
-      if (language) { language.classList.add('dw-language-switch'); tools.append(language); }
+      if (language) { language.classList.add('dw-language-switch'); tools.append(language); placeLanguageSwitch(language, tools); }
       let nativeSearchButton;
       const prepareNativeSearch = () => {
         nativeSearchButton = nativeSearch.querySelector('.aa-DetachedSearchButton');

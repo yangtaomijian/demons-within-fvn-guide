@@ -240,3 +240,89 @@ footer.footer .dw-publication-footer > p { margin: 0; }
 @media (min-width: 360px) and (max-width: 375px) {
   html[lang^='en'] .dw-masthead-name { font-size: 1.03rem; }
 }
+
+/* Mobile language entry follows the existing site-navigation drawer. */
+.dw-language-switch > svg { display: none; }
+.dw-nav-language[hidden] { display: none !important; }
+@media (max-width: 991.98px) {
+  #quarto-header .navbar { min-height: 60px; padding-inline: 0; }
+  #quarto-header .navbar > .container-fluid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: .375rem;
+    padding-inline: 1rem;
+  }
+  #quarto-header .navbar-brand-container {
+    min-width: 0;
+    max-width: 100%;
+    margin: 0 !important;
+    flex-shrink: 1;
+  }
+  #quarto-header .navbar-brand:has(.dw-masthead-name) {
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  #quarto-header .navbar-title { min-width: 0; }
+  #quarto-header .dw-masthead-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: clamp(1.08rem, 3.3vw, 1.22rem);
+    line-height: 1.15;
+  }
+  #quarto-header .dw-masthead-edition { display: none; }
+  #quarto-header .quarto-navbar-tools { gap: 4px !important; margin: 0 !important; }
+  #quarto-header .quarto-navbar-tools :is(.quarto-color-scheme-toggle, .dw-theme-auto, .dw-search-launcher) {
+    box-sizing: border-box;
+    flex: 0 0 44px;
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    margin: 0;
+    padding: 0 !important;
+  }
+  #quarto-header .dw-theme-auto { font-size: .72rem; line-height: 1; }
+  #quarto-header .dw-search-launcher svg { width: 20px; height: 20px; }
+  #quarto-header .quarto-color-scheme-toggle .bi::before { width: 20px !important; height: 20px !important; }
+  #quarto-sidebar:has(.dw-nav-language) {
+    min-height: 0 !important;
+    height: calc(100dvh - var(--dw-header-height)) !important;
+    max-height: calc(100dvh - var(--dw-header-height)) !important;
+    max-width: calc(100vw - 32px);
+    padding: 0;
+  }
+  /* Quarto moves an unpinned sidebar to top: 0; reclaim the header space. */
+  #quarto-sidebar.sidebar-unpinned:has(.dw-nav-language) {
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+  }
+  #quarto-sidebar.show:has(.dw-nav-language) { display: flex; flex-direction: column; }
+  #quarto-sidebar:has(.dw-nav-language) .sidebar-menu-container {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: .75rem .85rem;
+  }
+  #quarto-sidebar .dw-nav-language {
+    flex: 0 0 auto;
+    margin-top: 0;
+    padding: .5rem .75rem calc(.5rem + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid var(--dw-border);
+    background: var(--dw-surface-soft);
+  }
+  #quarto-sidebar .dw-language-switch {
+    display: flex;
+    justify-content: flex-start;
+    gap: .65rem;
+    width: 100%;
+    height: auto;
+    min-height: 44px;
+    padding: .35rem .5rem;
+    font-size: .9rem;
+    font-weight: 600;
+  }
+  #quarto-sidebar .dw-language-switch > svg { display: block; flex: 0 0 20px; width: 20px; height: 20px; }
+  #quarto-sidebar .dw-language-switch:focus-visible { outline: 2px solid var(--dw-primary); outline-offset: 2px; }
+}
