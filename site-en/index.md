@@ -2,7 +2,7 @@
 title: "Demons Within Public 14.6 Player Guide"
 title-prefix: "Demons Within Public 14.6 Player Guide"
 description: "An unofficial Public 14.6 guide for the furry visual novel Demons Within, covering Essence Wheel choices, branch outcomes, endings, CG scenes, Memory Codex entries and Sprite Viewer unlocks."
-image: assets/social/demons-within-public-14.6-en.png
+image: assets/social/demons-within-en.png
 twitter-card:
   card-style: summary_large_image
 toc: false

@@ -33,8 +33,8 @@ CLOUDFLARE_ANALYTICS_TOKEN = "b77469ef6c8b4b17af4a9f17ffdd8a65"
 ZH_SITE_NAME = "Demons Within 玩家攻略"
 EN_SITE_NAME = "Demons Within Player Guide"
 SOCIAL_IMAGES = {
-    "zh-CN": "assets/social/demons-within-public-14.6-zh.png",
-    "en": "assets/social/demons-within-public-14.6-en.png",
+    "zh-CN": "assets/social/demons-within-zh.png",
+    "en": "assets/social/demons-within-en.png",
 }
 ZH_HOME_TITLE = "心魔在焉（Demons Within）Public 14.6 中文攻略"
 EN_HOME_TITLE = "Demons Within Public 14.6 Player Guide"
