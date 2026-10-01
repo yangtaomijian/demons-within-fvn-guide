@@ -21,4 +21,5 @@ for name in ('favicon.svg', 'favicon-32x32.png', 'apple-touch-icon.png'):
 shutil.copy2(root / 'assets/dw-search-core.js', target_assets / 'dw-search-core.js')
 print('Bilingual output: _site/ and _site/en/')
 PY
+python3 "$root/scripts/normalize-layout.py" "$root/_site"
 python3 "$root/scripts/finalize-publication.py"

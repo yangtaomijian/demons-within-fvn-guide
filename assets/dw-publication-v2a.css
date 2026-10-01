@@ -54,7 +54,7 @@ html[lang^='zh'] .dw-masthead-name {
 
 /* Side navigation reads as furniture around the article, with a strong rule at
    the active destination instead of a filled pill. */
-body :is(#quarto-sidebar, #quarto-margin-sidebar, .dw-panel-toolbar) { background: var(--dw-panel-surface) !important; }
+body :is(#quarto-sidebar, #dw-page-toc-panel, .dw-panel-toolbar) { background: var(--dw-panel-surface) !important; }
 .dw-panel-toolbar { border-bottom-color: var(--dw-border); }
 .dw-panel-toolbar > span { color: var(--dw-text-faint); font-size: .7rem; letter-spacing: .11em; }
 #quarto-sidebar .sidebar-item-container,
@@ -67,15 +67,15 @@ body :is(#quarto-sidebar, #quarto-margin-sidebar, .dw-panel-toolbar) { backgroun
   border-left-color: var(--dw-accent);
   font-weight: 720;
 }
-#quarto-margin-sidebar #TOC .nav-link { border-radius: 0; padding-left: .75rem; }
-#quarto-margin-sidebar #TOC .nav-link::before { display: none; }
-#quarto-margin-sidebar #TOC .nav-link.active {
+#dw-page-toc-panel #TOC .nav-link { border-radius: 0; padding-left: .75rem; }
+#dw-page-toc-panel #TOC .nav-link::before { display: none; }
+#dw-page-toc-panel #TOC .nav-link.active {
   color: var(--dw-heading) !important;
   background: transparent;
   border-left-color: var(--dw-accent);
   font-weight: 700;
 }
-#quarto-margin-sidebar #TOC ul ul .nav-link { color: var(--dw-text-faint); }
+#dw-page-toc-panel #TOC ul ul .nav-link { color: var(--dw-text-faint); }
 
 /* Editorial title, precise reference headings. All body and interface copy
    keeps the existing sans-serif stack and reading metrics. */
@@ -203,7 +203,7 @@ footer.footer .dw-publication-footer > p { margin: 0; }
 
 @media (min-width: 1100px) {
   body.dw-layout-ready #quarto-sidebar { border-right-color: var(--dw-border); }
-  body.dw-layout-ready #quarto-margin-sidebar { border-left: 0; border-right-color: var(--dw-border); }
+  body.dw-layout-ready #dw-page-toc-panel { border-left: 0; border-right-color: var(--dw-border); }
 }
 @media (max-width: 767.98px) {
   .dw-masthead-edition { display: none; }

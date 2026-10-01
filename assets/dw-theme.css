@@ -98,7 +98,7 @@ code, pre { color: var(--dw-code-text); background: var(--dw-code-bg); }
 #quarto-search .aa-DetachedSearchButton { color: var(--dw-text-soft); }
 #quarto-search .aa-DetachedSearchButton:hover { color: var(--dw-primary); }
 
-#quarto-margin-sidebar, #TOC { color: var(--dw-text-soft); }
+#dw-page-toc-panel, #TOC { color: var(--dw-text-soft); }
 .sidebar nav[role="doc-toc"] ul > li > a { color: var(--dw-text-soft); line-height: 1.5; white-space: normal; }
 .sidebar nav[role="doc-toc"] ul > li > a:hover { color: var(--dw-primary-hover); }
 .sidebar nav[role="doc-toc"] ul > li > a.active { color: var(--dw-primary-hover) !important; border-left-color: var(--dw-accent) !important; font-weight: 650; }
@@ -195,14 +195,14 @@ main.content details > summary:focus-visible { outline-offset: -4px; }
 .navbar .dropdown-menu .dropdown-item { margin: 0; padding: .52rem .75rem; border-radius: .25rem; }
 
 /* Dots stay neutral so wrapped text is distinct from a nested TOC level. */
-#quarto-margin-sidebar #TOC li + li { margin-top: .4rem; }
-#quarto-margin-sidebar #TOC .nav-link {
+#dw-page-toc-panel #TOC li + li { margin-top: .4rem; }
+#dw-page-toc-panel #TOC .nav-link {
   position: relative;
   padding: .38rem .4rem .38rem 1.15rem;
   border-radius: 6px;
   line-height: 1.4;
 }
-#quarto-margin-sidebar #TOC .nav-link::before {
+#dw-page-toc-panel #TOC .nav-link::before {
   content: "";
   position: absolute;
   left: .45rem;
@@ -213,11 +213,11 @@ main.content details > summary:focus-visible { outline-offset: -4px; }
   background: var(--dw-text-faint);
   opacity: .65;
 }
-#quarto-margin-sidebar #TOC .nav-link.active { background: color-mix(in srgb, var(--dw-accent) 10%, transparent); }
-#quarto-margin-sidebar #TOC ul ul { padding-left: .8rem; margin-top: .35rem; }
-#quarto-margin-sidebar #TOC ul ul .nav-link { font-size: .76rem; font-weight: 400; }
-#quarto-margin-sidebar #TOC ul ul .nav-link.active { font-weight: 650; }
-#quarto-margin-sidebar #TOC > ul { margin-bottom: 0; }
+#dw-page-toc-panel #TOC .nav-link.active { background: color-mix(in srgb, var(--dw-accent) 10%, transparent); }
+#dw-page-toc-panel #TOC ul ul { padding-left: .8rem; margin-top: .35rem; }
+#dw-page-toc-panel #TOC ul ul .nav-link { font-size: .76rem; font-weight: 400; }
+#dw-page-toc-panel #TOC ul ul .nav-link.active { font-weight: 650; }
+#dw-page-toc-panel #TOC > ul { margin-bottom: 0; }
 
 main.content table { border-collapse: separate; border-spacing: 0; border: 1px solid var(--dw-border); border-radius: .4rem; }
 main.content table thead th:first-child { border-top-left-radius: .4rem; }
@@ -273,9 +273,9 @@ main.content li::marker { color: var(--dw-accent); }
 .navbar .nav-link { font-weight: 540; border-radius: 10px; }
 .navbar .nav-link.active { font-weight: 650; text-decoration: none; }
 .navbar .dropdown-item.active { text-decoration: none; }
-#quarto-margin-sidebar #TOC .nav-link { border-left: 2px solid transparent; font-size: .8rem; }
-#quarto-margin-sidebar #TOC ul ul .nav-link { font-size: .76rem; }
-#quarto-margin-sidebar #TOC .nav-link.active { border-left-color: var(--dw-accent); }
+#dw-page-toc-panel #TOC .nav-link { border-left: 2px solid transparent; font-size: .8rem; }
+#dw-page-toc-panel #TOC ul ul .nav-link { font-size: .76rem; }
+#dw-page-toc-panel #TOC .nav-link.active { border-left-color: var(--dw-accent); }
 
 /* Entry cards keep their destinations while matching PW's quiet title treatment. */
 .dw-home .dw-entry { position: relative; border-radius: 10px; }

@@ -84,7 +84,7 @@
     applySiteSidebar();
     const panels = [];
     for (const side of ['right']) {
-      const panel = document.getElementById('quarto-margin-sidebar');
+      const panel = document.getElementById('dw-page-toc-panel');
       const hasContent = panel?.querySelector('#TOC');
       if (!hasContent) { body.classList.add('dw-no-' + side); continue; }
       const title = english ? 'On this page' : '本页目录';
@@ -119,7 +119,7 @@
       panels.push(apply);
     }
     let applyMobileToc;
-    const marginSidebar = document.getElementById('quarto-margin-sidebar');
+    const marginSidebar = document.getElementById('dw-page-toc-panel');
     const toc = marginSidebar?.querySelector('#TOC');
     const tocLinks = [...(toc?.querySelectorAll('a[data-scroll-target^="#"]') || [])];
     const secondaryNav = document.querySelector('.quarto-secondary-nav > .container-fluid');
