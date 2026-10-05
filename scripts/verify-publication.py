@@ -36,6 +36,11 @@ SOCIAL_IMAGES = {
     "zh-CN": "assets/social/demons-within-zh.png",
     "en": "assets/social/demons-within-en.png",
 }
+# Historical homepage OG image paths remain public compatibility aliases.
+SOCIAL_IMAGE_ALIASES = {
+    "assets/social/demons-within-public-14.6-zh.png": "assets/social/demons-within-zh.png",
+    "en/assets/social/demons-within-public-14.6-en.png": "en/assets/social/demons-within-en.png",
+}
 ZH_HOME_TITLE = "心魔在焉（Demons Within）Public 14.6 中文攻略"
 EN_HOME_TITLE = "Demons Within Public 14.6 Player Guide"
 ZH_HOME_DESCRIPTION = "《心魔在焉（Demons Within）》Public 14.6 FVN 中文攻略，涵盖本源之轮选择、分支与结局、CG、辞书和 Sprite Viewer 解锁条件。"
@@ -130,6 +135,17 @@ def expected_content_pages() -> dict[Path, tuple[str, str, str, str]]:
         expected[SITE / logical] = (logical, ZH_ROOT, "zh-CN", "zh_CN")
         expected[SITE / "en" / logical] = (logical, EN_ROOT, "en", "en_US")
     return expected
+
+
+def verify_social_image_aliases() -> None:
+    for alias, current in SOCIAL_IMAGE_ALIASES.items():
+        source_alias = ROOT / alias.replace("en/", "site-en/", 1) if alias.startswith("en/") else ROOT / alias
+        current_image = SITE / current
+        if not current_image.is_file():
+            raise AssertionError(f"{current_image}: current social image missing")
+        for path in (source_alias, SITE / alias):
+            if not path.is_file() or path.read_bytes() != current_image.read_bytes():
+                raise AssertionError(f"{path}: historical social image missing or differs from current card")
 
 
 def verify_metadata() -> dict[Path, Page]:
@@ -491,6 +507,7 @@ def verify_public_docs() -> None:
 
 def main() -> None:
     pages = verify_metadata()
+    verify_social_image_aliases()
     verify_sitemaps()
     verify_links_and_assets(pages)
     verify_search(pages)
@@ -499,6 +516,7 @@ def main() -> None:
     verify_discussion_cutover(pages)
     verify_web_analytics()
     verify_public_docs()
+    print("Historical social image URLs published with current card bytes: 2/2")
     print("Indexable HTML pages: 12/12 (6 Chinese + 6 English)")
     print("Canonical, description, language, OG, Twitter: 12/12")
     print("Reciprocal hreflang pairs: 6/6")
