@@ -7,6 +7,7 @@ project:
     - python3 scripts/build-safe-search.py
   render:
     - index.md
+    - discussions.md
     - guide/choices.qmd
     - guide/faq.md
     - reference/interventions.md
@@ -101,5 +102,6 @@ format:
       - ../assets/dw-discussion-remote.html
       - ../assets/dw-discussion-runtime.html
       - ../assets/dw-discussion-ui.html
+      - ../assets/dw-discussion-hub.html
       - ../assets/dw-feedback-ui.html
     smooth-scroll: false

@@ -10,6 +10,7 @@ ROOT_URL = "https://demons-within.carambi.com/"
 EN_URL = ROOT_URL + "en/"
 PAGES = (
     "index.html",
+    "discussions.html",
     "guide/choices.html",
     "guide/faq.html",
     "reference/interventions.html",
@@ -61,7 +62,7 @@ def main() -> None:
     if en_robots.exists():
         en_robots.unlink()
 
-    print("Publication metadata finalized: 12 paired pages, normalized sitemaps, origin-root robots.txt retained.")
+    print("Publication metadata finalized: 14 paired pages, normalized sitemaps, origin-root robots.txt retained.")
 
 
 if __name__ == "__main__":

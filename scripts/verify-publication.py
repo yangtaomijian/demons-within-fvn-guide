@@ -21,6 +21,7 @@ ZH_ROOT = ORIGIN + "/"
 EN_ROOT = ZH_ROOT + "en/"
 PAGES = {
     "index.html",
+    "discussions.html",
     "guide/choices.html",
     "guide/faq.html",
     "reference/interventions.html",
@@ -334,7 +335,7 @@ def verify_search(pages: dict[Path, Page]) -> None:
                 target_page = pages.setdefault(target, parse(target))
                 if unquote(parsed.fragment) not in target_page.ids:
                     raise AssertionError(f"{path}: missing search anchor {href}")
-        if found_pages != PAGES:
+        if found_pages != PAGES - {"discussions.html"}:
             raise AssertionError(f"{path}: search page set mismatch: {sorted(found_pages)}")
 
 
@@ -451,7 +452,7 @@ def verify_discussion_cutover(pages: dict[Path, Page]) -> None:
             raise AssertionError(f"{path}: expected one Discussion runtime/mount factory")
         if text.count("window.__dwDiscussionRemoteTransport = Object.freeze") != 1:
             raise AssertionError(f"{path}: expected one production-capable remote transport")
-        if not is_home and f"'{('/' + logical)}':" not in text:
+        if not is_home and logical not in {"discussions.html", "en/discussions.html"} and f"'{('/' + logical)}':" not in text:
             raise AssertionError(f"{path}: article path is not in Discussion map")
         footer_slots = re.findall(r'<button class="dw-feedback-slot"[^>]*>.*?</button>', text)
         if (len(footer_slots) != 1 or "disabled" not in footer_slots[0]
@@ -517,16 +518,16 @@ def main() -> None:
     verify_web_analytics()
     verify_public_docs()
     print("Historical social image URLs published with current card bytes: 2/2")
-    print("Indexable HTML pages: 12/12 (6 Chinese + 6 English)")
-    print("Canonical, description, language, OG, Twitter: 12/12")
-    print("Reciprocal hreflang pairs: 6/6")
-    print("Sitemap URLs: 6 Chinese + 6 English; home URLs normalized")
+    print("Indexable HTML pages: 14/14 (7 Chinese + 7 English)")
+    print("Canonical, description, language, OG, Twitter: 14/14")
+    print("Reciprocal hreflang pairs: 7/7")
+    print("Sitemap URLs: 7 Chinese + 7 English; home URLs normalized")
     print("Internal links, anchors, assets, favicons, and search targets: PASS")
     print(f"Search v2 core identity and adapter coverage: 3 cores + {len(expected_content_pages())} guide pages: PASS")
     print("Origin-root robots.txt points to the sitemap; no /en/robots.txt; noindex 404 present: PASS")
-    print("Carambi Discussion: ten mapped articles, two excluded homepages; Giscus absent; production API/sitekey and Feedback wiring: PASS")
+    print("Carambi Discussion: ten mapped articles, two excluded homepages and two read-only summary pages; Giscus absent; production API/sitekey and Feedback wiring: PASS")
     print("Staging API/sitekey absent from generated production output; no staging noindex header: PASS")
-    print("Cloudflare Web Analytics: 12/12 content pages; excluded from 404 and verification HTML")
+    print("Cloudflare Web Analytics: 14/14 content pages; excluded from 404 and verification HTML")
     print("Site descriptions and future GitHub Issues URL: PASS")
 
 

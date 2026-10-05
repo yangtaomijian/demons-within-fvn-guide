@@ -15,7 +15,7 @@ staging = (
     '<meta name="dw-discussion-api" content="https://discussion-staging.carambi.com">',
     '<meta name="dw-discussion-turnstile-sitekey" content="0x4AAAAAAFEW58ENHynCclX5">',
 )
-pages = ("index.html", "guide/choices.html", "guide/faq.html",
+pages = ("index.html", "discussions.html", "guide/choices.html", "guide/faq.html",
          "reference/interventions.html", "collectibles/cg.html", "collectibles/memorium.html")
 for prefix in (site, site / "en"):
     for page in pages:

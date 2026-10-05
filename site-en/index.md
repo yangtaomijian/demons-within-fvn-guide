@@ -57,3 +57,10 @@ Check how to unlock each entry or state, along with known limitations.
 This guide is not affiliated with Sleth and does not distribute the game. It does not reproduce unauthorized game assets, full Memory Codex text or third-party fan works.
 
 Public guide pages include a **Discussion** section where visitors can post comments and replies without an account. For errors, unclear guidance, broken links, or site problems you would rather send privately, use **Private feedback** in the page footer. If the on-site feedback tools are unavailable, or the issue concerns the repository itself, you can also use [GitHub Issues](https://github.com/yangtaomijian/demons-within-fvn-guide/issues).
+
+
+::: {.dw-discussions-entry}
+[View all discussions](discussions.md)
+
+Read public discussions from every guide page in English and Chinese.
+:::

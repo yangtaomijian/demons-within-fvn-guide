@@ -58,3 +58,10 @@ comments: false
 本站不隶属于 Sleth，也不提供游戏本体；不直接转载未经授权的游戏原素材、完整辞书正文或第三方同人作品。
 
 正文攻略页底部设有**公开讨论区**，无需账号即可发表评论和回复。如需私下反馈攻略错误、表述不清、链接或页面问题，可使用页面底部的**「私下反馈」**；如站内反馈无法正常使用，或问题涉及仓库本身，也可以通过 [GitHub Issues](https://github.com/yangtaomijian/demons-within-fvn-guide/issues) 联系。
+
+
+::: {.dw-discussions-entry}
+[查看全站讨论](discussions.md)
+
+查看中英文各攻略页面的公开讨论，点击后返回原页面阅读与回复。
+:::

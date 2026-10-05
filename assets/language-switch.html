@@ -6,7 +6,7 @@
   if (!link || !brand) return;
   const languageRoot = new URL('./', brand.href);
   const root = new URL(english ? '../' : './', languageRoot);
-  const pages = new Set(['', 'index.html', 'guide/faq.html', 'guide/choices.html', 'reference/interventions.html', 'collectibles/cg.html', 'collectibles/memorium.html']);
+  const pages = new Set(['', 'index.html', 'discussions.html', 'guide/faq.html', 'guide/choices.html', 'reference/interventions.html', 'collectibles/cg.html', 'collectibles/memorium.html']);
   function update() {
     const page = location.pathname.slice(languageRoot.pathname.length);
     if (!location.pathname.startsWith(languageRoot.pathname) || !pages.has(page)) return;
