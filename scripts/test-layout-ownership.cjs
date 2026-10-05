@@ -113,6 +113,21 @@ async function run(name, type, options) {
         await page.reload();
         await page.waitForTimeout(200);
         check(await state(page), `${name}/${locale}/${colorScheme}/reload`);
+        // Quarto's target spacer overlaps the preceding Memory disclosure.
+        // Its transparent area must allow a real pointer click through.
+        await page.locator('#TOC a[data-scroll-target="#sprite-viewer"]').click();
+        await page.waitForFunction(() => document.querySelector('#toc-sprite-viewer').classList.contains('active'));
+        const summary = page.locator('main details.dw-memory-browse > summary');
+        await summary.evaluate(e => e.scrollIntoView({ block: 'center', behavior: 'instant' }));
+        await page.waitForFunction(() => document.querySelector('#quarto-header').getBoundingClientRect().top === 0);
+        const beforeDisclosure = await page.evaluate(() => scrollY);
+        await summary.click();
+        await page.waitForFunction(() => document.querySelector('details.dw-memory-browse').open);
+        assert.equal(await page.evaluate(() => scrollY), beforeDisclosure, 'Target-adjacent disclosure must open without jumping');
+        assert.equal(new URL(page.url()).hash, '#sprite-viewer', 'Disclosure must keep the existing fragment');
+        const viewerTab = page.locator('#sprite-viewer .dw-viewer-tabs [role="tab"]').nth(1);
+        await viewerTab.click();
+        assert.equal(await viewerTab.getAttribute('aria-selected'), 'true', 'Target section controls must retain pointer interaction');
         // Language switching must still target the other locale, including
         // the original independently localized PW controls.
         const language = page.locator(`.${prefix}-language-switch`);
@@ -120,6 +135,22 @@ async function run(name, type, options) {
           const target = new URL(await language.getAttribute("href"), page.url());
           assert.equal(target.pathname.includes("/en/"), !locale);
         }
+        // A heading followed closely by a child exposes a dropped trailing
+        // scrollspy update after Quarto's hashchange header adjustment.
+        await page.setViewportSize({ width: 1100, height: 600 });
+        await page.goto(`${base}/${locale}reference/interventions.html`);
+        const chapters = page.locator('#TOC > ul > li');
+        const chapter = await chapters.evaluateAll(es => es.map((e, index) => ({ index, children: e.querySelectorAll('ul a').length })).sort((a, b) => b.children - a.children)[0]);
+        const chapterLink = chapters.nth(chapter.index).locator(':scope > a');
+        const chapterHash = await chapterLink.getAttribute('data-scroll-target');
+        await chapterLink.click();
+        await page.waitForFunction(hash => new Promise(resolve => {
+          const y = scrollY;
+          requestAnimationFrame(() => requestAnimationFrame(() => resolve(
+            y === scrollY && document.querySelector(`#TOC a[data-scroll-target="${hash}"]`).classList.contains('active')
+          )));
+        }), chapterHash);
+        assert.equal(decodeURIComponent(new URL(page.url()).hash), chapterHash);
         await page.close();
       }
     }
