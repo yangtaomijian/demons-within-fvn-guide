@@ -200,7 +200,13 @@
       if (!hasContent) { body.classList.add('dw-no-' + side); continue; }
       const title = english ? 'On this page' : '本页目录';
       const key = 'dw-guide-' + side + '-collapsed';
-      const media = matchMedia('(min-width: 768px) and (max-width: 1099.98px)');
+      const media = matchMedia('(min-width: 768px)');
+      const desktopKey = 'dw-desktop-toc-collapsed-v1';
+      let desktopCollapsed = false;
+      const readDesktop = () => {
+        try { desktopCollapsed = sessionStorage.getItem(desktopKey) === '1'; } catch {}
+        return desktopCollapsed;
+      };
       let collapsed = read(key);
       const toolbar = document.createElement('div');
       toolbar.className = 'dw-panel-toolbar';
@@ -208,7 +214,9 @@
       const button = (open) => {
         const b = document.createElement('button'); b.type = 'button';
         b.className = open ? 'dw-edge-toggle dw-edge-' + side : 'dw-panel-toggle';
-        b.textContent = open ? '←' : '→';
+        const arrow = document.createElement('span'); arrow.className = 'dw-toc-arrow'; arrow.textContent = open ? '←' : '→'; arrow.setAttribute('aria-hidden','true');
+        const text = document.createElement('span'); text.className = 'dw-desktop-toc-label'; text.textContent = english ? (open ? 'Expand TOC' : 'Collapse') : (open ? '展开目录' : '收起');
+        b.append(arrow, text);
         b.title = english ? (open ? 'Expand ' : 'Collapse ') + 'table of contents' : (open ? '展开' : '收起') + '本页目录';
         b.setAttribute('aria-label', b.title); b.setAttribute('aria-controls', panel.id);
         return b;
@@ -216,16 +224,33 @@
       const closeButton = button(false), openButton = button(true);
       toolbar.append(closeButton);panel.prepend(toolbar);body.append(openButton);
       const apply = () => {
-        const hidden = media.matches && collapsed;
+        const active = document.activeElement;
+        const hadTocFocus = panel.contains(active) || active === openButton || active?.matches('.dw-mobile-toc-toggle');
+        const hidden = media.matches && (desktop.matches ? readDesktop() : collapsed);
         body.classList.toggle('dw-' + side + '-collapsed', hidden);
         panel.inert = hidden;
         if (hidden) panel.setAttribute('aria-hidden','true'); else panel.removeAttribute('aria-hidden');
         closeButton.setAttribute('aria-expanded', String(!hidden));
         openButton.setAttribute('aria-expanded', String(!hidden));
         openButton.hidden = !hidden;
+        if (hadTocFocus) requestAnimationFrame(() => {
+          if (active.getClientRects().length && !active.closest('[inert]') && getComputedStyle(active).visibility !== 'hidden') return;
+          const target = mobile.matches ? document.querySelector('.dw-mobile-toc-toggle') : hidden ? openButton : closeButton;
+          target?.focus({preventScroll:true});
+        });
       };
-      closeButton.addEventListener('click', () => { collapsed = true;write(key,collapsed);apply();openButton.focus(); });
-      openButton.addEventListener('click', () => { collapsed = false;write(key,collapsed);apply();closeButton.focus(); });
+      const setCollapsed = value => {
+        if (desktop.matches) {
+          desktopCollapsed = value;
+          try { sessionStorage.setItem(desktopKey, value ? '1' : '0'); } catch {}
+        } else { collapsed = value; write(key,collapsed); }
+        apply();
+        (value ? openButton : closeButton).focus({preventScroll:true});
+      };
+      closeButton.addEventListener('click', () => setCollapsed(true));
+      openButton.addEventListener('click', () => setCollapsed(false));
+      desktop.addEventListener('change', apply);
+      window.addEventListener('pageshow', () => { apply(); applyMobileToc?.(); });
       media.addEventListener('change', apply);
       panels.push(apply);
     }

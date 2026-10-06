@@ -202,7 +202,7 @@ body :is(#quarto-sidebar,#dw-page-toc-panel,.dw-panel-toolbar,#quarto-header .qu
 /* Keep the desktop TOC title and links clear of the viewport edge. */
 @media (min-width:1100px) {
   body.dw-layout-ready #dw-page-toc-panel { padding:14px .75rem 1.5rem 20px; }
-  body.dw-layout-ready #dw-page-toc-panel .dw-panel-toolbar { padding:.93rem 0 .48rem; border-bottom:0; }
+  body.dw-layout-ready #dw-page-toc-panel .dw-panel-toolbar { padding:.93rem 0 .48rem; border-bottom:1px solid color-mix(in srgb, var(--dw-border) 65%, transparent); }
   body.dw-layout-ready #dw-page-toc-panel #TOC { padding:.55rem 0 1rem; }
 }
 
@@ -222,3 +222,16 @@ footer.footer p { margin:0 0 .65rem; color:var(--dw-text-soft); font-size:.85rem
 footer.footer :is(.nav-footer-left,.nav-footer-right) { display:none; }
 footer.footer .nav-footer { flex-direction:column; gap:0; }
 footer.footer .nav-footer-center { flex:0 0 auto; height:auto; }
+
+/* A wide-desktop session choice; narrow panels retain their existing policy. */
+.dw-desktop-toc-label { display:none; }
+@media (min-width:1100px) {
+  body #dw-page-toc-panel .dw-panel-toggle { display:inline-flex; width:auto; min-height:2rem; padding:.3rem .5rem; font-size:.75rem; }
+  body #dw-page-toc-panel .dw-toc-arrow, body .dw-edge-right .dw-toc-arrow { display:none; }
+  .dw-desktop-toc-label { display:inline; }
+  body.dw-right-collapsed #dw-page-toc-panel { display:none !important; }
+  body.dw-right-collapsed #quarto-content { padding-left:7rem; }
+  body.dw-right-collapsed .dw-edge-right { display:inline-flex; width:auto; min-height:2rem; max-width:6.2rem; left:.6rem; right:auto; top:calc(var(--dw-header-height) + 1rem); padding:.3rem .5rem; font-size:.75rem; }
+  body .dw-panel-toggle:focus-visible, body .dw-edge-right:focus-visible { outline:2px solid var(--dw-accent); outline-offset:2px; }
+  body .dw-edge-right[hidden] { display:none !important; }
+}
