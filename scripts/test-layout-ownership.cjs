@@ -143,6 +143,11 @@ async function run(name, type, options) {
         const chapter = await chapters.evaluateAll(es => es.map((e, index) => ({ index, children: e.querySelectorAll('ul a').length })).sort((a, b) => b.children - a.children)[0]);
         const chapterLink = chapters.nth(chapter.index).locator(':scope > a');
         const chapterHash = await chapterLink.getAttribute('data-scroll-target');
+        // Browse the long default-expanded rail before activating an offscreen
+        // title, just as a real pointer user does; this pauses edge following.
+        await page.mouse.move(100, 350);
+        await page.waitForTimeout(40);
+        await chapterLink.evaluate(link => link.scrollIntoView({ block: 'center', behavior: 'instant' }));
         await chapterLink.click();
         await page.waitForFunction(hash => new Promise(resolve => {
           const y = scrollY;

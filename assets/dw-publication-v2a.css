@@ -326,3 +326,65 @@ footer.footer .dw-publication-footer > p { margin: 0; }
   #quarto-sidebar .dw-language-switch > svg { display: block; flex: 0 0 20px; width: 20px; height: 20px; }
   #quarto-sidebar .dw-language-switch:focus-visible { outline: 2px solid var(--dw-primary); outline-offset: 2px; }
 }
+
+/* Desktop branch choices stay independent of native active-heading folding. */
+@media (min-width: 1100px) {
+  body #dw-page-toc-panel #TOC .guide-toc-branch[data-desktop-expanded="true"] { display: block !important; }
+  body #dw-page-toc-panel #TOC .guide-toc-branch[data-desktop-expanded="false"] { display: none !important; }
+  body #dw-page-toc-panel #TOC .guide-toc-branch-item { position: relative; }
+  body #dw-page-toc-panel #TOC .guide-toc-branch-item > a.nav-link { padding-right: 1.7rem !important; }
+  body #dw-page-toc-panel #TOC .guide-toc-branch-toggle {
+    position: absolute; top: .1rem; right: 0; z-index: 2;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 1.5rem; height: 1.7rem; padding: 0;
+    border: 0; border-radius: 3px; background: transparent;
+    color: var(--dw-text-faint); font: inherit; line-height: 1; cursor: pointer;
+  }
+  body #dw-page-toc-panel #TOC .guide-toc-branch-toggle:hover { color: var(--dw-heading); background: color-mix(in srgb, var(--dw-accent) 8%, transparent); }
+  body #dw-page-toc-panel #TOC .guide-toc-branch-toggle:focus-visible { outline: 2px solid var(--dw-accent); outline-offset: 1px; }
+  body #dw-page-toc-panel #TOC a.guide-toc-parent { color: var(--dw-heading) !important; font-weight: 650; border-left-color: var(--dw-accent) !important; }
+}
+body #dw-page-toc-panel #TOC .guide-toc-branch-toggle[hidden] { display: none !important; }
+
+/* PW desktop TOC baseline: adapt the existing DW DOM, not the site branding. */
+@media (min-width: 1100px) {
+  body #dw-page-toc-panel {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", "Source Han Sans SC", sans-serif;
+    padding: 0 .8rem 1.5rem 20px !important;
+    scroll-padding-top: calc(14px + 2rem + .5rem + 5px);
+  }
+  body.dw-layout-ready #dw-page-toc-panel .dw-panel-toolbar {
+    min-height: 0; padding: 14px 0 .5rem; gap: .5rem;
+    border-bottom-color: color-mix(in srgb, var(--dw-border) 65%, transparent);
+  }
+  body.dw-layout-ready #dw-page-toc-panel .dw-panel-toolbar > span {
+    font-size: .71rem; font-weight: 600; letter-spacing: .1em;
+  }
+  html[lang^='zh'] body.dw-layout-ready #dw-page-toc-panel .dw-panel-toolbar > span { letter-spacing: .045em; }
+  body #dw-page-toc-panel .dw-panel-toggle,
+  body .dw-edge-right { border-radius: 6px; background: var(--dw-bg); box-shadow: none; }
+  body #dw-page-toc-panel #TOC > ul { padding-left: 0; }
+  body #dw-page-toc-panel #TOC :is(ul, li) { color: var(--dw-text); }
+  body #dw-page-toc-panel #TOC li + li { margin-top: .2rem; }
+  body #dw-page-toc-panel #TOC .nav-link {
+    font-size: .8rem; font-weight: 400; line-height: 1.4;
+    padding: .3rem .4rem .3rem .7rem; margin: 0 !important;
+    white-space: normal; word-break: normal; overflow-wrap: anywhere;
+    color: var(--dw-text-soft) !important;
+    border-left: 2px solid transparent !important; border-radius: 0;
+    background: transparent !important; box-shadow: none;
+  }
+  body #dw-page-toc-panel #TOC .nav-link::before { content: none; display: none; }
+  body #dw-page-toc-panel #TOC .nav-link:hover { color: var(--dw-primary-hover) !important; }
+  body #dw-page-toc-panel #TOC ul ul { padding-left: .65rem; margin-top: .2rem; }
+  body #dw-page-toc-panel #TOC ul ul .nav-link { font-size: .76rem; color: var(--dw-text-faint) !important; }
+  body #dw-page-toc-panel #TOC ul ul .nav-link:hover { color: var(--dw-primary-hover) !important; }
+  body #dw-page-toc-panel #TOC .nav-link.active {
+    color: var(--dw-heading) !important; font-weight: 700;
+    border-left-color: var(--dw-accent) !important;
+  }
+  body #dw-page-toc-panel #TOC a.guide-toc-parent {
+    color: var(--dw-heading) !important; font-weight: 650;
+    border-left-color: var(--dw-accent) !important;
+  }
+}

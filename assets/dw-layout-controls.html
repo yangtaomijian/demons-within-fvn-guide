@@ -1,5 +1,152 @@
 <script>
 (() => {
+  // Desktop expansion is a separate user choice from Quarto's scrollspy.
+  function installDesktopTocTree(toc, desktop) {
+    if (!toc) return;
+    const english = document.documentElement.lang.startsWith("en");
+    const links = [...toc.querySelectorAll("a.nav-link")];
+    const originalCurrent = new Map(links.map(link => [link, link.getAttribute("aria-current")]));
+    const branches = [...toc.querySelectorAll(":scope > ul > li")].flatMap((item, index) => {
+      const link = item.querySelector(":scope > a.nav-link");
+      const list = item.querySelector(":scope > ul");
+      if (!link || !list) return [];
+      const originalHidden = list.getAttribute("aria-hidden");
+      list.id ||= "guide-desktop-toc-branch-" + index;
+      list.classList.add("guide-toc-branch");
+      list.dataset.desktopExpanded = "true";
+      item.classList.add("guide-toc-branch-item");
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "guide-toc-branch-toggle";
+      button.hidden = !desktop.matches;
+      button.setAttribute("aria-controls", list.id);
+      const arrow = document.createElement("span");
+      arrow.setAttribute("aria-hidden", "true");
+      button.append(arrow);
+      function sync() {
+        const expanded = list.dataset.desktopExpanded === "true";
+        button.setAttribute("aria-expanded", String(expanded));
+        button.setAttribute("aria-label", (english ? (expanded ? "Collapse subsections: " : "Expand subsections: ") : (expanded ? "收起子目录：" : "展开子目录：")) + link.textContent.trim());
+        arrow.textContent = expanded ? "▾" : "▸";
+        if (desktop.matches) list.setAttribute("aria-hidden", String(!expanded));
+        else if (originalHidden === null) list.removeAttribute("aria-hidden");
+        else list.setAttribute("aria-hidden", originalHidden);
+      }
+      button.addEventListener("click", () => {
+        if (!desktop.matches) return;
+        const expanded = list.dataset.desktopExpanded !== "true";
+        if (!expanded && list.contains(document.activeElement)) button.focus({ preventScroll: true });
+        list.dataset.desktopExpanded = String(expanded);
+        sync();
+      });
+      // Keep the link immediately before its list for native narrow-screen walking.
+      link.before(button);
+      sync();
+      return [{ button, link, sync }];
+    });
+    function highlightParents() {
+      const active = toc.querySelector("a.nav-link.active");
+      const parents = new Set();
+      if (desktop.matches) {
+        let item = active?.closest("li")?.parentElement?.closest("li");
+        while (item && toc.contains(item)) {
+          const link = item.querySelector(":scope > a.nav-link");
+          if (link) parents.add(link);
+          item = item.parentElement?.closest("li");
+        }
+      }
+      for (const link of links) {
+        const parent = parents.has(link);
+        if (link.classList.contains("guide-toc-parent") !== parent) link.classList.toggle("guide-toc-parent", parent);
+        const current = desktop.matches && link === active ? "location" : originalCurrent.get(link);
+        if (current === null) link.removeAttribute("aria-current");
+        else if (link.getAttribute("aria-current") !== current) link.setAttribute("aria-current", current);
+      }
+    }
+    function responsive() {
+      for (const branch of branches) {
+        if (!desktop.matches && document.activeElement === branch.button) branch.link.focus({ preventScroll: true });
+        branch.button.hidden = !desktop.matches;
+        branch.sync();
+      }
+      highlightParents();
+    }
+    new MutationObserver(highlightParents).observe(toc, { subtree: true, attributes: true, attributeFilter: ["class"] });
+    desktop.addEventListener("change", responsive);
+    responsive();
+  }
+
+  // Match the desktop TOC contract: edge reveal, with manual browsing priority.
+  function installDesktopTocFollow(panel, toc, desktop, toolbarSelector) {
+    if (!panel || !toc) return { queue() {}, resume() {} };
+    installDesktopTocTree(toc, desktop);
+    const article = document.getElementById("quarto-document-content");
+    let paused = false, frame = 0;
+    function followActive() {
+      frame = 0;
+      if (!desktop.matches || paused || panel.inert || !panel.getClientRects().length ||
+          getComputedStyle(panel).visibility === "hidden") return;
+      let active = toc.querySelector("a.nav-link.active");
+      // A manually hidden current subsection follows its visible parent.
+      while (active && !active.getClientRects().length) {
+        active = active.closest("li")?.parentElement?.closest("li")?.querySelector(":scope > a.nav-link");
+      }
+      if (!active || !toc.contains(active)) return;
+      const rail = panel.getBoundingClientRect(), link = active.getBoundingClientRect();
+      // These sites keep a sticky toolbar inside the scrolling rail.
+      const toolbar = panel.querySelector(toolbarSelector)?.getBoundingClientRect();
+      const top = Math.max(rail.top, toolbar?.bottom || rail.top) + 24;
+      const bottom = rail.bottom - 24;
+      const delta = link.height > bottom - top || link.top < top ? link.top - top
+        : link.bottom > bottom ? link.bottom - bottom : 0;
+      const next = Math.max(0, Math.min(panel.scrollHeight - panel.clientHeight, panel.scrollTop + delta));
+      if (Math.abs(next - panel.scrollTop) > 1) panel.scrollTo({ top: next, behavior: "instant" });
+    }
+    function queue() {
+      if (!frame) frame = requestAnimationFrame(followActive);
+    }
+    function pause() { if (desktop.matches) paused = true; }
+    function resume() { paused = false; queue(); }
+    panel.addEventListener("pointerenter", event => {
+      // Reopening puts the rail under the stationary pointer. That entrance
+      // comes from the now-hidden opener, not a new attempt to browse the TOC.
+      const opener = event.relatedTarget?.closest?.("button[aria-controls]");
+      if (opener?.hidden && opener.getAttribute("aria-controls") === panel.id) return;
+      pause();
+    });
+    panel.addEventListener("pointerdown", pause, { passive: true });
+    panel.addEventListener("wheel", pause, { passive: true });
+    panel.addEventListener("focusin", event => {
+      if (event.target.closest("#TOC")) pause();
+    });
+    const readingInput = event => {
+      if (!desktop.matches || panel.contains(event.target)) return;
+      if (article?.contains(event.target) || event.target.closest?.("footer.footer")) resume();
+    };
+    document.addEventListener("wheel", readingInput, { capture: true, passive: true });
+    document.addEventListener("touchstart", readingInput, { capture: true, passive: true });
+    document.addEventListener("pointerdown", event => {
+      if (desktop.matches && event.target === document.documentElement) resume();
+    }, { passive: true });
+    document.addEventListener("keydown", event => {
+      if (!desktop.matches || !["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "].includes(event.key) ||
+          panel.contains(event.target) || event.target.closest?.('input,textarea,select,[contenteditable="true"]')) return;
+      if (article?.contains(event.target) || event.target === document.body || event.target === document.documentElement) resume();
+    });
+    toc.addEventListener("click", event => {
+      if (desktop.matches && event.target.closest("a.nav-link")) resume();
+    });
+    new MutationObserver(queue).observe(toc, { subtree: true, attributes: true, attributeFilter: ["class"] });
+    const resize = new ResizeObserver(queue);
+    resize.observe(panel); resize.observe(toc);
+    panel.addEventListener("scroll", queue, { passive: true });
+    window.addEventListener("resize", queue);
+    window.addEventListener("quarto-sectionChanged", queue);
+    queue();
+    return { queue, resume };
+  }
+
+
 
   // Move the existing link, preserving its URL/fragment listeners and identity.
   const placeLanguageSwitch = (link, tools) => {
@@ -223,6 +370,7 @@
       };
       const closeButton = button(false), openButton = button(true);
       toolbar.append(closeButton);panel.prepend(toolbar);body.append(openButton);
+      const desktopTocFollow = installDesktopTocFollow(panel, hasContent, desktop, ".dw-panel-toolbar");
       const apply = () => {
         const active = document.activeElement;
         const hadTocFocus = panel.contains(active) || active === openButton || active?.matches('.dw-mobile-toc-toggle');
@@ -233,6 +381,7 @@
         closeButton.setAttribute('aria-expanded', String(!hidden));
         openButton.setAttribute('aria-expanded', String(!hidden));
         openButton.hidden = !hidden;
+        desktopTocFollow.queue();
         if (hadTocFocus) requestAnimationFrame(() => {
           if (active.getClientRects().length && !active.closest('[inert]') && getComputedStyle(active).visibility !== 'hidden') return;
           const target = mobile.matches ? document.querySelector('.dw-mobile-toc-toggle') : hidden ? openButton : closeButton;
@@ -246,6 +395,7 @@
         } else { collapsed = value; write(key,collapsed); }
         apply();
         (value ? openButton : closeButton).focus({preventScroll:true});
+        if (!value && desktop.matches) desktopTocFollow.resume();
       };
       closeButton.addEventListener('click', () => setCollapsed(true));
       openButton.addEventListener('click', () => setCollapsed(false));
