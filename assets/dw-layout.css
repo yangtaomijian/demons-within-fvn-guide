@@ -206,7 +206,7 @@ body :is(#quarto-sidebar,#dw-page-toc-panel,.dw-panel-toolbar,#quarto-header .qu
   body.dw-layout-ready #dw-page-toc-panel #TOC { padding:.55rem 0 1rem; }
 }
 
-/* The footer stays within the desktop reading region. */
+/* The desktop footer centers across the full page, independently of the page TOC. */
 footer.footer { background:var(--dw-panel-surface); border-top:1px solid var(--dw-border); }
 footer.footer .nav-footer { display:flex; align-items:center; justify-content:center; min-height:0; padding:1rem; border:0; background:transparent; }
 footer.footer .nav-footer > div:empty { display:none; }
@@ -215,7 +215,7 @@ footer.footer p { margin:0 0 .65rem; color:var(--dw-text-soft); font-size:.85rem
 .dw-back-to-top { display:inline-flex; align-items:center; justify-content:center; min-height:2.4rem; padding:.45rem .85rem; border:1px solid var(--dw-border); border-radius:6px; color:var(--dw-text-soft); background:var(--dw-surface); font-size:.8rem; text-decoration:none; }
 .dw-back-to-top:hover { color:var(--dw-primary); background:var(--dw-surface-soft); border-color:var(--dw-border-strong); }
 @media (min-width:1100px) {
-  body.dw-layout-ready footer.footer { padding-left:calc(var(--dw-left-width) + 1rem); padding-right:calc(var(--dw-right-width) + 1rem); }
+  body.dw-layout-ready footer.footer { padding-inline:1rem; }
   footer.footer .nav-footer { max-width:960px; margin-inline:auto; }
 }
 /* Quarto fills unused footer slots with nonbreaking spaces. */
