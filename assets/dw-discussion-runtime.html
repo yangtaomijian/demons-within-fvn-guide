@@ -18,6 +18,20 @@
     '/en/collectibles/memorium.html': 'collectibles.memorium',
   });
 
+  // Accept only existing guide body anchors, never discussion or publication UI IDs.
+  function getContentHash(hash = location.hash) {
+    if (!/^#[^?#]{1,255}$/.test(hash) || Array.from(hash).length > 256) return '';
+    let id;
+    try { id = decodeURIComponent(hash.slice(1)); } catch { return ''; }
+    if (/^(?:[a-z]+-comment-|[0-9a-f]{8}-[0-9a-f-]{27}$)/i.test(id)) return '';
+    const target = document.getElementById(id);
+    const main = document.querySelector('main#quarto-document-content');
+    if (!target || target === main || !main?.contains(target) ||
+        target.closest('header, nav, footer, aside, form, dialog, [role="dialog"], .quarto-title-block, .quarto-title, .toc, .footnotes, [role="doc-endnotes"], [role="navigation"], #dw-public-discussion, #dw-discussion-hub') ||
+        !target.matches('section[id], h2[id], h3[id], h4[id], h5[id], h6[id], p[id], li[id], blockquote[id], table[id], figure[id]')) return '';
+    return hash;
+  }
+
   function getContext() {
     const locale = document.documentElement.lang;
     if (locale !== 'en' && locale !== 'zh-CN') return null;
@@ -40,7 +54,7 @@
   const transport = localHost ? window.__dwDiscussionFixtureTransport ?? null :
     (stagingHost || productionHost) ? window.__dwDiscussionRemoteTransport ?? null : null;
   window.__dwDiscussionRuntime = Object.freeze({
-    getContext, transport, mode: transport ?
+    getContext, getContentHash, transport, mode: transport ?
       (localHost ? 'fixture' : stagingHost ? 'staging-read' : 'production') : 'inactive',
   });
   const context = getContext();

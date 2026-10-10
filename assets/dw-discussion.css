@@ -180,7 +180,7 @@
 
 /* Local scope extension: independent persistent tree section and hub entry. */
 #dw-public-discussion .dw-discussion-heading { display:flex; align-items:baseline; justify-content:space-between; gap:.6rem 1rem; flex-wrap:wrap; }
-#dw-public-discussion .dw-discussion-heading h2 { flex:1; }
+#dw-public-discussion .dw-discussion-heading h2 { flex:1 1 10rem; min-width:0; }
 #dw-public-discussion .dw-discussion-hub-link { font-size:.86rem; }
 #dw-public-discussion .dw-discussion-persistent { margin:1.3rem 0 1.7rem; }
 #dw-public-discussion .dw-discussion-persistent[hidden] { display:none!important; }
@@ -229,3 +229,5 @@
 
 /* The publication title block already displays this page description. */
 #dw-discussion-hub #description { display:none; }
+
+#dw-public-discussion .dw-discussion-refresh { flex:none; }
