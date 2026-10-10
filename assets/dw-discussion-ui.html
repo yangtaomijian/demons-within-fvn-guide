@@ -71,6 +71,21 @@
     replyingHidden: '正在回复已隐藏的评论', replyingDeleted: '正在回复已删除的评论', replyingMissing: '回复对象当前不可用',
     targetUnavailable: '此回复对象当前已不可回复。草稿仍然保留，请选择可回复的评论。',
   };
+  const reactionWords = context.locale === 'en' ? {
+    label: 'Emoji reactions', add: 'Add a reaction', selected: 'selected',
+    types: { like: 'Helpful', heart: 'Love or thanks', smile: 'Happy or friendly', celebrate: 'Celebrate', thinking: 'Thinking or unsure' },
+    storage: 'Emoji reactions need browser storage. You can still read and comment.',
+    failed: 'Couldn’t load reactions. Try again.', writeFailed: 'Couldn’t update this reaction. Try again.',
+    unknown: 'The reaction response was uncertain. No action was resent.',
+    rate: 'Too many reactions. Wait a moment before trying again.', unavailable: 'Reactions are unavailable for this comment.',
+  } : {
+    label: '表情反应', add: '添加表情反应', selected: '已选择',
+    types: { like: '赞同或有帮助', heart: '喜欢或感谢', smile: '开心或友善', celebrate: '庆祝', thinking: '疑惑或保留意见' },
+    storage: '表情反应需要浏览器存储；仍可查看和发表评论。',
+    failed: '表情反应加载失败，请重试。', writeFailed: '表情反应未能更新，请重试。',
+    unknown: '表情反应结果不确定，没有重复发送操作。',
+    rate: '表情操作过于频繁，请稍后再试。', unavailable: '此评论当前不能使用表情反应。',
+  };
   const dateFormat = new Intl.DateTimeFormat(context.locale, {
     year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
   });
@@ -132,6 +147,221 @@
   const state = { persistent: null, activeVersion: context.guideVersion, pages: new Map(), index: [], pending: false,
     locationQueued: false, navigationRunning: false, locationReplayScheduled: false,
     drafts: new Map(), uncertainTargets: new Set(), activeReplyRootId: null, activeReplyScope: null, replyUnavailable: false, activeTarget: null, opener: null, posting: false, threadLocked: false };
+  // Reactions have their own state and requests; they never rebuild the composer.
+  const reactionTypes = ['like', 'heart', 'smile', 'celebrate', 'thinking'];
+  const reactionEmoji = { like: '👍', heart: '❤️', smile: '😄', celebrate: '🎉', thinking: '🤔' };
+  const reactionReadEnabled = typeof runtime.transport.readReactions === 'function';
+  const reactionWriteEnabled = typeof runtime.transport.setReaction === 'function' &&
+    (remoteMode || runtime.transport.fixtureCanWrite === true);
+  const reactionState = { rows: new Map(), panels: new Map(), generation: 0, open: null, visitorId: null };
+  const visitorStorageKey = 'carambi:demons-within:reaction-visitor:v1';
+  function reactionVisitor() {
+    try {
+      let value = localStorage.getItem(visitorStorageKey);
+      if (!/^[0-9a-f]{64}$/.test(value ?? '')) {
+        const bytes = new Uint8Array(32); crypto.getRandomValues(bytes);
+        value = [...bytes].map(byte => byte.toString(16).padStart(2, '0')).join('');
+        localStorage.setItem(visitorStorageKey, value);
+        if (localStorage.getItem(visitorStorageKey) !== value) return null;
+      }
+      return value;
+    } catch { return null; }
+  }
+  function reactionRow(id) {
+    if (!reactionState.rows.has(id)) reactionState.rows.set(id, { data: null, ready: false, pending: false,
+      revision: 0, readToken: 0, message: '', retry: false });
+    return reactionState.rows.get(id);
+  }
+  function validReaction(value, id) {
+    return value?.commentId === id && typeof value.canReact === 'boolean' && value.counts &&
+      Object.keys(value.counts).length === reactionTypes.length &&
+      reactionTypes.every(type => Number.isSafeInteger(value.counts[type]) && value.counts[type] >= 0) &&
+      Array.isArray(value.selected) && new Set(value.selected).size === value.selected.length &&
+      value.selected.every(type => reactionTypes.includes(type) && value.counts[type] > 0);
+  }
+  function closeReactionMenu(restore = false) {
+    const id = reactionState.open;
+    if (!id) return;
+    reactionState.open = null;
+    paintReactions(id);
+    if (restore) reactionState.panels.get(id)?.querySelector('.dw-discussion-reaction-add')?.focus({ preventScroll: true });
+  }
+  // Position the chooser over the page without consuming toolbar or tree height.
+  function positionReactionMenu() {
+    const panel = reactionState.panels.get(reactionState.open);
+    const menu = panel?.querySelector('.dw-discussion-reaction-menu');
+    const anchor = panel?.querySelector('.dw-discussion-reaction-add');
+    if (!menu?.isConnected || menu.hidden || !anchor) return;
+    const rect = anchor.getBoundingClientRect();
+    const viewport = window.visualViewport;
+    const left = viewport?.offsetLeft ?? 0, top = viewport?.offsetTop ?? 0;
+    const width = viewport?.width ?? innerWidth, height = viewport?.height ?? innerHeight;
+    menu.style.maxWidth = Math.max(44, width - 16) + 'px';
+    menu.style.maxHeight = '';
+    let box = menu.getBoundingClientRect();
+    menu.style.left = Math.max(left + 8, Math.min(rect.left, left + width - box.width - 8)) + 'px';
+    const toolbar = panel.closest('.dw-discussion-actions')?.getBoundingClientRect() ?? rect;
+    const below = Math.max(rect.bottom, toolbar.bottom) + 6;
+    const above = Math.min(rect.top, toolbar.top) - 6;
+    const belowSpace = top + height - 8 - below, aboveSpace = above - top - 8;
+    const available = Math.max(belowSpace, aboveSpace);
+    if (available >= 58 && available < box.height) {
+      menu.style.maxHeight = available + 'px'; box = menu.getBoundingClientRect();
+    }
+    const desiredTop = belowSpace >= box.height || belowSpace >= aboveSpace ? below : above - box.height;
+    menu.style.top = Math.max(top + 8, Math.min(desiredTop, top + height - box.height - 8)) + 'px';
+  }
+  window.addEventListener('scroll', positionReactionMenu, { passive: true });
+  window.addEventListener('resize', positionReactionMenu);
+  window.visualViewport?.addEventListener('scroll', positionReactionMenu, { passive: true });
+  window.visualViewport?.addEventListener('resize', positionReactionMenu);
+  function paintReactions(id) {
+    const panel = reactionState.panels.get(id);
+    if (!panel?.isConnected) return;
+    const row = reactionRow(id), data = row.data;
+    const position = { x: scrollX, y: scrollY };
+    const focused = panel.contains(document.activeElement) ? document.activeElement : null;
+    const focusKey = focused?.dataset.reactionType ?? (focused?.classList.contains('dw-discussion-reaction-add') ? 'add' : null);
+    const focusedMenu = Boolean(focused?.closest('.dw-discussion-reaction-menu'));
+    panel.replaceChildren(); panel.setAttribute('aria-busy', String(row.pending));
+    const enabled = Boolean(row.ready && !row.pending && data?.canReact === true && reactionWriteEnabled && reactionState.visitorId);
+    const buttonFor = (type, menu = false) => {
+      const selected = data?.selected.includes(type) === true;
+      const button = make('button', 'dw-discussion-action dw-discussion-reaction',
+        `${reactionEmoji[type]}${menu ? '' : ' ' + data.counts[type]}${selected ? ' ✓' : ''}`);
+      button.type = 'button'; button.dataset.reactionType = type;
+      button.setAttribute('aria-pressed', String(selected)); button.disabled = !enabled;
+      button.setAttribute('aria-label', `${reactionWords.types[type]}${menu ? '' : ': ' + data.counts[type]}${selected ? ', ' + reactionWords.selected : ''}`);
+      button.addEventListener('click', () => writeReaction(id, type));
+      return button;
+    };
+    const counts = make('div', 'dw-discussion-reaction-counts');
+    for (const type of reactionTypes) if (data?.counts[type] > 0) counts.append(buttonFor(type));
+    const add = make('button', 'dw-discussion-action dw-discussion-reaction-add', '＋'); add.type = 'button';
+    add.disabled = !enabled; add.setAttribute('aria-label', reactionWords.add);
+    add.setAttribute('aria-expanded', String(reactionState.open === id));
+    const menuId = `dw-reaction-menu-${id}`; add.setAttribute('aria-controls', menuId);
+    if (data?.canReact === false) add.title = reactionWords.unavailable;
+    add.addEventListener('click', () => {
+      const opening = reactionState.open !== id;
+      closeReactionMenu(); reactionState.open = opening ? id : null; paintReactions(id);
+      if (opening) reactionState.panels.get(id)?.querySelector('.dw-discussion-reaction-menu button')?.focus({ preventScroll: true });
+      else reactionState.panels.get(id)?.querySelector('.dw-discussion-reaction-add')?.focus({ preventScroll: true });
+    });
+    counts.append(add); panel.append(counts);
+    const menu = make('div', 'dw-discussion-reaction-menu'); menu.id = menuId;
+    menu.setAttribute('role', 'group'); menu.setAttribute('aria-label', reactionWords.add); menu.hidden = reactionState.open !== id;
+    for (const type of reactionTypes) menu.append(buttonFor(type, true));
+    menu.addEventListener('keydown', event => {
+      if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closeReactionMenu(true); return; }
+      const buttons = [...menu.querySelectorAll('button')]; const at = buttons.indexOf(document.activeElement);
+      const next = event.key === 'Home' ? 0 : event.key === 'End' ? buttons.length - 1 :
+        ['ArrowRight', 'ArrowDown'].includes(event.key) ? (at + 1) % buttons.length :
+        ['ArrowLeft', 'ArrowUp'].includes(event.key) ? (at + buttons.length - 1) % buttons.length : null;
+      if (next !== null) { event.preventDefault(); buttons[next].focus(); }
+    });
+    panel.append(menu);
+    const notice = make('div', 'dw-discussion-reaction-status', row.message || (reactionWriteEnabled && !reactionState.visitorId ? reactionWords.storage : ''));
+    notice.setAttribute('role', 'status'); notice.setAttribute('aria-live', 'polite');
+    if (row.retry && !row.pending) {
+      const retry = make('button', 'dw-discussion-action dw-discussion-reaction-retry', words.retry); retry.type = 'button';
+      retry.addEventListener('click', () => readReactions([id], reactionState.generation)); notice.append(retry);
+    }
+    panel.append(notice);
+    if (focusKey) {
+      const replacement = focusKey === 'add' ? add :
+        (focusedMenu ? menu : counts).querySelector(`[data-reaction-type="${focusKey}"]`) || add;
+      if (!replacement.disabled && !replacement.closest('[hidden]')) replacement.focus({ preventScroll: true });
+      else if (focused) { panel.tabIndex = -1; panel.focus({ preventScroll: true }); }
+    }
+    window.scrollTo(position.x, position.y);
+    positionReactionMenu();
+  }
+  async function readReactions(ids, generation, preserveMessage = false) {
+    if (!reactionReadEnabled || !ids.length) return;
+    const visitorId = reactionVisitor(); reactionState.visitorId = visitorId;
+    for (let offset = 0; offset < ids.length; offset += 50) {
+      if (generation !== reactionState.generation) return;
+      const batch = ids.slice(offset, offset + 50);
+      const tokens = new Map(batch.map(id => { const row = reactionRow(id); return [id, { token: ++row.readToken, revision: row.revision }]; }));
+      try {
+        const response = await runtime.transport.readReactions({ pageKey: context.pageKey, locale: context.locale,
+          commentIds: batch, ...(visitorId ? { visitorId } : {}) });
+        if (response?.ok !== true || !Array.isArray(response.reactions) || response.reactions.length !== batch.length ||
+            new Set(response.reactions.map(row => row?.commentId)).size !== batch.length ||
+            !response.reactions.every(row => batch.includes(row?.commentId) && validReaction(row, row.commentId)))
+          throw Error('INVALID_REACTION_RESPONSE');
+        if (generation !== reactionState.generation) return;
+        for (const data of response.reactions) {
+          const row = reactionRow(data.commentId), token = tokens.get(data.commentId);
+          if (row.pending || row.readToken !== token.token || row.revision !== token.revision) continue;
+          row.data = data; row.visitorId = visitorId; row.ready = true; row.retry = false;
+          if (!preserveMessage) row.message = '';
+          paintReactions(data.commentId);
+        }
+      } catch (error) {
+        if (generation !== reactionState.generation) return;
+        for (const id of batch) {
+          const row = reactionRow(id), token = tokens.get(id);
+          if (row.pending || row.readToken !== token.token || row.revision !== token.revision) continue;
+          row.ready = false; row.retry = true;
+          const failure = error?.httpStatus === 429 || error?.code === 'RATE_LIMITED' ? reactionWords.rate : reactionWords.failed;
+          row.message = preserveMessage && row.message ? row.message + ' ' + failure : failure;
+          paintReactions(id);
+        }
+      }
+    }
+  }
+  async function writeReaction(id, type) {
+    const row = reactionRow(id);
+    if (!row.ready || row.pending || row.data?.canReact !== true || !reactionWriteEnabled) return;
+    const visitorId = reactionVisitor(); reactionState.visitorId = visitorId;
+    if (!visitorId) { paintReactions(id); return; }
+    // An identity replaced by another tab must be reread before deriving add/remove.
+    if (visitorId !== row.visitorId) { row.ready = false; await readReactions([id], reactionState.generation); return; }
+    const intent = row.data.selected.includes(type) ? 'remove' : 'add';
+    const generation = reactionState.generation;
+    const restoreFocus = reactionState.panels.get(id)?.contains(document.activeElement);
+    row.pending = true; row.revision++; row.message = ''; row.retry = false;
+    closeReactionMenu(true); paintReactions(id);
+    try {
+      const response = await runtime.transport.setReaction({ pageKey: context.pageKey, locale: context.locale, commentId: id, type, visitorId, intent });
+      if (response?.ok !== true || !validReaction(response.reaction, id)) {
+        const error = Error('INVALID_REACTION_RESPONSE'); error.outcomeUnknown = true; throw error;
+      }
+      row.pending = false;
+      if (generation === reactionState.generation) { row.data = response.reaction; row.ready = true; }
+      else { row.ready = false; await readReactions([id], reactionState.generation); }
+    } catch (error) {
+      row.pending = false; row.ready = false;
+      row.message = error?.httpStatus === 429 || error?.code === 'RATE_LIMITED' ? reactionWords.rate :
+        error?.outcomeUnknown === false ? reactionWords.writeFailed : reactionWords.unknown;
+      // A read is safe even when the write response was lost. Never resend the write.
+      await readReactions([id], reactionState.generation, true);
+      row.retry = !row.ready;
+    } finally {
+      row.pending = false; paintReactions(id);
+      const panel = reactionState.panels.get(id);
+      if (restoreFocus && document.activeElement === panel) {
+        const add = panel?.querySelector('.dw-discussion-reaction-add');
+        if (add && !add.disabled) add.focus({ preventScroll: true });
+      }
+    }
+  }
+  function prepareReactions() {
+    if (!reactionReadEnabled) return;
+    const generation = ++reactionState.generation;
+    if (!reactionState.panels.has(reactionState.open)) reactionState.open = null;
+    const ids = [...reactionState.panels.keys()]; reactionState.visitorId = reactionVisitor();
+    for (const id of ids) { reactionRow(id).ready = false; paintReactions(id); }
+    queueMicrotask(() => { if (generation === reactionState.generation) readReactions(ids, generation); });
+  }
+  section.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && reactionState.open) { event.preventDefault(); closeReactionMenu(true); }
+  });
+  document.addEventListener('click', event => {
+    if (reactionState.open && !event.composedPath().some(node => node.classList?.contains('dw-discussion-reactions'))) closeReactionMenu();
+  });
   const requestFor = (guideVersion, cursor = null, section = 'current') => ({
     site: context.site, locale: context.locale, pageKey: context.pageKey, guideVersion, cursor, section,
   });
@@ -266,6 +496,14 @@
         comment.status === 'hidden' ? words.hidden : words.deleted));
       article.append(dateTime(comment.createdAt));
     }
+    if (reactionReadEnabled && published && root.status === 'published') {
+      const panel = make('div', 'dw-discussion-reactions'); panel.dataset.commentId = comment.id;
+      panel.setAttribute('role', 'group'); panel.setAttribute('aria-label', reactionWords.label);
+      reactionState.panels.set(comment.id, panel);
+      let toolbar = article.querySelector(':scope > .dw-discussion-actions');
+      if (!toolbar) { toolbar = make('div', 'dw-discussion-actions'); article.append(toolbar); }
+      toolbar.prepend(panel);
+    }
     if (isRoot && Array.isArray(comment.replies) && comment.replies.length) {
       const replies = make('div', 'dw-discussion-replies');
       replies.setAttribute('aria-label', words.replies);
@@ -300,6 +538,7 @@
     lockedNotice.hidden = page.status !== 'locked';
     rootAction.hidden = !writeEnabled || state.threadLocked || state.activeVersion !== context.guideVersion;
     rootAction.disabled = state.pending || state.posting;
+    reactionState.panels.clear();
     persistentComments.replaceChildren();
     const persistentPage = state.persistent;
     persistent.hidden = !persistentPage || (!projectRoots(persistentPage.comments).length && !persistentPage.nextCursor);
@@ -316,6 +555,7 @@
     if (state.activeTarget === 'root' && (state.threadLocked || state.activeVersion !== context.guideVersion))
       closeComposer(false);
     else placeComposer();
+    prepareReactions();
   }
 
   const form = make('form', 'dw-discussion-composer');
@@ -569,6 +809,7 @@
     busy(true); refresh.textContent = words.refreshing; message('loading');
     try { await refreshDiscussion(); message(); }
     catch {
+      prepareReactions();
       status.replaceChildren(make('span', '', words.refreshError));
       const retry = make('button', 'dw-discussion-action', words.retry);
       retry.type = 'button'; retry.addEventListener('click', manualRefresh); status.append(retry);

@@ -13,6 +13,51 @@
   if (origin !== `https://${expectedApiHost}` || !/^0x[A-Za-z0-9]+$/.test(turnstileSitekey)) return;
   const config = Object.freeze({ origin, turnstileSitekey });
   const endpoint = config.origin + '/v1/discussion';
+  const reactionTypes = ['like', 'heart', 'smile', 'celebrate', 'thinking'];
+  const uuid = value => typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
+  function validReaction(value, id) {
+    return value?.commentId === id && typeof value.canReact === 'boolean' &&
+      value.counts && Object.keys(value.counts).length === reactionTypes.length &&
+      reactionTypes.every(type => Number.isSafeInteger(value.counts[type]) && value.counts[type] >= 0) &&
+      Array.isArray(value.selected) && new Set(value.selected).size === value.selected.length &&
+      value.selected.every(type => reactionTypes.includes(type) && value.counts[type] > 0);
+  }
+  async function reactionRequest(path, payload, writing = false) {
+    const controller = new AbortController();
+    let response, timer, data;
+    try {
+      await Promise.race([
+        (async () => {
+          response = await fetch(endpoint + path, {
+            method: 'POST', mode: 'cors', credentials: 'omit', referrerPolicy: 'no-referrer',
+            headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload), signal: controller.signal,
+          });
+          try { data = await response.json(); } catch { /* Invalid responses never confirm a write. */ }
+        })(),
+        new Promise((_, reject) => { timer = setTimeout(() => {
+          controller.abort(); reject(Error('REACTION_REQUEST_TIMEOUT'));
+        }, 15000); }),
+      ]);
+    } catch {
+      const error = Error('REACTION_NETWORK_FAILED');
+      error.outcomeUnknown = writing && (!response || ![400, 401, 403, 404, 405, 409, 413, 415, 422, 423, 429].includes(response.status));
+      throw error;
+    } finally { clearTimeout(timer); }
+    if (response.status !== 200 || data?.ok !== true) {
+      const error = Error('REACTION_REQUEST_FAILED');
+      error.httpStatus = response.status;
+      error.code = typeof data?.code === 'string' ? data.code : null;
+      error.outcomeUnknown = writing && ![400, 401, 403, 404, 405, 409, 413, 415, 422, 423, 429].includes(response.status);
+      throw error;
+    }
+    return data;
+  }
+  function reactionContext(input) {
+    if (typeof input.pageKey !== 'string' || !input.pageKey || !['zh-CN', 'en'].includes(input.locale))
+      throw Error('INVALID_REACTION_REQUEST');
+    if (input.visitorId !== undefined && !/^[0-9a-f]{64}$/.test(input.visitorId)) throw Error('INVALID_REACTION_REQUEST');
+    return { pageKey: input.pageKey, locale: input.locale };
+  }
   window.__dwDiscussionRemoteTransport = Object.freeze({
     turnstileSitekey: config.turnstileSitekey,
     async readDiscussion(request) {
@@ -33,6 +78,33 @@
       const response = await fetch(url, { method: 'GET', mode: 'cors', credentials: 'omit', referrerPolicy: 'no-referrer' });
       if (!response.ok) throw Error('DISCUSSION_READ_FAILED');
       return response.json();
+    },
+    async readReactions(input) {
+      const payload = reactionContext(input);
+      if (!Array.isArray(input.commentIds) || !input.commentIds.length || input.commentIds.length > 50 ||
+          !input.commentIds.every(uuid) || new Set(input.commentIds).size !== input.commentIds.length)
+        throw Error('INVALID_REACTION_REQUEST');
+      payload.commentIds = [...input.commentIds];
+      if (input.visitorId !== undefined) payload.visitorId = input.visitorId;
+      const data = await reactionRequest('/reactions/read', payload);
+      if (!Array.isArray(data.reactions) || data.reactions.length !== payload.commentIds.length ||
+          new Set(data.reactions.map(row => row?.commentId)).size !== data.reactions.length ||
+          !data.reactions.every(row => payload.commentIds.includes(row?.commentId) && validReaction(row, row.commentId)))
+        throw Error('INVALID_REACTION_RESPONSE');
+      return { ok: true, reactions: data.reactions.map(row => ({ commentId: row.commentId,
+        counts: { ...row.counts }, selected: [...row.selected], canReact: row.canReact })) };
+    },
+    async setReaction(input) {
+      const payload = reactionContext(input);
+      if (!uuid(input.commentId) || !reactionTypes.includes(input.type) || !['add', 'remove'].includes(input.intent) ||
+          !/^[0-9a-f]{64}$/.test(input.visitorId)) throw Error('INVALID_REACTION_REQUEST');
+      Object.assign(payload, { commentId: input.commentId, type: input.type, visitorId: input.visitorId, intent: input.intent });
+      const data = await reactionRequest('/reactions', payload, true);
+      if (!validReaction(data.reaction, input.commentId)) {
+        const error = Error('INVALID_REACTION_RESPONSE'); error.outcomeUnknown = true; throw error;
+      }
+      const row = data.reaction;
+      return { ok: true, reaction: { commentId: row.commentId, counts: { ...row.counts }, selected: [...row.selected], canReact: row.canReact } };
     },
     async postComment(input) {
       const payload = {

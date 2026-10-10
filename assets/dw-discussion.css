@@ -43,7 +43,7 @@
 #dw-public-discussion .dw-discussion-action[hidden] { display: none !important; }
 #dw-public-discussion .dw-discussion-comment {
   min-width: 0;
-  padding: 1.1rem 0 1.2rem;
+  padding: .75rem 0 .85rem;
   border-top: 1px solid var(--dw-border);
 }
 #dw-public-discussion .dw-discussion-meta {
@@ -52,7 +52,7 @@
   flex-wrap: wrap;
   gap: .25rem .7rem;
   min-width: 0;
-  margin-bottom: .45rem;
+  margin-bottom: .3rem;
 }
 #dw-public-discussion .dw-discussion-author,
 #dw-public-discussion .dw-discussion-time { overflow-wrap: anywhere; }
@@ -64,7 +64,7 @@
   white-space: nowrap;
 }
 #dw-public-discussion .dw-discussion-body {
-  margin: 0 0 .55rem;
+  margin: 0 0 .35rem;
   line-height: 1.7;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
@@ -73,10 +73,10 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  column-gap: .75rem;
-  row-gap: .35rem;
+  column-gap: .35rem;
+  row-gap: .25rem;
   min-width: 0;
-  margin: .1rem 0 .5rem;
+  margin: 0 0 .25rem;
 }
 #dw-public-discussion .dw-discussion-actions :is(.dw-discussion-fragment, .dw-discussion-reply-action, .dw-discussion-report-action) {
   margin: 0;
@@ -84,11 +84,11 @@
 #dw-public-discussion .dw-discussion-fragment { display: inline-flex; margin-top: .1rem; font-size: .84rem; }
 #dw-public-discussion .dw-discussion-replies {
   min-width: 0;
-  margin: 1rem 0 0 .3rem;
+  margin: .65rem 0 0 .3rem;
   padding-left: 1rem;
   border-left: 2px solid var(--dw-border);
 }
-#dw-public-discussion .dw-discussion-reply { min-width: 0; padding: .2rem 0 .85rem; }
+#dw-public-discussion .dw-discussion-reply { min-width: 0; padding: .15rem 0 .65rem; }
 #dw-public-discussion .dw-discussion-reply:last-child { padding-bottom: 0; }
 #dw-public-discussion .dw-discussion-tombstone,
 #dw-public-discussion .dw-discussion-empty { color: var(--dw-text-soft); }
@@ -236,3 +236,21 @@
 #dw-public-discussion .dw-discussion-reply-to { display:block; margin:0 0 .4rem; font-size:.82rem; overflow-wrap:anywhere; }
 #dw-public-discussion .dw-discussion-reply-target { margin:0 0 .35rem; font-weight:650; overflow-wrap:anywhere; }
 #dw-public-discussion .dw-discussion-reply-target[hidden] { display:none!important; }
+
+/* One wrapping toolbar; reaction state remains in its own focusable group. */
+#dw-public-discussion .dw-discussion-reactions { display:flex; align-items:center; flex-wrap:wrap; flex:0 1 auto; min-width:0; max-width:100%; margin:0; }
+#dw-public-discussion .dw-discussion-reaction-counts,
+#dw-public-discussion .dw-discussion-reaction-menu { display:flex; flex-wrap:wrap; align-items:center; gap:.25rem; min-width:0; }
+#dw-public-discussion .dw-discussion-reaction-menu { position:fixed; z-index:1100; overflow-y:auto; align-content:start; margin:0; padding:.35rem; width:max-content; max-width:calc(100vw - 16px); box-sizing:border-box; border:1px solid var(--dw-border-strong); border-radius:8px; background:var(--dw-surface); box-shadow:0 3px 12px #0002; }
+#dw-public-discussion .dw-discussion-reaction-menu[hidden] { display:none!important; }
+#dw-public-discussion .dw-discussion-actions .dw-discussion-action { min-width:2.25rem; min-height:2.25rem; padding:.25rem .55rem; line-height:1.3; }
+#dw-public-discussion :is(.dw-discussion-reaction,.dw-discussion-reaction-add) { border-radius:1.15rem; }
+#dw-public-discussion .dw-discussion-reaction[aria-pressed='true'] { border-color:var(--dw-primary); background:var(--dw-primary-soft); font-weight:650; }
+#dw-public-discussion .dw-discussion-reaction-status { flex-basis:100%; font-size:.82rem; color:var(--dw-text-soft); overflow-wrap:anywhere; }
+#dw-public-discussion .dw-discussion-reaction-status:empty { display:none; }
+#dw-public-discussion .dw-discussion-reaction-status:not(:empty) { margin-top:.25rem; }
+#dw-public-discussion .dw-discussion-reaction-retry { margin:.25rem .4rem; }
+#dw-public-discussion .dw-discussion-reactions:focus-visible { outline:2px solid var(--dw-primary); outline-offset:2px; }
+@media(max-width:767.98px), (pointer:coarse), (hover:none) {
+  #dw-public-discussion .dw-discussion-actions .dw-discussion-action { min-width:44px; min-height:44px; padding:.35rem .6rem; }
+}
