@@ -231,3 +231,8 @@
 #dw-discussion-hub #description { display:none; }
 
 #dw-public-discussion .dw-discussion-refresh { flex:none; }
+
+/* Exact reply relationships stay flat and use UUID links without quoted content. */
+#dw-public-discussion .dw-discussion-reply-to { display:block; margin:0 0 .4rem; font-size:.82rem; overflow-wrap:anywhere; }
+#dw-public-discussion .dw-discussion-reply-target { margin:0 0 .35rem; font-weight:650; overflow-wrap:anywhere; }
+#dw-public-discussion .dw-discussion-reply-target[hidden] { display:none!important; }

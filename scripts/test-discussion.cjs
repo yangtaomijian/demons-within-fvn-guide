@@ -22,7 +22,7 @@ async function open(browser, locale, width, scenario) {
   if (scenario) await page.addInitScript(({ prefix, scenario, current, historical }) => {
     const id = n => `00000000-0000-4000-8000-${String(n).padStart(12, '0')}`;
     const comment = (n, status = 'published', parent = null, version = current, maintainer = false) => ({
-      id: id(n), status, parentCommentId: parent === null ? null : id(parent),
+      id: id(n), status, canReply: status === 'published', replyToCommentId: null, replyTo: null, parentCommentId: parent === null ? null : id(parent),
       authorKind: maintainer ? 'maintainer' : 'guest', displayName: status === 'published' ? maintainer ? 'Carambi' : n === 1 ? 'Z3r0' : 'Reader' : null,
       body: status === 'published' ? n === 1 ? 'Original player comment' : maintainer ? 'Exact replacement — thanks!' : 'Normal published content' : null,
       guideVersion: version, pageHash: null, pinnedAt: null, createdAt: '2026-10-05T09:01:11.045Z',

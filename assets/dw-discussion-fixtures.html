@@ -14,6 +14,7 @@
     const published = (options.status ?? 'published') === 'published';
     return {
       id: id(number), parentCommentId: options.parentCommentId ?? null,
+      replyToCommentId: null, replyTo: null, canReply: published,
       authorKind: options.authorKind ?? 'guest', status: options.status ?? 'published',
       displayName: published ? options.displayName ?? null : null,
       body: published ? options.body ?? '' : null,
@@ -99,6 +100,10 @@
       ];
     } else throw Error('FIXTURE_PAGE_UNKNOWN');
 
+    for (const root of roots) {
+      root.canReply = root.status === 'published' && status === 'open';
+      for (const reply of root.replies) reply.canReply = root.canReply && reply.status === 'published';
+    }
     return {
       ok: true, requestId: id(900), receivedAt: stamp(55),
       thread: { id: threadId, status },
