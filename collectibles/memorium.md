@@ -136,10 +136,9 @@ search: false
 - 要比较 Bear Day 与 Tiger Day，需读取选择 Edwin 或 Ludwig 休假日前的存档；进入方式与存档建议见[休假日分流](../guide/choices.qmd#day-off)。
 - **崇高之捐赠** 还受 Sam 那一轮操作影响：先到达对应提问，再选择不干预并点击词条，缺一不可。
 
-::: {.callout-note title="已知限制" #memorium-limit}
+::: {.callout-note title="版本说明" #memorium-limit}
 Public 14.6 已修复红眼狼与红眼狐狸的辞书记录问题，并加入旧记录兼容支持。
 
-尚未实测：辞书与 Viewer 新解锁记录的跨重启保留、14.0 旧记录升级后的列表刷新与再次启动显示，以及 Viewer 入口操作。
 :::
 
 :::: {.dw-lookup-tabs .dw-condition-tabs}
@@ -167,8 +166,8 @@ Public 14.6 已修复红眼狼与红眼狐狸的辞书记录问题，并加入�
 | [Helen]{#mem-helen} | 进入 Edwin 的 Tiger Day，在酒馆后段见到她时点击名字。 |
 | [Jayden]{#mem-jayden} | 进入 Tiger Day，第一次在酒馆见到他时点击名字。 |
 | [Boris]{#mem-boris} | Tiger Day 初见时可以点击；若当时漏掉，后来的共同主线还会在疲兵酒馆再次出现可点击名字。 |
-| [红眼狼]{#mem-red-eyes-wolf} | 从黑狼伏击继续到懒惰主线，在后续说明两名红眼怪的文字中点击对应名字。14.6 修复与旧记录升级说明见[已知限制](#memorium-limit)。 |
-| [红眼狐狸]{#mem-red-eyes-fox} | 与红眼狼同一段出现，需单独点击对应名字。14.6 修复与旧记录升级说明见[已知限制](#memorium-limit)。 |
+| [红眼狼]{#mem-red-eyes-wolf} | 从黑狼伏击继续到懒惰主线，在后续说明两名红眼怪的文字中点击对应名字。14.6 修复与旧记录升级说明见[版本说明](#memorium-limit)。 |
+| [红眼狐狸]{#mem-red-eyes-fox} | 与红眼狼同一段出现，需单独点击对应名字。14.6 修复与旧记录升级说明见[版本说明](#memorium-limit)。 |
 | [Russel]{#mem-russel} | 懒惰转折后的共同主线中，Resnick 与兄长重逢时点击名字。 |
 | [Brigham]{#mem-brigham} | 市场事件后的 Fated Encounter 中由剧情自动解锁，不需要点击名字。 |
 
@@ -241,7 +240,7 @@ Public 14.6 已修复红眼狼与红眼狐狸的辞书记录问题，并加入�
 
 Viewer 的入口在辞书的角色条目中，需要先解锁相应条目，再打开角色介绍并点击眼睛图标。
 
-到达下表对应剧情后，Viewer 状态会自动解锁，无需点击正文高亮词。尚未实测的项目见[已知限制](#memorium-limit)。
+到达下表对应剧情后，Viewer 状态会自动解锁，无需点击正文高亮词。
 
 <div id="sprite-common"></div>
 <div id="sprite-route"></div>
@@ -348,7 +347,7 @@ Viewer 的入口在辞书的角色条目中，需要先解锁相应条目，再�
 | Viewer 目标 | 取得位置与操作 |
 |---|---|
 | [Boris：Tiger Day 状态]{#sprite-boris-tiger-day} | 先进入 Tiger Day；酒馆后方的较早窗口选择色欲，把访客确定为 Boris。私人房间后段还要选择色欲开门，并在 Boris 自己的窗口再次选择色欲，之后才解锁。 |
-| [Boris：便服状态]{#sprite-boris-casual} | 这组衣着单独列出，但 Public 14.6 目前没有已知的正常主线取得方法。不要把它当作可以通过 Boris / Jayden 访客分支补到的目标；它在 Viewer 中的实际显示情况仍不确定。 |
+| [Boris：便服状态]{#sprite-boris-casual} | Public 14.6 暂无明确的正常主线取得方法。请勿将这组衣着视为 Boris / Jayden 访客分支的必得奖励。 |
 
 
 :::

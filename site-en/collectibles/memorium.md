@@ -136,10 +136,9 @@ Rows 2–4 are empty.
 - To compare Bear Day and Tiger Day, reload a save from before choosing Edwin's or Ludwig's day off. See [the day-off branches](../guide/choices.qmd#day-off) for the choices and save advice.
 - **Exalted Donations** also depends on Sam's turn: reach his question, don't intervene, then click the term. All three steps are required.
 
-::: {.callout-note title="Known limitations" #memorium-limit}
+::: {.callout-note title="Version note" #memorium-limit}
 Public 14.6 fixes the Red-eyes Wolf and Red-eyes Fox Codex record issues and adds compatibility for older records.
 
-Not yet tested in play: whether newly unlocked Codex and Viewer records survive a restart, how the list refreshes and displays after upgrading 14.0 records and restarting, and the steps for opening the Viewer.
 :::
 
 :::: {.dw-lookup-tabs .dw-condition-tabs}
@@ -167,8 +166,8 @@ Not yet tested in play: whether newly unlocked Codex and Viewer records survive 
 | [Helen]{#mem-helen} | On Edwin's Tiger Day, click Helen's name when she appears later in the tavern scene. |
 | [Jayden]{#mem-jayden} | On Tiger Day, click Jayden's name when you first meet him in the tavern. |
 | [Boris]{#mem-boris} | Click Boris's name when you first meet him on Tiger Day. If you miss it, his name is clickable again at The Weary Soldier later in the shared main story. |
-| [Red-eyes Wolf]{#mem-red-eyes-wolf} | Continue from the black wolf ambush into the Sloth story, then click his name in the later passage describing the two Red-eyes. See [known limitations](#memorium-limit) for the 14.6 fix and older records. |
-| [Red-eyes Fox]{#mem-red-eyes-fox} | Appears in the same passage as Red-eyes Wolf; click this name separately. See [known limitations](#memorium-limit) for the 14.6 fix and older records. |
+| [Red-eyes Wolf]{#mem-red-eyes-wolf} | Continue from the black wolf ambush into the Sloth story, then click his name in the later passage describing the two Red-eyes. See the [version note](#memorium-limit) for the 14.6 fix and older records. |
+| [Red-eyes Fox]{#mem-red-eyes-fox} | Appears in the same passage as Red-eyes Wolf; click this name separately. See the [version note](#memorium-limit) for the 14.6 fix and older records. |
 | [Russel]{#mem-russel} | Click Russel's name when Resnick reunites with his brother in the shared story after the Sloth awakening. |
 | [Brigham]{#mem-brigham} | Unlocks automatically during Fated Encounter after the market incident; no name click needed. |
 
@@ -241,7 +240,7 @@ This page lists **23 groups of Sprite Viewer variations**. Twenty-two can be unl
 
 To open the Viewer, unlock the character's Memory Codex entry, open their profile and click the eye icon.
 
-Viewer states unlock automatically at the story points below; you do not need to click highlighted words. See [known limitations](#memorium-limit) for what remains untested.
+Viewer states unlock automatically at the story points below; you do not need to click highlighted words.
 
 <div id="sprite-common"></div>
 <div id="sprite-route"></div>
@@ -348,7 +347,7 @@ Viewer states unlock automatically at the story points below; you do not need to
 | Viewer group | Where and how to unlock |
 |---|---|
 | [Boris: Tiger Day states]{#sprite-boris-tiger-day} | Enter Tiger Day and choose Lust at the earlier opportunity behind the tavern to select Boris as the visitor. Later in the private room, choose Lust to open the door, then Lust again at Boris's own Wheel to unlock this group. |
-| [Boris: casual clothes]{#sprite-boris-casual} | This clothing group is listed separately, but Public 14.6 has no known normal main-story route to it. It cannot be treated as another unlock from the Boris / Jayden visitor branch. How it actually appears in the Viewer remains uncertain. |
+| [Boris: casual clothes]{#sprite-boris-casual} | No known main-story unlock route is available for this outfit in Public 14.6. Don’t treat it as a guaranteed reward from the Boris / Jayden visitor branch. |
 
 
 :::
