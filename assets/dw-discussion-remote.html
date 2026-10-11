@@ -58,6 +58,52 @@
     if (input.visitorId !== undefined && !/^[0-9a-f]{64}$/.test(input.visitorId)) throw Error('INVALID_REACTION_REQUEST');
     return { pageKey: input.pageKey, locale: input.locale };
   }
+  const subscriptionStates = ['not_requested', 'verification_pending', 'verification_failed',
+    'verification_unknown', 'active', 'cancelled', 'expired'];
+  const subscriptionCodes = ['SUBSCRIPTION_UNAVAILABLE', 'SUBSCRIPTION_EMAIL_INVALID',
+    'SUBSCRIPTION_EMAIL_FIXED', 'SUBSCRIPTION_RATE_LIMITED'];
+  function subscriptionContext(input) {
+    if (!uuid(input.commentId) || typeof input.pageKey !== 'string' || !input.pageKey ||
+        !['zh-CN', 'en'].includes(input.locale) || !/^[0-9a-f]{64}$/.test(input.subscriptionProof ?? ''))
+      throw Error('INVALID_SUBSCRIPTION_REQUEST');
+    return { commentId: input.commentId, pageKey: input.pageKey, locale: input.locale,
+      subscriptionProof: input.subscriptionProof };
+  }
+  async function subscriptionRequest(path, payload) {
+    const controller = new AbortController();
+    let response, data, timer;
+    try {
+      await Promise.race([
+        (async () => {
+          response = await fetch(config.origin + '/v1/email-subscriptions' + path, {
+            method: 'POST', mode: 'cors', credentials: 'omit', referrerPolicy: 'no-referrer',
+            headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload), signal: controller.signal, redirect: 'error',
+          });
+          try { data = await response.json(); } catch { /* Unreadable bodies never confirm private state. */ }
+        })(),
+        new Promise((_, reject) => { timer = setTimeout(() => {
+          controller.abort(); reject(Error('SUBSCRIPTION_TIMEOUT'));
+        }, 15000); }),
+      ]);
+    } catch {
+      const error = Error('SUBSCRIPTION_RESPONSE_UNKNOWN'); error.outcomeUnknown = true; throw error;
+    } finally { clearTimeout(timer); }
+    if (response.status !== 200 || data?.ok !== true) {
+      const error = Error('SUBSCRIPTION_REQUEST_FAILED');
+      error.code = data?.ok === false && subscriptionCodes.includes(data?.code) ? data.code : null;
+      error.httpStatus = response.status;
+      error.outcomeUnknown = !error.code && ![400, 401, 403, 404, 405, 409, 413, 415, 422, 423, 429].includes(response.status);
+      throw error;
+    }
+    const value = data.subscription;
+    if (!subscriptionStates.includes(value?.state) || typeof value.mayRetry !== 'boolean' ||
+        (value.expiresAt !== undefined && (typeof value.expiresAt !== 'string' ||
+          !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value.expiresAt) || !Number.isFinite(Date.parse(value.expiresAt)) || new Date(value.expiresAt).toISOString() !== value.expiresAt))) {
+      const error = Error('INVALID_SUBSCRIPTION_RESPONSE'); error.outcomeUnknown = true; throw error;
+    }
+    return { ok: true, subscription: { state: value.state, mayRetry: value.mayRetry,
+      ...(value.expiresAt !== undefined ? { expiresAt: value.expiresAt } : {}) } };
+  }
   window.__dwDiscussionRemoteTransport = Object.freeze({
     turnstileSitekey: config.turnstileSitekey,
     async readDiscussion(request) {
@@ -106,6 +152,16 @@
       const row = data.reaction;
       return { ok: true, reaction: { commentId: row.commentId, counts: { ...row.counts }, selected: [...row.selected], canReact: row.canReact } };
     },
+    async enrollSubscription(input) {
+      const payload = subscriptionContext(input);
+      if (typeof input.email !== 'string' || !input.email.trim() || input.email.length > 254)
+        throw Error('INVALID_SUBSCRIPTION_REQUEST');
+      payload.email = input.email.trim();
+      return subscriptionRequest('', payload);
+    },
+    async readSubscriptionStatus(input) {
+      return subscriptionRequest('/status', subscriptionContext(input));
+    },
     async postComment(input) {
       const payload = {
         schemaVersion: 1, pageKey: input.pageKey, locale: input.locale,
@@ -114,10 +170,12 @@
         replyToCommentId: input.replyToCommentId ?? null,
         turnstileToken: input.turnstileToken, honeypot: input.honeypot,
       };
+      if (/^[0-9a-f]{64}$/.test(input.subscriptionProof ?? '')) payload.subscriptionProof = input.subscriptionProof;
       let response;
       try { response = await fetch(endpoint + '/comments', {
         method: 'POST', mode: 'cors', credentials: 'omit', referrerPolicy: 'no-referrer',
         headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload),
+        ...(payload.subscriptionProof ? { redirect: 'error' } : {}),
       }); } catch (cause) {
         const error = Error('DISCUSSION_POST_UNKNOWN', { cause });
         error.outcomeUnknown = true;

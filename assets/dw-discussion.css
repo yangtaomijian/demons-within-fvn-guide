@@ -254,3 +254,15 @@
 @media(max-width:767.98px), (pointer:coarse), (hover:none) {
   #dw-public-discussion .dw-discussion-actions .dw-discussion-action { min-width:44px; min-height:44px; padding:.35rem .6rem; }
 }
+
+/* Optional private notifications stay inside the composer and a stable result panel. */
+#dw-public-discussion :is(.dw-discussion-subscription-controls,.dw-discussion-subscription-email-group,.dw-discussion-subscription-panel,.dw-discussion-subscription-correction-group)[hidden] { display:none!important; }
+#dw-public-discussion .dw-discussion-subscription-choice { display:flex; align-items:flex-start; gap:.5rem; font-size:.9rem; font-weight:400; }
+#dw-public-discussion .dw-discussion-subscription-optin { flex:none; margin:.2rem 0 0; }
+#dw-public-discussion :is(.dw-discussion-subscription-email-group,.dw-discussion-subscription-correction-group) { display:grid; gap:.4rem; min-width:0; margin-top:.5rem; }
+#dw-public-discussion .dw-discussion-subscription-note { margin:.35rem 0 0; font-size:.82rem; color:var(--dw-text-soft); overflow-wrap:anywhere; }
+#dw-public-discussion .dw-discussion-subscription-panel { min-width:0; margin:.75rem 0; padding:.75rem; border:1px solid var(--dw-border); border-radius:8px; overflow-wrap:anywhere; }
+#dw-public-discussion .dw-discussion-subscription-panel h3 { margin:0 0 .4rem; font-size:1rem; }
+#dw-public-discussion .dw-discussion-subscription-status { margin:.35rem 0; }
+#dw-public-discussion .dw-discussion-subscription-actions { display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.5rem; }
+#dw-public-discussion .dw-discussion-subscription-panel:focus-visible { outline:2px solid var(--dw-primary); outline-offset:2px; }
