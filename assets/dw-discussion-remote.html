@@ -13,9 +13,17 @@
   if (origin !== `https://${expectedApiHost}` || !/^0x[A-Za-z0-9]+$/.test(turnstileSitekey)) return;
   const config = Object.freeze({ origin, turnstileSitekey });
   const endpoint = config.origin + '/v1/discussion';
-  const reactionTypes = ['like', 'heart', 'smile', 'celebrate', 'thinking'];
+  const legacyReactionTypes = ['like', 'heart', 'smile', 'celebrate', 'thinking'];
+  function reactionTypesFor(input) {
+    if (input.reactionVersion !== undefined && input.reactionVersion !== 1 && input.reactionVersion !== 2) throw Error('INVALID_REACTION_VERSION');
+    return input.reactionVersion === 2 ? [...legacyReactionTypes, 'sad'] : legacyReactionTypes;
+  }
+  function reactionProtocol(input) {
+    reactionTypesFor(input);
+    return input.reactionVersion === undefined ? {} : { reactionVersion: input.reactionVersion };
+  }
   const uuid = value => typeof value === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
-  function validReaction(value, id) {
+  function validReaction(value, id, reactionTypes = legacyReactionTypes) {
     return value?.commentId === id && typeof value.canReact === 'boolean' &&
       value.counts && Object.keys(value.counts).length === reactionTypes.length &&
       reactionTypes.every(type => Number.isSafeInteger(value.counts[type]) && value.counts[type] >= 0) &&
@@ -105,6 +113,7 @@
       ...(value.expiresAt !== undefined ? { expiresAt: value.expiresAt } : {}) } };
   }
   window.__dwDiscussionRemoteTransport = Object.freeze({
+    reactionVersion: 2,
     turnstileSitekey: config.turnstileSitekey,
     async readDiscussion(request) {
       const url = new URL(endpoint);
@@ -126,7 +135,7 @@
       return response.json();
     },
     async readReactions(input) {
-      const payload = reactionContext(input);
+      const payload = { ...reactionProtocol(input), ...reactionContext(input) };
       if (!Array.isArray(input.commentIds) || !input.commentIds.length || input.commentIds.length > 50 ||
           !input.commentIds.every(uuid) || new Set(input.commentIds).size !== input.commentIds.length)
         throw Error('INVALID_REACTION_REQUEST');
@@ -135,18 +144,18 @@
       const data = await reactionRequest('/reactions/read', payload);
       if (!Array.isArray(data.reactions) || data.reactions.length !== payload.commentIds.length ||
           new Set(data.reactions.map(row => row?.commentId)).size !== data.reactions.length ||
-          !data.reactions.every(row => payload.commentIds.includes(row?.commentId) && validReaction(row, row.commentId)))
+          !data.reactions.every(row => payload.commentIds.includes(row?.commentId) && validReaction(row, row.commentId, reactionTypesFor(input))))
         throw Error('INVALID_REACTION_RESPONSE');
       return { ok: true, reactions: data.reactions.map(row => ({ commentId: row.commentId,
         counts: { ...row.counts }, selected: [...row.selected], canReact: row.canReact })) };
     },
     async setReaction(input) {
-      const payload = reactionContext(input);
-      if (!uuid(input.commentId) || !reactionTypes.includes(input.type) || !['add', 'remove'].includes(input.intent) ||
+      const payload = { ...reactionProtocol(input), ...reactionContext(input) };
+      if (!uuid(input.commentId) || !reactionTypesFor(input).includes(input.type) || !['add', 'remove'].includes(input.intent) ||
           !/^[0-9a-f]{64}$/.test(input.visitorId)) throw Error('INVALID_REACTION_REQUEST');
       Object.assign(payload, { commentId: input.commentId, type: input.type, visitorId: input.visitorId, intent: input.intent });
       const data = await reactionRequest('/reactions', payload, true);
-      if (!validReaction(data.reaction, input.commentId)) {
+      if (!validReaction(data.reaction, input.commentId, reactionTypesFor(input))) {
         const error = Error('INVALID_REACTION_RESPONSE'); error.outcomeUnknown = true; throw error;
       }
       const row = data.reaction;

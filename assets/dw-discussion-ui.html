@@ -100,14 +100,14 @@
   };
   const reactionWords = context.locale === 'en' ? {
     label: 'Emoji reactions', add: 'Add a reaction', selected: 'selected',
-    types: { like: 'Helpful', heart: 'Love or thanks', smile: 'Happy or friendly', celebrate: 'Celebrate', thinking: 'Thinking or unsure' },
+    types: { like: 'Helpful', heart: 'Love or thanks', smile: 'Happy or friendly', celebrate: 'Celebrate', thinking: 'Thinking or unsure', sad: 'Sad / Sympathy' },
     storage: 'Emoji reactions need browser storage. You can still read and comment.',
     failed: 'Couldn’t load reactions. Try again.', writeFailed: 'Couldn’t update this reaction. Try again.',
     unknown: 'We couldn’t confirm whether your reaction was saved. Refresh to check before trying again.',
     rate: 'Too many reactions. Wait a moment before trying again.', unavailable: 'Reactions are unavailable for this comment.',
   } : {
     label: '表情反应', add: '添加表情反应', selected: '已选择',
-    types: { like: '赞同或有帮助', heart: '喜欢或感谢', smile: '开心或友善', celebrate: '庆祝', thinking: '疑惑或保留意见' },
+    types: { like: '赞同或有帮助', heart: '喜欢或感谢', smile: '开心或友善', celebrate: '庆祝', thinking: '疑惑或保留意见', sad: '难过、共情' },
     storage: '表情反应需要浏览器存储；仍可查看和发表评论。',
     failed: '表情反应加载失败，请重试。', writeFailed: '表情反应未能更新，请重试。',
     unknown: '无法确认表情是否已更新，请刷新后查看，避免重复操作。',
@@ -179,8 +179,9 @@
     locationQueued: false, navigationRunning: false, locationReplayScheduled: false,
     drafts: new Map(), uncertainTargets: new Set(), activeReplyRootId: null, activeReplyScope: null, replyUnavailable: false, activeTarget: null, opener: null, posting: false, threadLocked: false };
   // Reactions have their own state and requests; they never rebuild the composer.
-  const reactionTypes = ['like', 'heart', 'smile', 'celebrate', 'thinking'];
-  const reactionEmoji = { like: '👍', heart: '❤️', smile: '😄', celebrate: '🎉', thinking: '🤔' };
+  const reactionProtocol = runtime.transport.reactionVersion === 2 ? { reactionVersion: 2 } : {};
+  const reactionTypes = ['like', 'heart', 'smile', 'celebrate', 'thinking', ...(reactionProtocol.reactionVersion === 2 ? ['sad'] : [])];
+  const reactionEmoji = { like: '👍', heart: '❤️', smile: '😄', celebrate: '🎉', thinking: '🤔', sad: '😢' };
   const reactionReadEnabled = typeof runtime.transport.readReactions === 'function';
   const reactionWriteEnabled = typeof runtime.transport.setReaction === 'function' &&
     (remoteMode || runtime.transport.fixtureCanWrite === true);
@@ -316,7 +317,7 @@
       const batch = ids.slice(offset, offset + 50);
       const tokens = new Map(batch.map(id => { const row = reactionRow(id); return [id, { token: ++row.readToken, revision: row.revision }]; }));
       try {
-        const response = await runtime.transport.readReactions({ pageKey: context.pageKey, locale: context.locale,
+        const response = await runtime.transport.readReactions({ ...reactionProtocol, pageKey: context.pageKey, locale: context.locale,
           commentIds: batch, ...(visitorId ? { visitorId } : {}) });
         if (response?.ok !== true || !Array.isArray(response.reactions) || response.reactions.length !== batch.length ||
             new Set(response.reactions.map(row => row?.commentId)).size !== batch.length ||
@@ -356,7 +357,7 @@
     row.pending = true; row.revision++; row.message = ''; row.retry = false;
     closeReactionMenu(true); paintReactions(id);
     try {
-      const response = await runtime.transport.setReaction({ pageKey: context.pageKey, locale: context.locale, commentId: id, type, visitorId, intent });
+      const response = await runtime.transport.setReaction({ ...reactionProtocol, pageKey: context.pageKey, locale: context.locale, commentId: id, type, visitorId, intent });
       if (response?.ok !== true || !validReaction(response.reaction, id)) {
         const error = Error('INVALID_REACTION_RESPONSE'); error.outcomeUnknown = true; throw error;
       }
