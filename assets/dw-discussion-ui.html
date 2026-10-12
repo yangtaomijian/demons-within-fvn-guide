@@ -507,7 +507,10 @@
       const actions = make('div', 'dw-discussion-actions');
       if (isRoot && typeof comment.pageHash === 'string' && /^#[^?#]{1,255}$/.test(comment.pageHash)) {
         const anchor = make('a', 'dw-discussion-fragment', words.fragment);
-        anchor.href = context.pagePath + comment.pageHash;
+        // Content anchors belong to the original language page; UUID discussion anchors remain in the current UI.
+        const publicationLocale = ['en', 'zh-CN'].includes(comment.publicationLocale) ? comment.publicationLocale : context.locale;
+        const logicalPath = context.pagePath.replace(/^\/en\//, '/');
+        anchor.href = (publicationLocale === 'en' ? '/en' : '') + logicalPath + comment.pageHash;
         actions.append(anchor);
       }
       if (writeEnabled && canReplyTo({ root, target: comment })) {

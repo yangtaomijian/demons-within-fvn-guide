@@ -469,6 +469,40 @@ def verify_discussion_cutover(pages: dict[Path, Page]) -> None:
                 raise AssertionError(f"{path}: staging API or sitekey leaked into production output")
 
 
+def verify_shared_discussion_identity() -> None:
+    """Gate bilingual identity and artifacts without comparing translated content."""
+    runtime = (ROOT / "assets/dw-discussion-runtime.html").read_text(encoding="utf-8")
+    version_match = re.search(r"const guideVersion = '([^']+)';", runtime)
+    if not version_match:
+        raise AssertionError("Discussion guideVersion identity missing")
+    version = version_match.group(1)
+    source_map = dict(re.findall(r"'(/(?:en/)?(?:guide|reference|collectibles)/[^']+\.html)': '([^']+)'", runtime))
+    chinese_paths = {path: key for path, key in source_map.items() if not path.startswith("/en/")}
+    if not chinese_paths or len(source_map) != 2 * len(chinese_paths):
+        raise AssertionError("Discussion bilingual page registry is incomplete")
+    for path, key in chinese_paths.items():
+        if source_map.get("/en" + path) != key:
+            raise AssertionError(f"Discussion page_key pair mismatch: {path}")
+        for paired in (path, "/en" + path):
+            artifact = SITE / paired.lstrip("/")
+            text = artifact.read_text(encoding="utf-8")
+            versions = re.findall(r"const guideVersion = '([^']+)';", text)
+            if versions != [version]:
+                raise AssertionError(f"{artifact}: Discussion bilingual version mismatch")
+            built_map = dict(re.findall(r"'(/(?:en/)?(?:guide|reference|collectibles)/[^']+\.html)': '([^']+)'", text))
+            if built_map != source_map or built_map.get(paired) != key:
+                raise AssertionError(f"{artifact}: Discussion page registry mismatch")
+            for marker in ("window.__dwDiscussionRuntime = Object.freeze", "window.__dwDiscussionRemoteTransport = Object.freeze", "const mount = document.getElementById('dw-public-discussion')"):
+                if text.count(marker) != 1:
+                    raise AssertionError(f"{artifact}: Discussion runtime/transport/UI missing")
+    for prefix in ("", "en/"):
+        hub = SITE / prefix / "discussions.html"
+        text = hub.read_text(encoding="utf-8")
+        if "const mount = document.getElementById('dw-discussion-hub')" not in text:
+            raise AssertionError(f"{hub}: shared Discussion hub artifact missing")
+    print(f"Shared Discussion identity: {version}; {len(chinese_paths)} bilingual page_key pairs and runtime artifacts: PASS")
+
+
 def verify_web_analytics() -> None:
     for path in expected_content_pages():
         text = path.read_text(encoding="utf-8")
@@ -515,6 +549,7 @@ def main() -> None:
     verify_search_v2()
     verify_404(pages)
     verify_discussion_cutover(pages)
+    verify_shared_discussion_identity()
     verify_web_analytics()
     verify_public_docs()
     print("Historical social image URLs published with current card bytes: 2/2")
