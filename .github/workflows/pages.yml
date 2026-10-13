@@ -50,6 +50,9 @@ jobs:
       - name: Run DW Search v2 regressions
         run: node scripts/test-search.mjs
 
+      - name: Run Closed Beta AI frontend regressions
+        run: node scripts/test-ai-closed-beta.mjs
+
       - name: Check Pages artifact
         run: |
           test -f _site/index.html
@@ -61,6 +64,8 @@ jobs:
           test -f _site/assets/favicon.svg
           test -f _site/assets/dw-search-core.js
           test -f _site/en/assets/dw-search-core.js
+          test -f _site/assets/ai/config.mjs
+          test -f _site/en/assets/ai/config.mjs
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5

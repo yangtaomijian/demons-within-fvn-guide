@@ -2,6 +2,7 @@ project:
   type: website
   output-dir: _site
   resources:
+    - assets/ai/
     - 404.html
     - googlef0776754787f4a8e.html
     - assets/favicon.svg
@@ -102,6 +103,7 @@ format:
       - assets/dw-discussion.css
       - assets/dw-feedback.css
     include-after-body:
+      - assets/dw-ai.html
       - assets/language-switch.html
       - assets/dw-layout-controls.html
       - assets/dw-publication-v2a.html

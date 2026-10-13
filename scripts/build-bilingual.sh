@@ -16,6 +16,8 @@ if target.exists():
 shutil.copytree(source, target)
 target_assets = target / 'assets'
 target_assets.mkdir(parents=True, exist_ok=True)
+# Keep the same AI frontend bytes under both language roots.
+shutil.copytree(root / 'assets/ai', target_assets / 'ai', dirs_exist_ok=True)
 for name in ('favicon.svg', 'favicon-32x32.png', 'apple-touch-icon.png'):
     shutil.copy2(root / 'assets' / name, target_assets / name)
 shutil.copy2(root / 'assets/dw-search-core.js', target_assets / 'dw-search-core.js')

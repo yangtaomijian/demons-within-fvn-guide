@@ -2,6 +2,7 @@ project:
   type: website
   output-dir: _site
   resources:
+    - assets/ai/
     - Newsreader-OFL.txt
   post-render:
     - python3 scripts/build-safe-search.py
@@ -92,6 +93,7 @@ format:
       - assets/dw-discussion.css
       - assets/dw-feedback.css
     include-after-body:
+      - ../assets/dw-ai.html
       - assets/language-switch.html
       - assets/dw-layout-controls.html
       - assets/dw-publication-v2a.html
