@@ -1,4 +1,7 @@
-:root { --dw-control-radius:.4rem; --dw-accent-soft:var(--dw-surface-soft); --dw-surface-panel:var(--dw-surface); --dw-surface-muted:var(--dw-surface-soft); --dw-text-muted:var(--dw-text-soft); --dw-focus:var(--dw-accent); --dw-link:var(--dw-accent); --dw-link-hover:var(--dw-heading); --dw-radius-sm:.4rem; --dw-shadow-panel:0 8px 32px #0002; --dw-font-sans:system-ui,sans-serif; }
+#dw-ai-panel, #dw-ai-launcher, .dw-ai-search-bridge { --dw-control-radius:.4rem; --dw-accent-soft:var(--dw-surface-soft); --dw-surface-panel:var(--dw-surface); --dw-surface-muted:var(--dw-surface-soft); --dw-text-muted:var(--dw-text-soft); --dw-focus:var(--dw-accent); --dw-link:var(--dw-primary); --dw-link-hover:var(--dw-primary-hover); --dw-radius-sm:.4rem; --dw-shadow-panel:0 8px 32px #0002; --dw-font-sans:system-ui,sans-serif; }
+/* Resolve body theme tokens here; root aliases cannot inherit body values. */
+#dw-ai-panel .dw-ai-citation { min-width:0; max-width:100%; overflow-wrap:anywhere; }
+#dw-ai-panel h3 { min-width:0; overflow-wrap:anywhere; }
 /* Ask the Guide rail. The closed page uses the original layout. */
 #dw-ai-launcher, #dw-ai-panel { display: none; }
 .dw-ai-sheet-head, #dw-ai-source-backdrop { display: none; }

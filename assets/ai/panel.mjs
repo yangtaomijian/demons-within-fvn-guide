@@ -129,6 +129,11 @@ import {createPanelTransport, percentage,descriptions,feedbackFor,availabilityTe
   const lengthCounter=node('span','',{id:'dw-ai-length',role:'status','aria-live':'polite','aria-atomic':'true'});lengthCounter.hidden=true;
   const lengthHelp=node('span','',{id:'dw-ai-length-help',class:'dw-ai-sr-only'});
   const send=node('button',undefined,{id:'dw-ai-send',type:'button','aria-label':t('发送问题'),title:t('发送问题')});send.disabled=true;
+  const restoreQuestion=node('button',t('恢复本题到输入框'),{id:'dw-ai-restore-question',type:'button',class:'dw-ai-text-button'});
+  restoreQuestion.addEventListener('click',()=>{
+    if(restoreQuestion.disabled||input.value!==''||!current?.question)return;
+    input.value=current.question;sizeInput();sync();input.focus({preventScroll:true});
+  });
   const svgNS='http://www.w3.org/2000/svg';
   function icon(kind){const svg=document.createElementNS(svgNS,'svg');svg.setAttribute('viewBox','0 0 24 24');svg.setAttribute('aria-hidden','true');svg.classList.add('dw-ai-icon-'+kind);const shape=document.createElementNS(svgNS,kind==='arrow'?'path':'rect');if(kind==='arrow'){shape.setAttribute('d','M12 19V5M5 12l7-7 7 7');shape.setAttribute('fill','none');shape.setAttribute('stroke','currentColor');shape.setAttribute('stroke-width','2');shape.setAttribute('stroke-linecap','round');shape.setAttribute('stroke-linejoin','round');}else{for(const [k,v] of Object.entries({x:7,y:7,width:10,height:10,rx:1,fill:'currentColor'}))shape.setAttribute(k,v);}svg.append(shape);return svg;}
   send.append(icon('arrow'),icon('stop'));composer.append(label,input,lengthCounter,lengthHelp,send);
@@ -315,6 +320,8 @@ import {createPanelTransport, percentage,descriptions,feedbackFor,availabilityTe
     send.setAttribute('aria-label',accessible);send.title=accessible;send.setAttribute('aria-busy',String(cancelling));
     send.disabled=stopping?cancelling||!trialState?.authenticated||!state.activeId:busy||state.busy||state.uncertain||!trialState?.authenticated||trialState?.beta?.approved!==true||!ready||pilot?.configured!==true||pilot.used===true||pilot.poolRemaining===0||pilot.rolling24hAvailable===false||composing||lengths.over||!input.value.trim();
     input.readOnly=sending||cancelling||state.busy;
+    restoreQuestion.disabled=busy||input.readOnly||input.value!==''||!current?.question;
+    restoreQuestion.title=input.value!==''?t('输入框已有草稿；清空后可恢复本题。'):t('恢复本题到输入框');
     query.hidden=!state.activeId||(!manualCheckNeeded&&!state.uncertain&&sending);
     query.disabled=cancelling||!trialState?.authenticated;
     renderAccount();
@@ -504,6 +511,7 @@ import {createPanelTransport, percentage,descriptions,feedbackFor,availabilityTe
     result.replaceChildren(node('p', question, { class: 'dw-ai-question' }), node('h3', t('正在整理回答…'), { id: 'dw-ai-stage' }), node('p', '', { id: 'dw-ai-wait' }), node('p', t('可以点击输入框右下角停止。关闭面板后仍会继续处理。'), { class: 'dw-ai-note' }));
     scroll.scrollTop = Math.max(0, result.offsetTop - scroll.offsetTop - 12);
   }
+  function offerQuestionRecovery(){if(current?.question)result.append(restoreQuestion);}
   function render(answer) {
     const allowed = ['answer','missing','failure','limited','cancelled','timeout','refused','offtopic','clarification'];
     if (!answer || !allowed.includes(answer.status)) answer = connectionFailure(t('回答暂未就绪，请查看进度。问题不会自动重发。'));
@@ -526,6 +534,7 @@ import {createPanelTransport, percentage,descriptions,feedbackFor,availabilityTe
     if (answer.status === 'limited' && kinds[answer.kind]) result.append(node('p', kinds[answer.kind], { class: 'dw-ai-note' }));
     uncertain = answer.kind === 'local_connection';
     if (uncertain) result.append(node('p', t('请查看进度确认结果。确认前不会再次发送问题。'), { class: 'dw-ai-note' }));
+    if(answer.status!=='answer')offerQuestionRecovery();
     status.textContent = answer.serviceStatus || (answer.status === 'answer' ? t('本题回答已返回') : (typeof answer.title === 'string' ? t(answer.title) : t('本题处理未完成')));
     scroll.scrollTop = Math.max(0, result.offsetTop - scroll.offsetTop - 12);
   }
@@ -548,7 +557,7 @@ import {createPanelTransport, percentage,descriptions,feedbackFor,availabilityTe
         if(!transport.state().activeId)await refreshSnapshot();
       }
     }catch(error){
-      if(generation===renderGeneration&&ownResult===resultGeneration){manualCheckNeeded=!!transport.state().activeId;status.textContent=kind==='cancel'?t('停止结果待确认，请查看进度'):t(descriptions[error.message])||t('连接未完成，请查看进度；不会自动重发。');if(kind==='cancel'){const title=result.querySelector('h3');if(title)title.textContent=t('停止结果待确认');}}
+      if(generation===renderGeneration&&ownResult===resultGeneration){manualCheckNeeded=!!transport.state().activeId;status.textContent=kind==='cancel'?t('停止结果待确认，请查看进度'):t(descriptions[error.message])||t('连接未完成，请查看进度；不会自动重发。');if(kind==='cancel'){const title=result.querySelector('h3');if(title)title.textContent=t('停止结果待确认');}if(kind==='send'){result.dataset.state='failure';const title=result.querySelector('h3');if(title)title.textContent=t('这次未能完成');offerQuestionRecovery();}}
     }finally{if(kind==='send')sending=false;if(kind==='cancel')cancelling=false;pendingActions--;busy=pendingActions>0;sync();}
   }
   async function recover(initial=false){
@@ -556,7 +565,7 @@ import {createPanelTransport, percentage,descriptions,feedbackFor,availabilityTe
     busy=true;sync();const snapshot=await refreshSnapshot();busy=false;
     if(snapshot&&transport.state().activeId){manualCheckNeeded=true;status.textContent=t('有结果待确认，请查看进度。');}sync();
   }
-  async function submit(){if(send.dataset.action!=='send'||send.disabled)return;const question=input.value;if(questionLengths(question).over){sync();return;}if(!questionLanguage(question)){status.textContent=languageClarification;return;}if(!privacyReviewed){openPrivacy(true);return;}waiting(question);await run(()=>transport.send(question),'send');}
+  async function submit(){if(send.dataset.action!=='send'||send.disabled)return;const question=input.value;if(questionLengths(question).over){sync();return;}if(!questionLanguage(question)){status.textContent=languageClarification;return;}if(!privacyReviewed){openPrivacy(true);return;}waiting(question);input.value='';sizeInput();await run(()=>transport.send(question),'send');}
   form.addEventListener('submit',event=>{event.preventDefault();submit();});
   send.addEventListener('click',()=>send.dataset.action==='stop'?stop():submit());
   async function stop(){if(send.disabled||cancelling)return;await run(()=>transport.cancel(),'cancel');}

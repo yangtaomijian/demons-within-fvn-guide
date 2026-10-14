@@ -1,6 +1,8 @@
 // Interface copy only; never translates questions, answers or source bodies.
 export const locale = /^en(?:-|$)/i.test(document.documentElement.lang) ? "en" : "zh";
 export const english = Object.freeze({
+  "恢复本题到输入框": "Restore this question to the input",
+  "输入框已有草稿；清空后可恢复本题。": "There is already a draft. Clear it before restoring this question.",
   "站主登录（受限）": "Owner sign-in (restricted)",
   "Closed Beta 尚未开放测试资格；登录不会自动获得额度。": "Closed Beta eligibility is not open. Signing in does not grant a trial allowance.",
   "DW AI 当前仅向已获授权的站主账户开放限定测试；登录不会自动获得测试资格。Public 14.6；回答语言跟随问题，证据与引用采用英文 canonical 来源。": "DW AI currently offers a limited test only to the authorized owner account; signing in does not grant eligibility. Public 14.6; answer language follows your question, with English canonical evidence and citations.",
