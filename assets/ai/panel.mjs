@@ -1,4 +1,5 @@
 import {CONFIG} from './config.mjs';
+import {createHumanCheck} from './human-check.mjs';
 import {t} from './strings.mjs';
 import {questionLengths} from './question-limits.mjs';
 import {questionLanguage,languageClarification} from './question-language.mjs';
@@ -78,13 +79,13 @@ import {createPanelTransport, percentage,descriptions,feedbackFor,availabilityTe
     return el;
   };
   const launcher = node('button', undefined, { id: 'dw-ai-launcher', type: 'button', 'aria-expanded': 'false', 'aria-controls': 'dw-ai-panel' });
-  launcher.append(node('span', t('AI 问攻略')), node('span', 'Closed Beta', { class: 'dw-ai-mode' }));
+  launcher.append(node('span', t('AI 问攻略')), node('span', 'Limited Open Beta', { class: 'dw-ai-mode' }));
   search.after(launcher);
   const panel = node('aside', undefined, { id: 'dw-ai-panel', 'aria-labelledby': 'dw-ai-title' });
   panel.hidden = true;
   const head = node('div', undefined, { class: 'dw-ai-head' });
   const heading = node('div');
-  heading.append(node('h2', t('问攻略'), { id: 'dw-ai-title' }), node('span', 'Closed Beta', { class: 'dw-ai-eyebrow' }));
+  heading.append(node('h2', t('问攻略'), { id: 'dw-ai-title' }), node('span', 'Limited Open Beta', { class: 'dw-ai-eyebrow' }));
   const close = node('button', t('关闭'), { id: 'dw-ai-close', type: 'button', 'aria-label': t('关闭 AI 面板') });
   head.append(heading, close);
   const scroll = node('div', undefined, { class: 'dw-ai-scroll' });
@@ -105,7 +106,9 @@ import {createPanelTransport, percentage,descriptions,feedbackFor,availabilityTe
   funds.append(node('summary',t('可用额度详情')),budget);
   const betaApply=node('button',t('申请 Beta'),{id:'dw-ai-beta-apply',type:'button',class:'dw-ai-text-button'});betaApply.hidden=true;
   document.addEventListener('dw:beta-application-ready',()=>sync());
-  notice.append(identity,account,permission,modeCheck,funds,betaApply);
+  const humanSlot=node('div',undefined,{id:'dw-ai-human-check'});humanSlot.hidden=true;
+  const humanNotice=node('p','',{class:'dw-ai-note'});humanNotice.hidden=true;
+  notice.append(identity,account,permission,modeCheck,funds,betaApply,humanNotice,humanSlot);
   const query = node('button',t('查看进度'),{id:'dw-ai-query',type:'button'}); query.hidden=true;
   const privacyCopy=t('启用 AI 问答后，问题和相关攻略材料会由 OpenAI 处理。本站不保存问答正文；OpenAI 按其政策处理数据，不能保证零保留。请勿填写账号信息、密钥或其他敏感内容。');
   let privacyReviewed=false,composing=false,compositionEndedAt=0,sending=false,cancelling=false,manualCheckNeeded=false;
@@ -117,7 +120,7 @@ import {createPanelTransport, percentage,descriptions,feedbackFor,availabilityTe
     node('p',t('AI 可能误读或遗漏攻略条件，请核对引用原文。')),
     node('p',t('无法读取你的游戏存档；请在问题中说明路线与进度。')),
     node('p',t('启用 AI 问答后，问题与相关攻略材料会由 OpenAI 处理；详见「隐私与数据」。')),
-    node('p',t('DW AI 当前仅向已获授权的站主账户开放限定测试；登录不会自动获得测试资格。Public 14.6；回答语言跟随问题，证据与引用采用英文 canonical 来源。')),privacyAck,privacyMore);
+    node('p',t('Limited Open Beta：有效 Google 账户可自助准入，每账户总共 1 问，全站最多接收 3 问、最多 6 次模型调用。仅获服务端提交许可的问题占名额，登录不占；从首次启用起固定 7 天，题数不会自动恢复。Public 14.6；回答语言跟随问题，证据与引用采用英文 canonical 来源。')),privacyAck,privacyMore);
   const empty=node('p',t('想查哪段攻略？在下方写下你的问题。'),{class:'dw-ai-empty'});
   const result=node('section',undefined,{id:'dw-ai-result','aria-label':t('问题与回答')});result.hidden=true;
   const scope=node('p',t('可选的 AI 问答工具，只检索本站公开的攻略资料，并根据检索结果生成回答。它不会搜索其他网站，也不会读取游戏代码或非公开内容。主线攻略和参考页面独立维护。'),{id:'dw-ai-scope',class:'dw-ai-note'});
@@ -185,6 +188,8 @@ import {createPanelTransport, percentage,descriptions,feedbackFor,availabilityTe
   let returnTarget = launcher, frozenPage = null;
   let activeSource = null, readerState = null, hideTimer = null, suppressedFocusTrigger = null, pointerFocusTrigger = null, citationNumber = 0;
   const transport = createPanelTransport({onSession:onSnapshot,onStateChange:sync});
+  const human=createHumanCheck({container:humanSlot,onChange:code=>{humanNotice.hidden=!trialState?.turnstile?.required||trialState?.ready!==true;humanNotice.textContent=code?t(descriptions[code]):human.ready()?'':t('请先完成人机验证，再发送问题。');sync();}});
+  function configureHuman(){human.configure({required:trialState?.turnstile?.required===true,sitekey:trialState?.turnstile?.sitekey,active:!panel.hidden&&trialState?.ready===true});}
   const cancelHide = () => { clearTimeout(hideTimer); hideTimer = null; };
   function restoreCitationFocus(trigger) {
     suppressedFocusTrigger = trigger;
@@ -318,7 +323,7 @@ import {createPanelTransport, percentage,descriptions,feedbackFor,availabilityTe
     send.dataset.action=stopping?'stop':'send';
     const accessible=cancelling?t('正在请求停止'):stopping?t('停止回答'):t('发送问题');
     send.setAttribute('aria-label',accessible);send.title=accessible;send.setAttribute('aria-busy',String(cancelling));
-    send.disabled=stopping?cancelling||!trialState?.authenticated||!state.activeId:busy||state.busy||state.uncertain||!trialState?.authenticated||trialState?.beta?.approved!==true||!ready||pilot?.configured!==true||pilot.used===true||pilot.poolRemaining===0||pilot.rolling24hAvailable===false||composing||lengths.over||!input.value.trim();
+    send.disabled=stopping?cancelling||!trialState?.authenticated||!state.activeId:busy||state.busy||state.uncertain||!trialState?.authenticated||trialState?.beta?.approved!==true||!ready||!human.ready()||pilot?.configured!==true||pilot.used===true||pilot.poolRemaining===0||pilot.rolling24hAvailable===false||composing||lengths.over||!input.value.trim();
     input.readOnly=sending||cancelling||state.busy;
     restoreQuestion.disabled=busy||input.readOnly||input.value!==''||!current?.question;
     restoreQuestion.title=input.value!==''?t('输入框已有草稿；清空后可恢复本题。'):t('恢复本题到输入框');
@@ -354,7 +359,7 @@ import {createPanelTransport, percentage,descriptions,feedbackFor,availabilityTe
     if (narrow.matches && mobileRow) mobileRow.append(launcher);
     else search.after(launcher);
     launcher.firstElementChild.textContent = narrow.matches ? 'AI' : t('AI 问攻略');
-    launcher.setAttribute('aria-label', t('AI 问攻略（Closed Beta）'));
+    launcher.setAttribute('aria-label', t('AI 问攻略（Limited Open Beta）'));
 
   }
   function freezePage() {
@@ -393,9 +398,11 @@ import {createPanelTransport, percentage,descriptions,feedbackFor,availabilityTe
       if (narrow.matches) panel.setAttribute('aria-modal', 'true'); else panel.removeAttribute('aria-modal');
       position(); (narrow.matches ? close : input).focus({ preventScroll: true });
     });
+    configureHuman();
     if (!busy) recover();
   }
   function closePanel() {
+    human.remove();humanNotice.hidden=true;
     dismissSource(false); returnToAnswer(false);
     preserveReading(() => {
       panel.hidden = true; document.body.classList.remove('dw-ai-open'); launcher.setAttribute('aria-expanded', 'false');
@@ -458,10 +465,10 @@ import {createPanelTransport, percentage,descriptions,feedbackFor,availabilityTe
   function onSnapshot(state){
     if(state!==null&&(typeof state?.authenticated!=='boolean'||state.httpStatus!==undefined&&state.httpStatus!==200))throw Error('SESSION_UNAVAILABLE');
     const next=state?.user?.id??null;
-    if(next!==userId){renderGeneration++;clearQuestion();privacyReviewed=false;privacyFirst.hidden=false;}userId=next;
+    if(next!==userId){human.remove();renderGeneration++;clearQuestion();privacyReviewed=false;privacyFirst.hidden=false;}userId=next;
     sessionPhase=state===null?'checking':'known';
     trialState=state;ready=CONFIG.provider!=='DISABLED'&&state?.ready===true;serverBusy=!!state?.activeRequestId;
-    sync();
+    configureHuman();sync();
   }
   function renderAccount(){
     const state=trialState,authenticated=sessionPhase==='known'&&state?.authenticated===true,pilot=state?.beta?.pilot;
@@ -472,7 +479,7 @@ import {createPanelTransport, percentage,descriptions,feedbackFor,availabilityTe
     google.hidden=true;gis.hidden=true;logout.hidden=true;sessionRetry.hidden=true;permission.hidden=true;modeCheck.hidden=true;funds.hidden=true;account.hidden=true;betaApply.hidden=true;ownerLogin.hidden=true;
     modeCheck.textContent='';budget.textContent='';
     if(sessionPhase==='access'){
-      identity.textContent='Closed Beta';permission.hidden=false;permission.textContent=t('登录暂不可用，请稍后重试。');
+      identity.textContent='Limited Open Beta';permission.hidden=false;permission.textContent=t('登录暂不可用，请稍后重试。');
       account.hidden=false;ownerLogin.hidden=!CONFIG.ownerBootstrapOnly;google.hidden=CONFIG.ownerBootstrapOnly;google.disabled=!['ready','retry','error'].includes(googlePhase);
       betaApply.hidden=true;
       if(googleMessage){modeCheck.hidden=false;modeCheck.textContent=googleMessage;}
@@ -487,7 +494,7 @@ import {createPanelTransport, percentage,descriptions,feedbackFor,availabilityTe
     account.hidden=false;permission.hidden=false;
     betaApply.hidden=true;
     if(!authenticated){
-      identity.textContent=t('尚未登录');permission.textContent=t('Closed Beta 尚未开放测试资格；登录不会自动获得额度。');
+      identity.textContent=t('尚未登录');permission.textContent=t('Google 登录后可申请一问；登录不占全站名额，实际提交需服务端许可。');
       if(CONFIG.ownerBootstrapOnly){ownerLogin.hidden=false;google.hidden=true;gis.hidden=true;return;}
       gis.hidden=!gis.childElementCount;google.hidden=!!gis.childElementCount;
       google.disabled=!['ready','retry','error'].includes(googlePhase);google.title=googleMessage||t('Google 登录');
@@ -497,7 +504,7 @@ import {createPanelTransport, percentage,descriptions,feedbackFor,availabilityTe
     logout.hidden=false;ownerLogin.hidden=!CONFIG.ownerBootstrapOnly;
     identity.textContent=t('已登录');
     const ended=availabilityText(state)==='本轮测试已结束';
-    permission.textContent=state.beta?.approved!==true?t(descriptions[state.code]??'暂时无法确认试用资格'):ended?t('本轮测试已结束'):!pilot?.configured?t('AI 问答尚未开放'):pilot.used?t('账户剩余 0 题'):pilot.poolRemaining===0?t('全站试用题数已用完'):t('账户剩余 {count} 题 · 全站剩余 {pool} 题',{count:Number.isInteger(pilot.remainingQuestions)?pilot.remainingQuestions:1,pool:Number.isInteger(pilot.poolRemaining)?pilot.poolRemaining:5});
+    permission.textContent=state.beta?.approved!==true?t(descriptions[state.code]??'暂时无法确认试用资格'):ended?t('本轮测试已结束'):!pilot?.configured?t('AI 问答尚未开放'):pilot.used?t('账户剩余 0 题'):pilot.poolRemaining===0?t('全站试用题数已用完'):t('账户剩余 {count} 题 · 全站剩余 {pool} 题',{count:Number.isInteger(pilot.remainingQuestions)?pilot.remainingQuestions:1,pool:Number.isInteger(pilot.poolRemaining)?pilot.poolRemaining:3});
     const shown=percentage(state.allowance?.percentage);funds.hidden=shown===null;
     budget.textContent=shown===null?'':t('可用处理额度约 {percent}%；已发送的问题不会恢复试用题数，额度不会自动补充。',{percent:shown});
     if(state.beta?.approved===true&&pilot?.configured&&!pilot.used&&state.code&&state.code!=='AUTH_REQUIRED'){
@@ -565,7 +572,7 @@ import {createPanelTransport, percentage,descriptions,feedbackFor,availabilityTe
     busy=true;sync();const snapshot=await refreshSnapshot();busy=false;
     if(snapshot&&transport.state().activeId){manualCheckNeeded=true;status.textContent=t('有结果待确认，请查看进度。');}sync();
   }
-  async function submit(){if(send.dataset.action!=='send'||send.disabled)return;const question=input.value;if(questionLengths(question).over){sync();return;}if(!questionLanguage(question)){status.textContent=languageClarification;return;}if(!privacyReviewed){openPrivacy(true);return;}waiting(question);input.value='';sizeInput();await run(()=>transport.send(question),'send');}
+  async function submit(){if(send.dataset.action!=='send'||send.disabled)return;const question=input.value;if(questionLengths(question).over){sync();return;}if(!questionLanguage(question)){status.textContent=languageClarification;return;}if(!privacyReviewed){openPrivacy(true);return;}waiting(question);input.value='';sizeInput();const turnstileToken=human.token();try{await run(()=>transport.send(question,{turnstileToken}),'send');}finally{human.consume();}}
   form.addEventListener('submit',event=>{event.preventDefault();submit();});
   send.addEventListener('click',()=>send.dataset.action==='stop'?stop():submit());
   async function stop(){if(send.disabled||cancelling)return;await run(()=>transport.cancel(),'cancel');}

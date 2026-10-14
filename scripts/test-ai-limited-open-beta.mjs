@@ -1,0 +1,21 @@
+// No network: public status distinctions, challenge ticket forwarding, quota/refund copy.
+import assert from 'node:assert/strict';
+globalThis.document={documentElement:{lang:'en'}};
+const {createTransport}=await import('../assets/ai/transport.mjs');
+const {availabilityText,descriptions,createPanelTransport}=await import('../assets/ai/adapter.mjs');
+const {t}=await import('../assets/ai/strings.mjs');
+const future=Date.now()+86400000;
+assert.equal(availabilityText({code:'PROVIDER_ADMISSION_OFF',ready:false,beta:{pilot:{configured:true,startsAt:null,endsAt:null}}}),'AI 问答尚未开放');
+assert.equal(availabilityText({code:'BETA_WINDOW_CLOSED',ready:false,beta:{pilot:{configured:true,startsAt:1,endsAt:Date.now()-1}}}),'本轮测试已结束');
+assert.match(t(descriptions.BETA_QUESTION_LIMIT),/question has been used/);
+assert.match(t(descriptions.OPEN_BETA_POOL_EXHAUSTED),/site.*pool/i);
+assert.match(t(descriptions.TURNSTILE_REJECTED),/not submitted/i);
+assert.match(t('本题已占用一次问答名额；处理额度退款不会恢复题数。'),/do not restore/);
+const calls=[];const transport=createTransport({origin:'https://demons-within.carambi.com',storage:null,fetchImpl:async(url,options)=>{calls.push({path:new URL(url).pathname,body:options.body?JSON.parse(options.body):null});return {status:429,type:'basic',json:async()=>({status:'rejected',code:'TURNSTILE_REJECTED'})};}});
+transport.adoptSession({authenticated:true,ready:true,csrf:'LOCAL_CSRF',turnstile:{required:true},beta:{approved:true,pilot:{endsAt:future}}});
+const rejected=await transport.send('When should I save to replay other outcomes?',{turnstileToken:'LOCAL_FAKE_TOKEN'});assert.equal(rejected.code,'TURNSTILE_REJECTED');assert.equal(calls.length,1);assert.equal(calls[0].path,'/api/request-ticket');assert.equal(calls[0].body.turnstileToken,'LOCAL_FAKE_TOKEN');assert.equal(transport.state().activeId,null);
+const panel=createPanelTransport({origin:'https://demons-within.carambi.com',storage:null,fetchImpl:async url=>({status:200,type:'basic',json:async()=>new URL(url).pathname==='/api/request-ticket'?{requestId:'local-fixture-id',ticket:'LOCAL_TICKET'}:{status:'failed',code:'LOCAL_FAILURE',refundState:'REFUNDED',questionQuotaConsumed:true}})});panel.adoptSession({authenticated:true,csrf:'LOCAL_CSRF'});const failure=await panel.send('When should I save?');assert.match(failure.serviceStatus,/do not restore the question quota/);
+const {createHumanCheck}=await import('../assets/ai/human-check.mjs');let callbacks;
+globalThis.turnstile={render(el,opts){callbacks=opts;return 'LOCAL_WIDGET';},remove(){},reset(){}};
+const human=createHumanCheck({container:{replaceChildren(){},hidden:true}});await human.configure({required:true,sitekey:'0xFAKELOCAL',active:true});callbacks.callback('LOCAL_TOKEN');assert.equal(human.ready(),true);callbacks['expired-callback']();assert.equal(human.ready(),false);const stale=callbacks;human.remove();await human.configure({required:true,sitekey:'0xFAKELOCAL',active:true});stale.callback('STALE_TOKEN');assert.equal(human.ready(),false);callbacks.callback('LOCAL_NEW_TOKEN');stale['expired-callback']();assert.equal(human.ready(),true);human.consume();assert.equal(human.ready(),false);delete globalThis.turnstile;
+console.log(JSON.stringify({status:'PASS_LIMITED_OPEN_BETA_FRONTEND_CONTRACT',groups:5,networkRequests:0,modelCalls:0}));

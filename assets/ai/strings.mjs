@@ -1,6 +1,16 @@
 // Interface copy only; never translates questions, answers or source bodies.
 export const locale = /^en(?:-|$)/i.test(document.documentElement.lang) ? "en" : "zh";
 export const english = Object.freeze({
+  "Limited Open Beta：有效 Google 账户可自助准入，每账户总共 1 问，全站最多接收 3 问、最多 6 次模型调用。仅获服务端提交许可的问题占名额，登录不占；从首次启用起固定 7 天，题数不会自动恢复。Public 14.6；回答语言跟随问题，证据与引用采用英文 canonical 来源。": "Limited Open Beta: valid Google accounts can apply, with 1 question per account in total, at most 3 accepted questions and 6 model calls across the site. Only server-authorized submissions use a slot; signing in does not. The round lasts 7 days from first activation, and question quotas never refill. Public 14.6; answers follow your question language, with English canonical evidence and citations.",
+  "Google 登录后可申请一问；登录不占全站名额，实际提交需服务端许可。": "Sign in with Google to apply for one question. Signing in does not use a site slot; submission requires server permission.",
+  "本轮 7 天测试已结束；未提交新题。": "This 7-day round has ended. No new question was submitted.",
+  "你已退出测试；本次未提交问题。": "You have withdrawn from the test. No question was submitted.",
+  "请先完成人机验证，再发送问题。": "Complete the human verification before sending your question.",
+  "人机验证未通过；本题未提交，请重新验证。": "Human verification failed. Your question was not submitted; please verify again.",
+  "人机验证暂不可用；本题未提交。": "Human verification is temporarily unavailable. Your question was not submitted.",
+  "本题已占用一次问答名额；处理额度退款不会恢复题数。": "This question used your one question slot. Processing allowance refunds do not restore the question quota.",
+  "AI 问攻略（Limited Open Beta）": "Ask the Guide (Limited Open Beta)",
+
   "恢复本题到输入框": "Restore this question to the input",
   "输入框已有草稿；清空后可恢复本题。": "There is already a draft. Clear it before restoring this question.",
   "站主登录（受限）": "Owner sign-in (restricted)",

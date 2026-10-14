@@ -25,12 +25,12 @@ export function createTransport({fetchImpl=globalThis.fetch,storage=globalThis.s
   async function withdraw(){if(!session?.authenticated)throw Error('AUTH_REQUIRED');const result=await request('/api/withdraw',{method:'POST',body:{csrf:session.csrf}});if(result.status==='withdrawn')await snapshot();return result;}
   async function disableAccount(){if(!session?.authenticated)throw Error('AUTH_REQUIRED');const result=await request('/api/account-delete',{method:'POST',body:{csrf:session.csrf}});if(result.status==='account_disabled'){generation++;storeId(null);uncertain=false;adoptSession(null);}return result;}
   async function queryStatus(){if(!activeId)throw Error('NO_REQUEST');const value=validatedState(await request('/api/status?requestId='+encodeURIComponent(activeId)));uncertain=activeStatuses.has(value.status);if(!uncertain){storeId(null);}return value;}
-  async function send(question){
+  async function send(question,{turnstileToken}={}){
     if(busy||uncertain||activeId)throw Error('REQUEST_PENDING');if(!session?.authenticated||!session.csrf)throw Error('AUTH_REQUIRED');
     if(typeof question!=='string'||!question.trim()||question.length>1200)throw Error('QUESTION_INVALID');
     busy=true;const startGeneration=generation;let dispatched=false;
     try{
-      const signed=await request('/api/request-ticket',{method:'POST',body:{csrf:session.csrf}});
+      const signed=await request('/api/request-ticket',{method:'POST',body:{csrf:session.csrf,...(session.turnstile?.required===true?{turnstileToken}: {})}});
       if(typeof signed.requestId!=='string'||typeof signed.ticket!=='string')return signed;
       if(startGeneration!==generation)throw Error('SESSION_CHANGED');storeId(signed.requestId);
       dispatched=true;

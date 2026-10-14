@@ -3,13 +3,13 @@ import {t} from './strings.mjs';
 import {createTransport,safeSourceURL,percentage} from './transport.mjs';
 import {descriptions as productDescriptions,feedbackFor as productFeedback} from './feedback.mjs';
 export {percentage};
-export const descriptions=Object.freeze({...productDescriptions,BETA_NOT_APPROVED:'已登录，尚未获准参加封闭测试。请等待站长手动确认；本次未提交问题。',SOURCE_MAPPING_INCOMPLETE:'中文攻略来源暂未准备完整，本题未发送，也未扣试用题数。',SOURCE_MAPPING_VERSION_MISMATCH:'攻略来源版本暂不一致，本题未发送，也未扣试用题数。',PROVIDER_DISABLED:'AI 问答尚未开放',PROVIDER_ADMISSION_OFF:'AI 问答暂时不可用',GLOBAL_EMERGENCY_STOP:'AI 问答暂时不可用',BUDGET_CLOSED:'AI 问答暂时不可用',BETA_WINDOW_CLOSED:'AI 问答暂时不可用',BETA_QUESTION_LIMIT:'账户试用题数已用完，未提交新题。',OPEN_BETA_POOL_EXHAUSTED:'全站试用题数已用完，未提交新题。',OPEN_BETA_WITHDRAWN:'你已退出封闭测试；本次未提交问题。',ACCOUNT_SNAPSHOT_EXPIRED:'AI 问答暂时不可用',BETA_DAILY_QUESTION_LIMIT:'全站滚动 24 小时内已发送 1 题，请在该题发送满 24 小时后重试。',BETA_EXECUTION_CLOSED:'AI 问答暂时不可用',SOURCE_LANGUAGE_MAPPING_MISSING:'部分所需来源的中文对应尚未核验，未生成回答。请改用英文提问或直接阅读攻略；本次已处理的检索仍按现有规则结算。',QUESTION_LANGUAGE_UNCLEAR:'问题语言不明确，请用中文或英文完整提问，或明确指定回答语言。',ANSWER_LANGUAGE_MISMATCH:'回答语言未符合要求，本题已停止，不会自动重试。'});
+export const descriptions=Object.freeze({...productDescriptions,BETA_NOT_APPROVED:'暂时无法确认试用资格；本次未提交问题。',SOURCE_MAPPING_INCOMPLETE:'中文攻略来源暂未准备完整，本题未发送，也未扣试用题数。',SOURCE_MAPPING_VERSION_MISMATCH:'攻略来源版本暂不一致，本题未发送，也未扣试用题数。',PROVIDER_DISABLED:'AI 问答尚未开放',PROVIDER_ADMISSION_OFF:'AI 问答暂时不可用',GLOBAL_EMERGENCY_STOP:'AI 问答暂时不可用',BUDGET_CLOSED:'AI 问答暂时不可用',BETA_WINDOW_CLOSED:'本轮 7 天测试已结束；未提交新题。',BETA_QUESTION_LIMIT:'账户试用题数已用完，未提交新题。',OPEN_BETA_POOL_EXHAUSTED:'全站试用题数已用完，未提交新题。',OPEN_BETA_WITHDRAWN:'你已退出测试；本次未提交问题。',TURNSTILE_REQUIRED:'请先完成人机验证，再发送问题。',TURNSTILE_REJECTED:'人机验证未通过；本题未提交，请重新验证。',TURNSTILE_UNAVAILABLE:'人机验证暂不可用；本题未提交。',ACCOUNT_SNAPSHOT_EXPIRED:'AI 问答暂时不可用',BETA_DAILY_QUESTION_LIMIT:'全站滚动 24 小时内已发送 1 题，请在该题发送满 24 小时后重试。',BETA_EXECUTION_CLOSED:'AI 问答暂时不可用',SOURCE_LANGUAGE_MAPPING_MISSING:'部分所需来源的中文对应尚未核验，未生成回答。请改用英文提问或直接阅读攻略；本次已处理的检索仍按现有规则结算。',QUESTION_LANGUAGE_UNCLEAR:'问题语言不明确，请用中文或英文完整提问，或明确指定回答语言。',ANSWER_LANGUAGE_MISMATCH:'回答语言未符合要求，本题已停止，不会自动重试。'});
 // Display only: a closed gate does not by itself prove that a Beta round ended.
 export function availabilityText(state={}) {
   if(!state||!['PROVIDER_DISABLED','PROVIDER_ADMISSION_OFF','BETA_WINDOW_CLOSED','BETA_EXECUTION_CLOSED','GLOBAL_EMERGENCY_STOP','BUDGET_CLOSED'].includes(state.code))return null;
   const pilot=state.beta?.pilot;
   if(state.ready!==true&&pilot?.configured===true&&typeof pilot.endsAt==='number'&&Number.isFinite(pilot.endsAt)&&pilot.endsAt<=Date.now())return '本轮测试已结束';
-  if(['PROVIDER_DISABLED','PROVIDER_ADMISSION_OFF','BETA_WINDOW_CLOSED'].includes(state.code)&&pilot?.configured===false)return 'AI 问答尚未开放';
+  if(['PROVIDER_DISABLED','PROVIDER_ADMISSION_OFF','BETA_WINDOW_CLOSED'].includes(state.code)&&(pilot?.configured===false||pilot?.startsAt===null))return 'AI 问答尚未开放';
   return descriptions[state.code];
 }
 export const feedbackFor=(value,state)=>t(availabilityText({...state,code:value?.code,ready:false})??descriptions[value?.code]??productFeedback(value));
@@ -41,7 +41,7 @@ export function createPanelTransport(options={}) {
     const settlement=t(refund[String(raw.refundState).toUpperCase()]);
     const completed=raw.status==='completed'&&segments.length>0;
     const partial=raw.partial===true?t('部分条件缺少证据；请查看回答限制。'):null;
-    return {status,title:titles[status],text:completed?'':descriptions[raw.code]?t(availabilityText({...product.state().session,code:raw.code,ready:false})??descriptions[raw.code]):raw.text??'',segments,provenance:raw.status==='completed'?'qb1-product':'host-service-failure',note:raw.note??'',serviceStatus:[completed?t('回答已完成'):null,partial,settlement].filter(Boolean).join(' · '),kind:uncertain?'local_connection':undefined,raw};
+    return {status,title:titles[status],text:completed?'':descriptions[raw.code]?t(availabilityText({...product.state().session,code:raw.code,ready:false})??descriptions[raw.code]):raw.text??'',segments,provenance:raw.status==='completed'?'qb1-product':'host-service-failure',note:raw.note??'',serviceStatus:[completed?t('回答已完成'):null,partial,settlement,raw.questionQuotaConsumed===true?t('本题已占用一次问答名额；处理额度退款不会恢复题数。'):null].filter(Boolean).join(' · '),kind:uncertain?'local_connection':undefined,raw};
   }
-  return Object.freeze({...product,send:async question=>project(await product.send(question)),queryStatus:async()=>project(await product.queryStatus()),cancel:async()=>project(await product.cancel()),sources:()=>new Map(sources),clearSources:()=>sources.clear(),safeSourceURL});
+  return Object.freeze({...product,send:async (question,options)=>project(await product.send(question,options)),queryStatus:async()=>project(await product.queryStatus()),cancel:async()=>project(await product.cancel()),sources:()=>new Map(sources),clearSources:()=>sources.clear(),safeSourceURL});
 }
