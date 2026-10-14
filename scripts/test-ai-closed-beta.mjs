@@ -4,7 +4,7 @@ globalThis.document={documentElement:{lang:'en'}};
 const {CONFIG}=await import('../assets/ai/config.mjs');
 const {createPanelTransport,descriptions}=await import('../assets/ai/adapter.mjs');
 const {t}=await import('../assets/ai/strings.mjs');
-assert.equal(CONFIG.enabled,true);assert.equal(CONFIG.provider,'DISABLED');assert.equal(CONFIG.ownerBootstrapOnly,true);assert.equal(CONFIG.history,false);
+assert.equal(CONFIG.enabled,true);assert.equal(CONFIG.provider,'SERVER_GATED');assert.equal(CONFIG.releaseMode,'OWNER_ONLY_BOUNDED_EPOCH');assert.equal(CONFIG.ownerBootstrapOnly,true);assert.equal(CONFIG.history,false);
 assert.match(t('Closed Beta 尚未开放测试资格；登录不会自动获得额度。'),/does not grant/);
 assert.match(t(descriptions.BETA_NOT_APPROVED),/awaiting Closed Beta approval/);
 const source={id:'fixture-faq',title:'FAQ · Where should I save?',locale:'en',mappingType:'excerpt',url:'https://demons-within.carambi.com/en/guide/faq.html#save-for-replay',text:'Keep a manual save at the start of a recognizable scene, then use separate slots before important choices.'};

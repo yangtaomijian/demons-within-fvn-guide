@@ -117,7 +117,7 @@ import {createPanelTransport, percentage,descriptions,feedbackFor,availabilityTe
     node('p',t('AI 可能误读或遗漏攻略条件，请核对引用原文。')),
     node('p',t('无法读取你的游戏存档；请在问题中说明路线与进度。')),
     node('p',t('启用 AI 问答后，问题与相关攻略材料会由 OpenAI 处理；详见「隐私与数据」。')),
-    node('p',t('DW AI 已进入 Closed Beta 准备阶段。当前模型与测试者准入均关闭；Google 登录不会自动获得测试资格。Public 14.6；回答语言跟随问题，证据与引用采用英文 canonical 来源。')),privacyAck,privacyMore);
+    node('p',t('DW AI 当前仅向已获授权的站主账户开放限定测试；登录不会自动获得测试资格。Public 14.6；回答语言跟随问题，证据与引用采用英文 canonical 来源。')),privacyAck,privacyMore);
   const empty=node('p',t('想查哪段攻略？在下方写下你的问题。'),{class:'dw-ai-empty'});
   const result=node('section',undefined,{id:'dw-ai-result','aria-label':t('问题与回答')});result.hidden=true;
   const scope=node('p',t('可选的 AI 问答工具，只检索本站公开的攻略资料，并根据检索结果生成回答。它不会搜索其他网站，也不会读取游戏代码或非公开内容。主线攻略和参考页面独立维护。'),{id:'dw-ai-scope',class:'dw-ai-note'});

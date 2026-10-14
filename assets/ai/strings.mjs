@@ -3,7 +3,7 @@ export const locale = /^en(?:-|$)/i.test(document.documentElement.lang) ? "en" :
 export const english = Object.freeze({
   "站主登录（受限）": "Owner sign-in (restricted)",
   "Closed Beta 尚未开放测试资格；登录不会自动获得额度。": "Closed Beta eligibility is not open. Signing in does not grant a trial allowance.",
-  "DW AI 已进入 Closed Beta 准备阶段。当前模型与测试者准入均关闭；Google 登录不会自动获得测试资格。Public 14.6；回答语言跟随问题，证据与引用采用英文 canonical 来源。": "DW AI is preparing for Closed Beta. Model access and tester admission are closed; Google sign-in does not grant eligibility. Public 14.6; answer language follows your question, with English canonical evidence and citations.",
+  "DW AI 当前仅向已获授权的站主账户开放限定测试；登录不会自动获得测试资格。Public 14.6；回答语言跟随问题，证据与引用采用英文 canonical 来源。": "DW AI currently offers a limited test only to the authorized owner account; signing in does not grant eligibility. Public 14.6; answer language follows your question, with English canonical evidence and citations.",
   "查看章节": "View section",
   "中文攻略来源暂未准备完整，本题未发送，也未扣试用题数。": "Chinese guide sources are temporarily incomplete. Your question was not sent and your trial question was not used.",
   "攻略来源版本暂不一致，本题未发送，也未扣试用题数。": "Guide source versions do not currently match. Your question was not sent and your trial question was not used.",
