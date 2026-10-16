@@ -10,6 +10,7 @@ export const english = Object.freeze({
   "人机验证暂不可用；本题未提交。": "Human verification is temporarily unavailable. Your question was not submitted.",
   "本题已占用一次问答名额；处理额度退款不会恢复题数。": "This question used your one question slot. Processing allowance refunds do not restore the question quota.",
   "AI 问攻略（Limited Open Beta）": "Ask the Guide (Limited Open Beta)",
+  "AI 问攻略（Beta）": "Ask the Guide (Beta)",
 
   "恢复本题到输入框": "Restore this question to the input",
   "输入框已有草稿；清空后可恢复本题。": "There is already a draft. Clear it before restoring this question.",

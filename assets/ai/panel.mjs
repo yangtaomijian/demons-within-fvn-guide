@@ -79,13 +79,14 @@ import {createPanelTransport, percentage,descriptions,feedbackFor,availabilityTe
     return el;
   };
   const launcher = node('button', undefined, { id: 'dw-ai-launcher', type: 'button', 'aria-expanded': 'false', 'aria-controls': 'dw-ai-panel' });
-  launcher.append(node('span', t('AI 问攻略')), node('span', 'Limited Open Beta', { class: 'dw-ai-mode' }));
+  launcher.append(node('span', t('AI 问攻略')), node('span', 'Beta', { class: 'dw-ai-mode' }));
   search.after(launcher);
+  const searchAI = node('button', t('问 AI · Beta'), { id: 'dw-search-ai-entry', type: 'button', 'aria-controls': 'dw-ai-panel' });
   const panel = node('aside', undefined, { id: 'dw-ai-panel', 'aria-labelledby': 'dw-ai-title' });
   panel.hidden = true;
   const head = node('div', undefined, { class: 'dw-ai-head' });
   const heading = node('div');
-  heading.append(node('h2', t('问攻略'), { id: 'dw-ai-title' }), node('span', 'Limited Open Beta', { class: 'dw-ai-eyebrow' }));
+  heading.append(node('h2', t('问攻略'), { id: 'dw-ai-title' }), node('span', 'Beta', { class: 'dw-ai-eyebrow' }));
   const close = node('button', t('关闭'), { id: 'dw-ai-close', type: 'button', 'aria-label': t('关闭 AI 面板') });
   head.append(heading, close);
   const scroll = node('div', undefined, { class: 'dw-ai-scroll' });
@@ -320,6 +321,7 @@ import {createPanelTransport, percentage,descriptions,feedbackFor,availabilityTe
     const state=transport.state(),pilot=trialState?.beta?.pilot;
     const lengths=updateLength();
     const stopping=cancelling||sending||!!state.activeId;
+    searchAI.disabled=busy||sending||cancelling||state.busy;
     send.dataset.action=stopping?'stop':'send';
     const accessible=cancelling?t('正在请求停止'):stopping?t('停止回答'):t('发送问题');
     send.setAttribute('aria-label',accessible);send.title=accessible;send.setAttribute('aria-busy',String(cancelling));
@@ -359,7 +361,7 @@ import {createPanelTransport, percentage,descriptions,feedbackFor,availabilityTe
     if (narrow.matches && mobileRow) mobileRow.append(launcher);
     else search.after(launcher);
     launcher.firstElementChild.textContent = narrow.matches ? 'AI' : t('AI 问攻略');
-    launcher.setAttribute('aria-label', t('AI 问攻略（Limited Open Beta）'));
+    launcher.setAttribute('aria-label', t('AI 问攻略（Beta）'));
 
   }
   function freezePage() {
@@ -412,6 +414,25 @@ import {createPanelTransport, percentage,descriptions,feedbackFor,availabilityTe
   }
   launcher.addEventListener('click', () => panel.hidden ? openPanel() : closePanel());
   close.addEventListener('click', closePanel);
+  // Keep Quarto's native search and dismissal lifecycle; this is a draft handoff.
+  function mountSearchBridge() {
+    const container=document.querySelector('.aa-DetachedContainer');
+    if(!container||container.querySelector('.dw-ai-search-bridge'))return;
+    const bridge=node('div',undefined,{class:'dw-ai-search-bridge'});
+    const row=node('div',undefined,{class:'dw-ai-search-bridge-row'});
+    row.append(node('span',t('站内搜索')),searchAI);bridge.append(row);
+    container.prepend(bridge);
+  }
+  searchAI.addEventListener('click',()=>{
+    const container=searchAI.closest('.aa-DetachedContainer');
+    const cancel=container?.querySelector('.aa-DetachedCancelButton');
+    if(searchAI.disabled||!cancel)return;
+    const draft=container.querySelector('.aa-Input')?.value??'';
+    cancel.click();
+    requestAnimationFrame(()=>openPanel({origin:search,draft}));
+  });
+  new MutationObserver(mountSearchBridge).observe(document.body,{childList:true,subtree:true});
+  mountSearchBridge();
   document.addEventListener('keydown', event => {
     if(document.getElementById('dw-beta-application')?.open)return;
     if(privacyDialog.open&&event.key!=='Tab')return;
