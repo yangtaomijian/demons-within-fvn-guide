@@ -166,7 +166,7 @@ Public 14.6 fixes the Red-eyes Wolf and Red-eyes Fox Codex record issues and add
 | [Helen]{#mem-helen} | On Edwin's Tiger Day, click Helen's name when she appears later in the tavern scene. |
 | [Jayden]{#mem-jayden} | On Tiger Day, click Jayden's name when you first meet him in the tavern. |
 | [Boris]{#mem-boris} | Click Boris's name when you first meet him on Tiger Day. If you miss it, his name is clickable again at The Weary Soldier later in the shared main story. |
-| [Red-eyes Wolf]{#mem-red-eyes-wolf} | Continue from the black wolf ambush into the Sloth story, then click his name in the later passage describing the two Red-eyes. See the [version note](#memorium-limit) for the 14.6 fix and older records. |
+| [Red-eyes Wolf]{#mem-red-eyes-wolf} | Continue from the black wolf ambush into the Sloth story, then click his name in the later passage describing Red-eyes Wolf and Red-eyes Fox. See the [version note](#memorium-limit) for the 14.6 fix and older records. |
 | [Red-eyes Fox]{#mem-red-eyes-fox} | Appears in the same passage as Red-eyes Wolf; click this name separately. See the [version note](#memorium-limit) for the 14.6 fix and older records. |
 | [Russel]{#mem-russel} | Click Russel's name when Resnick reunites with his brother in the shared story after the Sloth awakening. |
 | [Brigham]{#mem-brigham} | Unlocks automatically during Fated Encounter after the market incident; no name click needed. |
