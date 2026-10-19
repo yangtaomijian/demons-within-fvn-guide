@@ -102,6 +102,8 @@ format:
       - assets/dw-reference-v2b.css
       - assets/dw-discussion.css
       - assets/dw-feedback.css
+      - assets/ai/mt-panel.f0a5aa3cc24f.css
+      - assets/ai/mt-public-panel.16c871532b44.css
     include-after-body:
       - assets/dw-ai.html
       - assets/language-switch.html

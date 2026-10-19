@@ -1,4 +1,5 @@
 <script type="module">
 const root=new URL(document.querySelector('meta[name="dw-site-root"]')?.content||'/',location.href);
-import(new URL('assets/ai/entry.mjs',root).href).catch(()=>{});
+const entry=new URL('assets/ai/entry.mjs',root); entry.searchParams.set('v','dw-ui-css-20261019');
+import(entry.href).catch(()=>{});
 </script>
