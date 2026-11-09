@@ -230,17 +230,10 @@ To see all three images, use Sloth → Sloth → Lust. For the full no-intervent
 
 ### The Shard of Gluttony: six locked Wheels {#gluttony-shard-wheels}
 
-Continue the main story past [Gluttony Reveal](../collectibles/cg.md#gluttony-reveal). All six Wheels are on Resnick's side and follow this order.
+Continue the main story past [Gluttony Reveal](../collectibles/cg.md#gluttony-reveal). All six Wheels are on Resnick's side.
 
-| Wheel | What to do | Result |
-|---|---|---|
-| 1 · first attempt to resist | Select **Lust**. | The infusion fails, then the scene continues. |
-| 2 · second attempt to resist | Select **Lust** again. | The second infusion also fails, then the scene continues. |
-| 3 · first automatic Wheel | Wait. | Gluttony and Lust trigger automatically in that order, then the scene continues. |
-| 4 · second automatic Wheel | Wait. | Gluttony and Lust trigger automatically in that order, then the scene continues. |
-| 5 · third automatic Wheel | Wait. | Gluttony and Lust trigger automatically in that order, then the scene continues. |
-| 6 · final automatic Wheel | Wait. | Gluttony and Lust trigger automatically in that order. Let the final Wheel sequence finish to continue the story. |
+**Select Lust manually on each of the first two Wheels.** Both infusions fail, and the story continues after each one.
 
-The Wheel conveys the change through increasingly intense light effects and pulses. Follow the actions above; you do not need to distinguish specific levels.
+**Wait through the last four Wheels.** Each one triggers Gluttony first, then Lust, automatically. The story continues when the final Wheel sequence ends.
 
-The first two failures are part of the story. You do not need to wait for them to succeed or try another Essence. The later Wheels have no manual choice. See [the chapter and its day-off dialogue variation](../guide/choices.qmd#shard-of-gluttony).
+The Wheel’s light effects and pulses intensify as the scene progresses. See [the chapter and its day-off dialogue variation](../guide/choices.qmd#shard-of-gluttony).

@@ -184,6 +184,7 @@ main.content details > :not(summary) { margin-inline: .8rem; }
 
 /* General finishing details shared with PW; retain DW's palette and layout. */
 main.content :is(h1, h2, h3, h4) { text-wrap: pretty; }
+html[lang="en"] main.content > section[id^="public-"] > h2 { text-wrap: wrap; }
 main.content h3 { padding-bottom: .45rem; border-bottom: 1px solid var(--dw-border); font-weight: 750; }
 main.content .anchorjs-link:focus-visible { opacity: 1; }
 main.content details > summary:focus-visible { outline-offset: -4px; }
