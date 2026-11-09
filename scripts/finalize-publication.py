@@ -11,6 +11,7 @@ EN_URL = ROOT_URL + "en/"
 PAGES = (
     "index.html",
     "discussions.html",
+    "updates.html",
     "guide/choices.html",
     "guide/faq.html",
     "reference/interventions.html",
@@ -62,7 +63,7 @@ def main() -> None:
     if en_robots.exists():
         en_robots.unlink()
 
-    print("Publication metadata finalized: 14 paired pages, normalized sitemaps, origin-root robots.txt retained.")
+    print(f"Publication metadata finalized: {len(PAGES)} bilingual pairs, normalized sitemaps, origin-root robots.txt retained.")
 
 
 if __name__ == "__main__":

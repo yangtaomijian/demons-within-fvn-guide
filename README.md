@@ -2,9 +2,13 @@
 
 [中文站](https://demons-within.carambi.com/) · [English site](https://demons-within.carambi.com/en/)
 
-这是《心魔在焉（Demons Within）》**Public 14.6** 的非官方双语玩家攻略，由 [Carambi](https://carambi.com/zh/)（[@yangtaomijian](https://github.com/yangtaomijian)）维护。
+这是《心魔在焉（Demons Within）》的非官方双语玩家攻略，由 [Carambi](https://carambi.com/zh/)（[@yangtaomijian](https://github.com/yangtaomijian)）维护。
 
-This is an unofficial bilingual player guide for *Demons Within* **Public 14.6**, maintained by [Carambi](https://carambi.com/) ([@yangtaomijian](https://github.com/yangtaomijian)).
+This is an unofficial bilingual player guide for *Demons Within*, maintained by [Carambi](https://carambi.com/) ([@yangtaomijian](https://github.com/yangtaomijian)).
+
+本仓库的攻略覆盖 **Public 15.0**。见[更新记录](updates.md)。
+
+The guide in this repository covers **Public 15.0**. See [Updates](site-en/updates.md).
 
 ## 收录内容 / Coverage
 

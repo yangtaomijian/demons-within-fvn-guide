@@ -30,6 +30,9 @@ for prefix, name in (
     destination = root / '_site' / prefix / 'assets/social' / name
     destination.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(root / 'assets/social' / name, destination)
+# Finder metadata can survive a local render and should not enter the site artifact.
+for metadata in (root / '_site').rglob('.DS_Store'):
+    metadata.unlink()
 print('Bilingual output: _site/ and _site/en/')
 PY
 python3 "$root/scripts/normalize-layout.py" "$root/_site"

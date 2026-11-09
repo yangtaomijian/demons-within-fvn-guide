@@ -1,6 +1,6 @@
 ---
 title: "关键选择与存档"
-description: "心魔在焉 Public 14.6 主线中关键场景的操作与存档说明。"
+description: "心魔在焉 Public 15.0 主线中关键场景的操作与存档说明。"
 toc: true
 toc-depth: 2
 search: false
@@ -26,7 +26,7 @@ search: false
 ```{mermaid}
 %%{init: {"flowchart": {"curve": "linear", "nodeSpacing": 30, "rankSpacing": 20, "padding": 8}, "themeVariables": {"fontSize": "14px"}}}%%
 flowchart TD
-    accTitle: Public 14.6 主线导航图
+    accTitle: Public 15.0 主线导航图
     accDescr: 共同主线居中，仓库和黑狼伏击的终止结果在侧边。Bear Day 与 Tiger Day 分开后汇回共同主线。带链接的节点跳转到本页对应章节。
     subgraph spine[" "]
         first
@@ -41,6 +41,7 @@ flowchart TD
         reprieve
         gunther
         garret
+        gluttony
         finish
     end
     style spine fill:none,stroke:none
@@ -61,7 +62,8 @@ flowchart TD
     reprieve["林中休整 · 真心话大冒险<br/>Sam 的条目机会"]
     gunther["市场后的 Gunther 二次战<br/>三种操作汇入后续，局部状态保留"]
     garret["Garret 办公室喝酒<br/>含连续懒惰分支"]
-    finish(["Public 14.6 主线内容末端"])
+    gluttony["暴食碎片<br/>接续暴食揭示"]
+    finish(["Public 15.0 主线内容末端"])
 
     first --> warehouse
     warehouse --> normal
@@ -80,7 +82,8 @@ flowchart TD
     bath --> reprieve
     reprieve --> gunther
     gunther --> garret
-    garret --> finish
+    garret --> gluttony
+    gluttony --> finish
 
     class warehouse,days,wolf branch
     class endings,wolfEnd terminal
@@ -100,6 +103,7 @@ flowchart TD
     click reprieve href "#truth-or-dare" "真心话大冒险：Sam 的条目机会" _self
     click gunther href "#gunther-rematch" "市场后的 Gunther 二次战" _self
     click garret href "#garret-office" "Garret 办公室喝酒" _self
+    click gluttony href "#shard-of-gluttony" "暴食碎片" _self
 ```
 
 </div>
@@ -255,7 +259,7 @@ Resnick 晚间去公共浴场时，会发现 Garret 与 Brigham 指挥官 已经
 
 两边随后都会各自显示色欲，但可执行性不同。Garret 一侧是在 Garret 离开、Resnick 独自在浴池时出现另一处非锁定窗口；是否选择只改变这一小段表现，之后回到共同的次日剧情。
 
-Brigham 一侧稍后也会显示色欲，但这一项在 Public 14.6 尚未开放。点击只会提示未来更新，不会执行干预或开启其他剧情；继续推进文本即可沿现有谈话进入次日共同剧情。
+Brigham 一侧稍后也会显示色欲，但这一项在 Public 15.0 尚未开放。点击只会提示未来更新，不会执行干预或开启其他剧情；继续推进文本即可沿现有谈话进入次日共同剧情。
 
 ## 真心话大冒险：Sam 的条目机会 {#truth-or-dare}
 
@@ -263,7 +267,7 @@ Brigham 一侧稍后也会显示色欲，但这一项在 Public 14.6 尚未开�
 
 如果要收集 **崇高之捐赠** 条目，在这里不要选择圆盘，继续文本。Sam 随后会问起 Edwin 的钱从哪里来；看到 **崇高之捐赠** 高亮词后，还需要主动点击它。
 
-选择 **色欲** 会让 Sam 改问更私人的问题，这一分支不会显示该高亮词。想比较两段提问，或避免错过条目，建议在 Sam 开始思考问题之前保存。在 Public 14.6 主线中，这个高亮词只在上述不干预文本里出现。
+选择 **色欲** 会让 Sam 改问更私人的问题，这一分支不会显示该高亮词。想比较两段提问，或避免错过条目，建议在 Sam 开始思考问题之前保存。在 Public 15.0 主线中，这个高亮词只在上述不干预文本里出现。
 
 ## 市场后的 Gunther 二次战 {#gunther-rematch}
 
@@ -302,3 +306,11 @@ Gunther 的衣着和部分反应会随本次选择延续到下一段。想比较
 
 如果还想比较主要文字分支，则需要从更早的存档回看：第一次三分支窗口前的存档用于比较不干预、色欲与懒惰；进入懒惰后，可在第二次懒惰窗口和最后的色欲窗口前分别留档。
 :::
+
+## 暴食碎片 {#shard-of-gluttony}
+
+Public 14.6 的主线在 [Gluttony Reveal](../collectibles/cg.md#gluttony-reveal) 后结束。Public 15.0 看完揭示后还能继续，接着是酒馆事件和翌日剧情。
+
+前两处锁定轮都要在 Resnick 一侧选择**色欲**。两次注入都会在剧情中失败，仍需点击才能推进。后四处会自动依次触发暴食和色欲，等待即可。顺序见[暴食碎片的六处锁定轮](../reference/interventions.md#gluttony-shard-wheels)。
+
+如果休假日和 Edwin 一起度过，翌日两人会多谈一段此前的约定，之后回到共同对话。这不改变本章的圆盘流程或 [Edwin 立绘解锁](../collectibles/memorium.md#sprite-edwin-gluttony)。想比较这段对白，可在[休假日分流](#day-off)前留档；只想按当前路线回看新章，则在酒馆揭示前留档。

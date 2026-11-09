@@ -9,6 +9,7 @@ project:
   render:
     - index.md
     - discussions.md
+    - updates.md
     - guide/choices.qmd
     - guide/faq.md
     - reference/interventions.md
@@ -26,9 +27,9 @@ website:
     card-style: summary
   page-footer:
     center: |
-      <div class="dw-publication-footer"><p>Unofficial fan-made guide for Demons Within Public 14.6; later releases may differ.</p><div class="dw-publication-footer-links"><span>Maintained by <a class="dw-carambi-link" href="https://carambi.com/">Carambi</a></span><button class="dw-feedback-slot" type="button" disabled title="Private feedback requires JavaScript and the feedback form to load">Private feedback</button><a class="dw-back-to-top" href="#">↑ Back to top</a></div></div>
+      <div class="dw-publication-footer"><p>Unofficial fan-made guide for Demons Within Public 15.0; later releases may differ.</p><div class="dw-publication-footer-links"><span>Maintained by <a class="dw-carambi-link" href="https://carambi.com/">Carambi</a></span><button class="dw-feedback-slot" type="button" disabled title="Private feedback requires JavaScript and the feedback form to load">Private feedback</button><a class="dw-back-to-top" href="#">↑ Back to top</a></div></div>
   title: "Demons Within Player Guide"
-  description: "An unofficial Public 14.6 player guide for Demons Within, covering story choices, endings, CGs, and Memory Codex unlocks."
+  description: "An unofficial Public 15.0 player guide for Demons Within, covering story choices, endings, CGs, and Memory Codex unlocks."
   search:
     location: navbar
     type: overlay
@@ -53,6 +54,8 @@ website:
             text: "CG Scenes"
           - href: collectibles/memorium.md
             text: "Memory Codex & Sprite Viewer"
+      - href: updates.md
+        text: "Updates"
   navbar:
     right:
       - href: ../index.html
@@ -74,6 +77,8 @@ website:
             text: CG Scenes
           - href: collectibles/memorium.md
             text: Memory Codex & Sprite Viewer
+      - href: updates.md
+        text: "Updates"
 format:
   html:
     canonical-url: true

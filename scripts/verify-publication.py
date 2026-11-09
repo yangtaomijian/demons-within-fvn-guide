@@ -22,6 +22,7 @@ EN_ROOT = ZH_ROOT + "en/"
 PAGES = {
     "index.html",
     "discussions.html",
+    "updates.html",
     "guide/choices.html",
     "guide/faq.html",
     "reference/interventions.html",
@@ -42,12 +43,12 @@ SOCIAL_IMAGE_ALIASES = {
     "assets/social/demons-within-public-14.6-zh.png": "assets/social/demons-within-zh.png",
     "en/assets/social/demons-within-public-14.6-en.png": "en/assets/social/demons-within-en.png",
 }
-ZH_HOME_TITLE = "心魔在焉（Demons Within）Public 14.6 中文攻略"
-EN_HOME_TITLE = "Demons Within Public 14.6 Player Guide"
-ZH_HOME_DESCRIPTION = "《心魔在焉（Demons Within）》Public 14.6 FVN 中文攻略，涵盖本源之轮选择、分支与结局、CG、辞书和 Sprite Viewer 解锁条件。"
-EN_HOME_DESCRIPTION = "An unofficial Public 14.6 guide for the furry visual novel Demons Within, covering Essence Wheel choices, branch outcomes, endings, CG scenes, Memory Codex entries and Sprite Viewer unlocks."
-ZH_SITE_DESCRIPTION = "《心魔在焉（Demons Within）》Public 14.6 非官方中文玩家攻略，涵盖主线选择、结局、CG 与辞书收集。"
-EN_SITE_DESCRIPTION = "An unofficial Public 14.6 player guide for Demons Within, covering story choices, endings, CGs, and Memory Codex unlocks."
+ZH_HOME_TITLE = "心魔在焉（Demons Within）Public 15.0 中文攻略"
+EN_HOME_TITLE = "Demons Within Public 15.0 Player Guide"
+ZH_HOME_DESCRIPTION = "《心魔在焉（Demons Within）》Public 15.0 FVN 中文攻略，涵盖本源之轮选择、分支与结局、CG、辞书和 Sprite Viewer 解锁条件。"
+EN_HOME_DESCRIPTION = "An unofficial Public 15.0 guide for the furry visual novel Demons Within, covering Essence Wheel choices, branch outcomes, endings, CG scenes, Memory Codex entries and Sprite Viewer unlocks."
+ZH_SITE_DESCRIPTION = "《心魔在焉（Demons Within）》Public 15.0 非官方中文玩家攻略，涵盖主线选择、结局、CG 与辞书收集。"
+EN_SITE_DESCRIPTION = "An unofficial Public 15.0 player guide for Demons Within, covering story choices, endings, CGs, and Memory Codex unlocks."
 ISSUES_URL = "https://github.com/yangtaomijian/demons-within-fvn-guide/issues"
 FORBIDDEN_URL_PARTS = ("localhost", "file://", "/dw-guide", "/demons-within-fvn-guide/", "\\Users\\", "/Users/")
 NS = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
@@ -335,7 +336,7 @@ def verify_search(pages: dict[Path, Page]) -> None:
                 target_page = pages.setdefault(target, parse(target))
                 if unquote(parsed.fragment) not in target_page.ids:
                     raise AssertionError(f"{path}: missing search anchor {href}")
-        if found_pages != PAGES - {"discussions.html"}:
+        if found_pages != PAGES - {"discussions.html", "updates.html"}:
             raise AssertionError(f"{path}: search page set mismatch: {sorted(found_pages)}")
 
 
@@ -429,7 +430,7 @@ def verify_discussion_cutover(pages: dict[Path, Page]) -> None:
         if path == SITE / "404.html":
             continue
         logical = path.relative_to(SITE).as_posix()
-        is_home = logical in ("index.html", "en/index.html")
+        article = logical.removeprefix("en/") not in {"index.html", "discussions.html", "updates.html"}
         text = path.read_text(encoding="utf-8")
         # Quarto emits a dormant theme helper even when Giscus is not configured.
         # Reject the actual embed, configuration, or container instead.
@@ -452,7 +453,7 @@ def verify_discussion_cutover(pages: dict[Path, Page]) -> None:
             raise AssertionError(f"{path}: expected one Discussion runtime/mount factory")
         if text.count("window.__dwDiscussionRemoteTransport = Object.freeze") != 1:
             raise AssertionError(f"{path}: expected one production-capable remote transport")
-        if not is_home and logical not in {"discussions.html", "en/discussions.html"} and f"'{('/' + logical)}':" not in text:
+        if article and f"'{('/' + logical)}':" not in text:
             raise AssertionError(f"{path}: article path is not in Discussion map")
         footer_slots = re.findall(r'<button class="dw-feedback-slot"[^>]*>.*?</button>', text)
         if (len(footer_slots) != 1 or "disabled" not in footer_slots[0]
@@ -542,6 +543,7 @@ def verify_public_docs() -> None:
 
 def main() -> None:
     pages = verify_metadata()
+    content_count = len(pages)
     verify_social_image_aliases()
     verify_sitemaps()
     verify_links_and_assets(pages)
@@ -553,16 +555,16 @@ def main() -> None:
     verify_web_analytics()
     verify_public_docs()
     print("Historical social image URLs published with current card bytes: 2/2")
-    print("Indexable HTML pages: 14/14 (7 Chinese + 7 English)")
-    print("Canonical, description, language, OG, Twitter: 14/14")
-    print("Reciprocal hreflang pairs: 7/7")
-    print("Sitemap URLs: 7 Chinese + 7 English; home URLs normalized")
+    print(f"Indexable HTML pages: {content_count} ({len(PAGES)} Chinese + {len(PAGES)} English)")
+    print(f"Canonical, description, language, OG, Twitter: {content_count}/{content_count}")
+    print(f"Reciprocal hreflang pairs: {len(PAGES)}/{len(PAGES)}")
+    print(f"Sitemap URLs: {len(PAGES)} Chinese + {len(PAGES)} English; home URLs normalized")
     print("Internal links, anchors, assets, favicons, and search targets: PASS")
     print(f"Search v2 core identity and adapter coverage: 3 cores + {len(expected_content_pages())} guide pages: PASS")
     print("Origin-root robots.txt points to the sitemap; no /en/robots.txt; noindex 404 present: PASS")
-    print("Carambi Discussion: ten mapped articles, two excluded homepages and two read-only summary pages; Giscus absent; production API/sitekey and Feedback wiring: PASS")
+    print("Carambi Discussion: ten mapped articles; home, Updates and summary pages have no article thread; Giscus absent; production API/sitekey and Feedback wiring: PASS")
     print("Staging API/sitekey absent from generated production output; no staging noindex header: PASS")
-    print("Cloudflare Web Analytics: 14/14 content pages; excluded from 404 and verification HTML")
+    print(f"Cloudflare Web Analytics: {content_count}/{content_count} content pages; excluded from 404 and verification HTML")
     print("Site descriptions and future GitHub Issues URL: PASS")
 
 

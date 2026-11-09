@@ -9,7 +9,19 @@ root = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location('shared_search', root.parent / 'scripts/build-safe-search.py')
 shared = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(shared)
-shared.ALIASES = {"Massage": 'Ludwig massage', 'Memory Codex': 'Memorium · Codex'}
+shared.ALIASES = {
+    'Massage': 'Ludwig massage',
+    'Memory Codex': 'Memorium · Codex',
+    'The Shard of Gluttony': 'Gluttony chapter',
+    'Edwin: Gluttony form': 'Gluttony Edwin · Edwin Gluttony form',
+}
+shared.ANCHOR_ALIASES = {
+    'gluttony-shard-wheels': ('Gluttony wheel · failed infusion · automatic wheel',),
+    'sprite-edwin-gluttony': ('Edwin new form · Edwin new sprite',),
+    'gluttony-tavern-opening': ('new Gluttony CG · new CG · Tavern opening confrontation · second half of the tavern confrontation',),
+    'viewer-garret': ('Garret new poses · Garret shirtless · Garret armor · Garret new sprite',),
+}
+shared.EXTRA_LOCATORS = {'collectibles/memorium.html': {'viewer-garret': 'Garret: new poses'}}
 shared.PAGES = {
     'guide/choices.html': ('h2', 'Key choices and save advice for this scene.'),
     'reference/interventions.html': ('h3', 'Essence Wheel options and variations for this scene.'),
@@ -24,7 +36,9 @@ def record(page, names, anchor, name, summary, extra=()):
         summary = ('Where to find this entry and how to unlock it.' if anchor.startswith('mem-') else
                    'Unlock requirements for this Sprite Viewer state.' if anchor.startswith('sprite-') and anchor != 'sprite-viewer' else
                    'Look up unlock requirements by entry name.')
-    aliases = set(extra)
+        if anchor == 'mem-dawn-tournament':
+            summary = 'No longer listed in the Public 15.0 Memory Codex.'
+    aliases = set(extra) | set(shared.ANCHOR_ALIASES.get(anchor, ()))
     aliases.update(words for term, words in shared.ALIASES.items() if term.casefold() in name.casefold())
     words = ' · '.join(sorted(a for a in aliases if a and a != name))
     label = name + (' (' + words + ')' if words else '')

@@ -23,7 +23,7 @@ class EnglishBoundaryTests(base.SafeSearchTests):
 class EnglishCorpusTests(unittest.TestCase):
     def test_built_queries_and_language_boundary(self):
         records = json.loads((root / '_site/en/search.json').read_text())
-        self.assertEqual(len(records), 121)
+        self.assertEqual(len(records), 126)
         for r in records:
             self.assertIsNone(re.search('[\u4e00-\u9fff]', r['title'] + r['section'] + r['text']))
         for query in ('warehouse', 'Boris', 'Prank on Edwin', 'Exalted Donations',

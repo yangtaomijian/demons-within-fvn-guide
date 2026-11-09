@@ -37,6 +37,48 @@ class SafeSearchTests(unittest.TestCase):
         self.assertIn('Example &amp; Name', item['text'])
         self.assertEqual(item['section'], 'Example & Name')
 
+    def test_new_and_legacy_locators_exclude_conditions_and_body(self):
+        choices = self.output / 'guide/choices.html'
+        choices.write_text(
+            '<main><h1 class="title">Story choices</h1>'
+            '<section id="shard-of-gluttony">'
+            '<h2 data-anchor-id="shard-of-gluttony">The Shard of Gluttony</h2>'
+            '<p>CHAPTER_SPOILER_SENTINEL</p></section></main>'
+        )
+        memory = self.output / 'collectibles/memorium.html'
+        memory.write_text(
+            '<main><h1 class="title">Memory Codex and Sprite Viewer</h1>'
+            '<p><span id="mem-dawn-tournament">Dawn Tournament (Public 14.6)</span>'
+            ' OLD_CLICK_INSTRUCTIONS_SENTINEL</p>'
+            '<table><tr><td><span id="sprite-edwin-gluttony">Edwin: Gluttony form</span></td>'
+            '<td>NEW_UNLOCK_CONDITIONS_SENTINEL</td></tr></table></main>'
+        )
+        search.rebuild(self.output)
+        corpus = self.index.read_text()
+        for sentinel in ('CHAPTER_SPOILER_SENTINEL', 'OLD_CLICK_INSTRUCTIONS_SENTINEL', 'NEW_UNLOCK_CONDITIONS_SENTINEL'):
+            self.assertNotIn(sentinel, corpus)
+        records = {r['href']: r for r in json.loads(corpus)}
+        legacy = records['collectibles/memorium.html#mem-dawn-tournament']
+        self.assertIn('Public 14.6', legacy['section'])
+        self.assertIn('Public 15.0', legacy['text'])
+        self.assertIn('guide/choices.html#shard-of-gluttony', records)
+        self.assertIn('collectibles/memorium.html#sprite-edwin-gluttony', records)
+
+    def test_curated_pose_locator_does_not_index_body_or_conditions(self):
+        memory = self.output / 'collectibles/memorium.html'
+        memory.write_text(memory.read_text().replace('</main>',
+            '<div id="viewer-garret"></div>'
+            '<p>POSE_BODY_SENTINEL PRIVATE_ROUTE_SENTINEL</p></main>'))
+        search.rebuild(self.output)
+        rows = json.loads(self.index.read_text())
+        pose = next(r for r in rows if r['href'].endswith('#viewer-garret'))
+        self.assertIn('Garret', pose['section'])
+        self.assertNotIn('POSE_BODY_SENTINEL', self.index.read_text())
+        self.assertNotIn('PRIVATE_ROUTE_SENTINEL', self.index.read_text())
+        first = self.index.read_bytes()
+        search.rebuild(self.output)
+        self.assertEqual(first, self.index.read_bytes())
+
     def test_repeat_replaces_stale_anchors_and_unsafe_owned_records(self):
         search.rebuild(self.output)
         first = self.index.read_bytes()

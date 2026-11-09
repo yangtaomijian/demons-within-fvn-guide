@@ -470,7 +470,7 @@
   function targetUrl(root, id) {
     const url = new URL(context.pagePath, location.origin);
     if (root.discussionScope === 'persistent') url.searchParams.set('discussionScope', 'persistent');
-    else if (root.guideVersion !== context.guideVersion) url.searchParams.set('discussionVersion', root.guideVersion);
+    else url.searchParams.set('discussionVersion', root.guideVersion);
     url.hash = `dw-comment-${id}`;
     return url.pathname + url.search + url.hash;
   }
@@ -1109,7 +1109,7 @@
     if (cached) {
       state.activeVersion = guideVersion;
       saveDraft(); message(); renderPage();
-      return;
+      return true;
     }
     busy(true); message('loading');
     try {
@@ -1124,6 +1124,7 @@
         state.index = response.earlierVersions;
       state.activeVersion = guideVersion;
       message();
+      return true;
     } catch {
       message('error', () => loadVersion(guideVersion));
     } finally {
@@ -1171,22 +1172,73 @@
   refresh.addEventListener('click', manualRefresh);
   persistentMore.addEventListener('click', loadPersistent);
   let locationGeneration = 0;
+  // Resolve legacy links using only this page's public read endpoint. The backend
+  // returns an unpaginated version index; comment trees remain cursor-paginated.
   async function locateComment() {
     const run = ++locationGeneration;
     const id = location.hash.slice(1);
-    if (!new RegExp('^dw-comment-[0-9a-f]{8}-[0-9a-f-]{27}$', 'i').test(id)) return;
-    const visited = new Set();
-    while (run === locationGeneration) {
-      const target = document.getElementById(id);
-      if (target) { target.focus({ preventScroll: true }); target.scrollIntoView({ block: 'center', behavior: 'instant' }); return; }
-      const persistentTarget = new URLSearchParams(location.search).get('discussionScope') === 'persistent';
-      const page = persistentTarget ? state.persistent : state.pages.get(state.activeVersion);
-      if (!page?.nextCursor || visited.has(page.nextCursor)) break;
-      visited.add(page.nextCursor);
-      if (persistentTarget) await loadPersistent(); else await loadMore();
-      if (state.pending || state.posting) return;
-    }
-    if (run === locationGeneration) postNotice.textContent = words.missing;
+    if (!/^dw-comment-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) return;
+    const params = new URLSearchParams(location.search);
+    const persistentOnly = params.get('discussionScope') === 'persistent';
+    const legacy = !persistentOnly && !params.has('discussionVersion') && !params.has('discussionScope');
+    const versions = legacy ? [...new Set([context.guideVersion, ...state.index.map(row => row.guideVersion)])] : [state.activeVersion];
+    let requests = 0;
+    const stillCurrent = () => run === locationGeneration && !state.locationQueued;
+    const fetchPage = async (version, cursor, scope) => {
+      if (++requests > 40) throw Error('DISCUSSION_LOOKUP_INCOMPLETE');
+      let timer;
+      try {
+        return await Promise.race([read(version, cursor, scope), new Promise((_, reject) => {
+          timer = setTimeout(() => reject(Error('DISCUSSION_LOOKUP_TIMEOUT')), 15000);
+        })]);
+      } finally { clearTimeout(timer); }
+    };
+    const copyPage = page => page && ({ ...page, comments: [...page.comments], seen: new Set(page.seen) });
+    const fromResponse = (response, scope) => {
+      const data = scope === 'persistent' ? response.persistent : response.currentVersion;
+      if (!Array.isArray(data?.comments) || !(data.nextCursor === null || typeof data.nextCursor === 'string')) throw Error('INVALID_DISCUSSION_RESPONSE');
+      return { status: response.thread.status, comments: [...data.comments], seen: new Set(data.comments.map(root => root.id)), nextCursor: data.nextCursor };
+    };
+    const find = page => projectRoots(page.comments).some(root =>
+      `dw-comment-${root.id}` === id || root.replies.some(reply => `dw-comment-${reply.id}` === id));
+    saveDraft(); busy(true); message('loading'); postNotice.textContent = '';
+    try {
+      const scopes = persistentOnly ? ['persistent'] : legacy ? ['current', 'persistent'] : ['current'];
+      for (const scope of scopes) for (const version of scope === 'persistent' ? [context.guideVersion] : versions) {
+        if (!stillCurrent()) return;
+        if (typeof version !== 'string' || !version.trim() || Array.from(version).length > 80) throw Error('INVALID_DISCUSSION_RESPONSE');
+        let page = copyPage(scope === 'persistent' ? state.persistent : state.pages.get(version));
+        if (!page) page = fromResponse(await fetchPage(version, null, scope), scope);
+        const visited = new Set();
+        while (stillCurrent()) {
+          if (find(page)) {
+            if (scope === 'persistent') state.persistent = page;
+            else { state.pages.set(version, page); state.activeVersion = version; }
+            renderPage();
+            const target = document.getElementById(id);
+            if (!target) throw Error('DISCUSSION_LOOKUP_INCOMPLETE');
+            if (legacy) {
+              const url = new URL(location.href);
+              url.searchParams.set(scope === 'persistent' ? 'discussionScope' : 'discussionVersion', scope === 'persistent' ? 'persistent' : version);
+              history.replaceState(history.state, '', url);
+            }
+            target.focus({ preventScroll: true }); target.scrollIntoView({ block: 'center', behavior: 'instant' });
+            message(); return;
+          }
+          if (page.nextCursor === null) break;
+          if (typeof page.nextCursor !== 'string' || !page.nextCursor || visited.has(page.nextCursor)) throw Error('DISCUSSION_LOOKUP_INCOMPLETE');
+          visited.add(page.nextCursor);
+          const next = fromResponse(await fetchPage(version, page.nextCursor, scope), scope);
+          if (!stillCurrent()) return;
+          for (const root of next.comments) if (!page.seen.has(root.id)) { page.comments.push(root); page.seen.add(root.id); }
+          page.nextCursor = next.nextCursor;
+        }
+      }
+      if (stillCurrent()) { message(); postNotice.textContent = words.missing; }
+    } catch {
+      // An incomplete scan is retryable, never evidence that a comment is gone.
+      if (stillCurrent()) message('error', followLocation);
+    } finally { busy(false); }
   }
   function scheduleLocationReplay() {
     if (!state.locationQueued || state.pending || state.posting || state.navigationRunning || state.locationReplayScheduled) return;
@@ -1207,8 +1259,9 @@
     state.navigationRunning = true;
     try {
       const params = new URLSearchParams(location.search); const version = params.get('discussionVersion')?.trim();
-      await loadVersion(params.get('discussionScope') !== 'persistent' && version && Array.from(version).length <= 80 ? version : context.guideVersion);
-      if (!state.locationQueued && !state.pending && !state.posting) await locateComment();
+      const loaded = await loadVersion(params.get('discussionScope') !== 'persistent' && version && Array.from(version).length <= 80 ? version : context.guideVersion);
+      if (!loaded && !state.locationQueued) message('error', followLocation);
+      if (loaded && !state.locationQueued && !state.pending && !state.posting) await locateComment();
     } finally {
       state.navigationRunning = false;
       scheduleLocationReplay();

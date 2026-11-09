@@ -1,12 +1,12 @@
 ---
 title: "Full Essence Wheel Choice Index"
-description: "When each Essence Wheel appears, what you can choose and what changes in Demons Within Public 14.6."
+description: "When each Essence Wheel appears, what you can choose and what changes in Demons Within Public 15.0."
 toc: true
 toc-depth: 3
 search: false
 ---
 
-This page lists the Essence Wheels in the **Public 14.6 main story** in story order, including locked tutorials, dual Wheels, brief displays and options unavailable in this version. It contains branch and ending spoilers.
+This page lists the Essence Wheels in the **Public 15.0 main story** in story order, including locked tutorials, dual Wheels, brief displays and options unavailable in this version. It contains branch and ending spoilers.
 
 “No intervention” means leaving every Essence unselected at an optional Wheel and advancing the text. Locked Wheels cannot be skipped this way: a few stages advance automatically, while the rest require the available action. For longer sequences and save planning, follow the links to [Key Choices & Save Strategy](../guide/choices.qmd).
 
@@ -167,7 +167,7 @@ On Garret's branch, a later optional Lust Wheel targets Resnick once he is alone
 
 ### Officers' Bath: Brigham's Unavailable Option {#brigham-wip}
 
-If you leave the first Wheel alone and Brigham stays, Lust appears later, but **the normal Public 14.6 interface cannot perform this intervention**. Clicking it only displays a future-update message; it changes no outcome and opens no other scene. Advance the text to finish the existing conversation and reach the next day.
+If you leave the first Wheel alone and Brigham stays, Lust appears later, but **the normal Public 15.0 interface cannot perform this intervention**. Clicking it only displays a future-update message; it changes no outcome and opens no other scene. Advance the text to finish the existing conversation and reach the next day.
 
 ### Truth or Dare: Four Turns {#truth-or-dare}
 
@@ -225,3 +225,22 @@ After Garret mentions a young wolf he used to know, the main optional three-way 
 After Sloth, a second Wheel appears when Garret again tells Resnick to leave. Only **Sloth** produces an intervention here: no intervention ends the night; Sloth puts him to sleep and shows the first two images in order. At the final optional Lust opportunity, no intervention gives a different observation passage before leaving, while Lust shows the third image before the scene ends.
 
 To see all three images, use Sloth → Sloth → Lust. For the full no-intervention and first-Lust conversations too, replay from an earlier save. See [drinks in Garret's office](../guide/choices.qmd#garret-office).
+
+## The Shard of Gluttony
+
+### The Shard of Gluttony: six locked Wheels {#gluttony-shard-wheels}
+
+Continue the main story past [Gluttony Reveal](../collectibles/cg.md#gluttony-reveal). All six Wheels are on Resnick's side and follow this order.
+
+| Wheel | What to do | Result |
+|---|---|---|
+| 1 · first attempt to resist | Select **Lust**. | The infusion fails, then the scene continues. |
+| 2 · second attempt to resist | Select **Lust** again. | The second infusion also fails, then the scene continues. |
+| 3 · first automatic Wheel | Wait. | Gluttony and Lust trigger automatically in that order, then the scene continues. |
+| 4 · second automatic Wheel | Wait. | Gluttony and Lust trigger automatically in that order, then the scene continues. |
+| 5 · third automatic Wheel | Wait. | Gluttony and Lust trigger automatically in that order, then the scene continues. |
+| 6 · final automatic Wheel | Wait. | Gluttony and Lust trigger automatically in that order. Let the final Wheel sequence finish to continue the story. |
+
+The Wheel conveys the change through increasingly intense light effects and pulses. Follow the actions above; you do not need to distinguish specific levels.
+
+The first two failures are part of the story. You do not need to wait for them to succeed or try another Essence. The later Wheels have no manual choice. See [the chapter and its day-off dialogue variation](../guide/choices.qmd#shard-of-gluttony).

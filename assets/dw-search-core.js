@@ -14,6 +14,7 @@
     { id: 'COLLECTION', query: ['收集', 'collection', 'collect'], record: ['收集', 'collection', 'collect'] },
     { id: 'UNLOCK', query: ['解锁', 'unlock', 'unlocks'], record: ['解锁', 'unlock', 'unlocks'] },
     { id: 'ENDING', query: ['结局', 'ending', 'endings'], record: ['结局', 'ending', 'endings'] },
+    { id: 'GLUTTONY_CHAPTER', query: ['暴食碎片', '暴食新章', 'shard of gluttony', 'gluttony chapter'], record: ['暴食碎片', '暴食新章', 'shard of gluttony', 'gluttony chapter'] },
     { id: 'GLUTTONY', query: ['暴食', 'gluttony'], record: ['暴食', 'gluttony'] },
     { id: 'CODEX', query: ['辞书', '记闻', 'memorium', 'memory codex', 'codex'], record: ['辞书', '记闻', 'memorium', 'memory codex', 'codex'] },
     { id: 'WAREHOUSE', query: ['仓库', 'warehouse'], record: ['仓库', 'warehouse'] },
@@ -78,7 +79,7 @@
   function tokenize(text, lang) {
     const pieces = [];
     // Isolate Latin runs first, so a Chinese segmenter never merges CG with adjacent Han.
-    for (const run of text.match(/[\p{Script=Han}]+|[\p{L}\p{N}]+/gu) || []) {
+    for (const run of text.match(/[\p{Script=Han}]+|(?:(?!\p{Script=Han})[\p{L}\p{N}])+/gu) || []) {
       if (CJK.test(run[0])) {
         if (typeof Intl !== 'undefined' && Intl.Segmenter) {
           const segmenter = new Intl.Segmenter('zh', { granularity: 'word' });
@@ -164,6 +165,11 @@
       const phrase = parsed.phrase;
       if (phrase && (containsPhrase(section, phrase) || containsPhrase(title, phrase))) score += 45;
       else if (phrase && containsPhrase(text, phrase)) score += 8;
+      // Preserve the established broad Gluttony/Gluttony CG entry while richer
+      // Public15 aliases answer specific queries (new CG, Wheels, character form).
+      if (!parsed.tokens.length && parsed.concepts.includes('GLUTTONY') &&
+          parsed.concepts.every(id => ['GLUTTONY', 'CG'].includes(id)) &&
+          item.record.href === 'collectibles/cg.html#gluttony-reveal') score += 60;
       return [{ record: item.record, score, index }];
     }).sort((a, b) => b.score - a.score || a.index - b.index || a.record.href.localeCompare(b.record.href))
       .map(({ record }) => ({ objectID: record.objectID, href: record.href, title: record.title, section: record.section, text: record.text }));

@@ -1,12 +1,12 @@
 ---
 title: "CG Scene Index"
-description: "Viewing requirements for nine CG and special illustration groups in Demons Within Public 14.6."
+description: "Viewing requirements for CGs and special illustrations in Demons Within Public 15.0."
 toc: true
 toc-depth: 2
 search: false
 ---
 
-This page covers nine CG / special illustration groups in the **Public 14.6 main story** of *Demons Within*, organized by recognizable scenes and their viewing requirements.
+This page covers CGs and special illustrations in the **Public 15.0 main story** of *Demons Within*, organized by scene and viewing requirements.
 
 The current version has no official gallery; these are categories used by this guide. Visual and story spoilers follow.
 
@@ -20,7 +20,8 @@ The current version has no official gallery; these are categories used by this g
 | [Officer Bath](#officer-bath) | The officers' bath | The scene appears on either branch; character presentation differs |
 | [Campfire Conversation](#campfire-conversation) | Dinner during the woodland respite | Reach the scene in the main story |
 | [Garret Asleep](#garret-asleep) | After drinks in Garret's office | Sloth → Sloth → Lust |
-| [Gluttony Reveal](#gluttony-reveal) | The end of Public 14.6 | Reach the current end of the main story |
+| [Gluttony Reveal](#gluttony-reveal) | After Resnick leaves the tavern | Reach the reveal in the shared main story |
+| [Tavern Confrontation](#gluttony-tavern-opening) | After Gluttony Reveal | Complete the six locked Wheels to see the second half |
 
 ## First Night {#first-night}
 
@@ -68,10 +69,18 @@ This special illustration appears during Day of Reprieve, as the group eats, dri
 
 While drinking in Garret's office, choose **Sloth** at the three-way choice, then use **Sloth** on Garret again. Once he falls asleep, the first two images appear consecutively. Choose **Lust** at the later Wheel to see the third.
 
-All three can be seen in one sequence in Public 14.6. You do not need to reload just for these images. Comparing the no-intervention text or other main dialogue branches still requires an earlier save. See [Garret's office](../guide/choices.qmd#garret-office) for prerequisites and save advice.
+All three can be seen in one sequence. You do not need to reload just for these images. Comparing the no-intervention text or other main dialogue branches still requires an earlier save. See [Garret's office](../guide/choices.qmd#garret-office) for prerequisites and save advice.
 
 ## Gluttony Reveal {#gluttony-reveal}
 
-This group appears at the current end of Public 14.6. Earlier choices change who Resnick talks to during the tavern scenes, but all versions lead to the same reveal after he leaves. No further Essence choice is needed at the end.
+Earlier choices change who Resnick talks to in the tavern, but the paths lead to the same reveal after he leaves. The reveal needs no Essence choice. Edwin’s Gluttony transformation plays out in one sequence, with no reload needed for its different stages.
 
-The main visual stages play in sequence, with no reload needed. Edwin transforms into a huge, tiger-like form associated with Gluttony. The current version ends immediately afterward.
+This was the last scene in Public 14.6. In Public 15.0, the story continues into [The Shard of Gluttony](../guide/choices.qmd#shard-of-gluttony).
+
+## Tavern Confrontation {#gluttony-tavern-opening}
+
+This group begins after Gluttony Reveal, when Edwin and Resnick face off inside the tavern.
+
+::: {#gluttony-tavern-return}
+Complete the [six locked Wheels](../reference/interventions.md#gluttony-shard-wheels) to see the second half of the same confrontation. Sloth steps in to help Lust stop Gluttony. The images appear in story order, with no need to reload.
+:::

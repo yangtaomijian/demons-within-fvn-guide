@@ -25,6 +25,8 @@ function parsed(query, lang, concepts, tokens = []) {
   return actual;
 }
 parsed('CG场景', 'zh', ['CG'], ['场景']);
+parsed('Edwin新形态', 'zh', [], ['edwin', '新', '形态']);
+parsed('Garret裸上身', 'zh', [], ['garret']);
 parsed('CG 场景', 'zh', ['CG'], ['场景']);
 parsed('暴食CG', 'zh', ['GLUTTONY', 'CG']);
 parsed('Sprite Viewer解锁', 'zh', ['SPRITE_VIEWER', 'UNLOCK']);
@@ -68,6 +70,11 @@ for (const test of cases) {
     const original = corpus[test.lang].find(record => record.href === result.href);
     assert.deepEqual(result, original, `${test.query}: result must contain only unchanged safe display fields`);
   }
+}
+for (const [lang, records] of Object.entries(corpus)) {
+  const legacy = records.find(record => record.href === 'collectibles/memorium.html#mem-dawn-tournament');
+  assert.match(legacy?.section ?? '', /Public 14\.6/);
+  assert.match(legacy?.text ?? '', lang === 'zh' ? /Public 15\.0 辞书不再收录/ : /No longer listed in the Public 15\.0 Memory Codex/);
 }
 assert.equal(JSON.stringify(corpus), before, 'search must not mutate the source corpus');
 const counts = { zh: cases.filter(c => c.lang === 'zh').length, en: cases.filter(c => c.lang === 'en').length,

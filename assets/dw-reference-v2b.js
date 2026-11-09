@@ -81,7 +81,7 @@
     const sequence = [
       ['first'], ['warehouse'], ['normal', 'captured', 'endings'], ['early'],
       ['days'], ['bear', 'tiger'], ['merge'], ['wolf', 'wolfEnd'], ['sloth'],
-      ['bath'], ['reprieve'], ['gunther'], ['garret'], ['finish']
+      ['bath'], ['reprieve'], ['gunther'], ['garret'], ['gluttony'], ['finish']
     ];
     const requiredEdges = ['days --> bear', 'days --> tiger', 'bear --> merge',
       'tiger --> merge', 'captured --> endings', 'wolf -->|No intervention| wolfEnd'];

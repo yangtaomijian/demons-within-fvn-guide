@@ -64,13 +64,15 @@ async (page) => {
     ['en/guide/choices.html#warehouse', 1280, -1, -1],
     ['collectibles/memorium.html#mem-resnick', 1440, 0, 0],
     ['collectibles/memorium.html#mem-russel', 390, 0, 0],
-    ['collectibles/memorium.html#mem-dawn-tournament', 360, 1, 0],
+    ['collectibles/memorium.html#mem-spare-days', 360, 1, 0],
     ['collectibles/memorium.html#mem-infirmary', 320, 2, 0],
     ['collectibles/memorium.html#mem-red-eyes', 430, 3, 0],
     ['en/collectibles/memorium.html#mem-resnick', 430, 0, 0],
     ['en/collectibles/memorium.html#mem-russel', 320, 0, 0],
     ['collectibles/memorium.html#sprite-ludwig-sloth-form', 390, 0, 1],
-    ['en/collectibles/memorium.html#sprite-ludwig-sloth-form', 320, 0, 1]
+    ['en/collectibles/memorium.html#sprite-ludwig-sloth-form', 320, 0, 1],
+    ['collectibles/memorium.html#sprite-edwin-gluttony', 390, 0, 2],
+    ['en/collectibles/memorium.html#sprite-edwin-gluttony', 320, 0, 2]
   ]) {
     await go(path, width);
     const id = path.split('#')[1];
@@ -79,6 +81,22 @@ async (page) => {
     if (id.startsWith('mem-') && (data.memory !== category || data.slot !== `#${id}`)) fail(`Memory state ${path}`, data);
     if (id.startsWith('sprite-') && data.viewer !== viewer) fail(`Viewer state ${path}`, data);
     results.push(`direct ${path} @ ${width}`);
+  }
+
+  for (const prefix of ['', 'en/']) {
+    const memoryPath = `${prefix}collectibles/memorium.html#mem-dawn-tournament`;
+    await go(memoryPath, 390);
+    const data = await checkLanding(`Legacy link ${memoryPath}`, 'mem-dawn-tournament');
+    const legacy = page.locator('#mem-dawn-tournament');
+    if (data.slot || await page.locator('.dw-memory-tabs a[href="#mem-dawn-tournament"]').count() ||
+        !(await legacy.innerText()).includes('Public 14.6')) fail('Legacy link is not a version note', data);
+    results.push(`historical link ${memoryPath}`);
+
+    await go(`${prefix}guide/choices.html`, 390);
+    const chapter = page.locator('.dw-story-overview-list a[href="#shard-of-gluttony"]');
+    await chapter.click();
+    await checkLanding(`Mobile new chapter ${prefix}`, 'shard-of-gluttony');
+    results.push(`mobile chapter link ${prefix}`);
   }
 
   const checkInitialStructural = async (label, id) => {
@@ -233,7 +251,9 @@ async (page) => {
   for (const [path, query, hash] of [
     ['guide/choices.html', 'warehouse', 'warehouse'],
     ['guide/choices.html', 'Resnick', 'mem-resnick'],
-    ['en/guide/choices.html', 'Ludwig: Sloth form', 'sprite-ludwig-sloth-form']
+    ['en/guide/choices.html', 'Ludwig: Sloth form', 'sprite-ludwig-sloth-form'],
+    ['guide/choices.html', '破晓竞技赛', 'mem-dawn-tournament'],
+    ['en/guide/choices.html', 'Gluttony Edwin', 'sprite-edwin-gluttony']
   ]) {
     await go(path, 1440);
     await page.getByRole('button', {name:path.startsWith('en/') ? 'Search' : '搜索'}).click();
@@ -244,12 +264,34 @@ async (page) => {
     await page.waitForTimeout(120);
     data = await checkLanding(`Search ${hash}`, hash);
     if (hash === 'mem-resnick' && data.slot !== '#mem-resnick') fail('Search Memory state', data);
-    if (hash.startsWith('sprite-') && data.viewer !== 1) fail('Search Viewer state', data);
+    if (hash.startsWith('sprite-') && data.viewer !== (hash === 'sprite-edwin-gluttony' ? 2 : 1))
+      fail('Search Viewer state', data);
     await page.goBack();
     if (!page.url().endsWith(path)) fail('Search Back destination', page.url());
     await page.goForward();
     await checkLanding(`Search Forward ${hash}`, hash);
     results.push(`Search ${hash}, Back/Forward`);
+  }
+  for (const [prefix, width] of [['', 1440], ['en/', 1440], ['', 390], ['en/', 390]]) {
+    const other = prefix ? '' : 'en/';
+    const nav = width < 500 ? '#quarto-sidebar' : '.navbar';
+    await go(`${prefix}index.html`, width);
+    if (width < 500) await page.locator('#quarto-header .quarto-btn-toggle').click();
+    await page.locator(`${nav} a[href$="updates.html"]`).click();
+    await page.waitForURL(base + prefix + 'updates.html');
+    if (await page.locator('#dw-public-discussion').count()) fail('Updates mounted a Discussion thread', page.url());
+
+    await go(`${prefix}updates.html?preview=language#public-14-6`, width);
+    if (width < 500) await page.locator('#quarto-header .quarto-btn-toggle').click();
+    const target = base + other + 'updates.html?preview=language#public-14-6';
+    await page.locator('.dw-language-switch').click();
+    await page.waitForURL(target);
+    if (!(await page.locator('#public-14-6').isVisible()) ||
+        (await page.locator('html').getAttribute('lang')) !== (other ? 'en' : 'zh-CN'))
+      fail('Updates language switch lost the matching section or locale', page.url());
+    if (await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1))
+      fail('Updates page overflows', page.url());
+    results.push(`Updates nav and language switch ${prefix || 'zh/'} @ ${width}`);
   }
   return results;
 }

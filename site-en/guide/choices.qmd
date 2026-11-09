@@ -1,6 +1,6 @@
 ---
 title: "Key Choices & Save Strategy"
-description: "Key decisions and advice on where to save in the Public 14.6 main story of Demons Within."
+description: "Key decisions and advice on where to save in the Public 15.0 main story of Demons Within."
 toc: true
 toc-depth: 2
 search: false
@@ -26,7 +26,7 @@ This map shows the main path, major branches and endings relevant to this page. 
 ```{mermaid}
 %%{init: {"flowchart": {"curve": "linear", "nodeSpacing": 30, "rankSpacing": 20, "padding": 8}, "themeVariables": {"fontSize": "14px"}}}%%
 flowchart TD
-    accTitle: Public 14.6 story map
+    accTitle: Public 15.0 story map
     accDescr: The shared story runs down the center, with warehouse and ambush endings to the side. Bear Day and Tiger Day rejoin the main story. Linked nodes lead to sections on this page.
     subgraph spine[" "]
         first
@@ -41,6 +41,7 @@ flowchart TD
         reprieve
         gunther
         garret
+        gluttony
         finish
     end
     style spine fill:none,stroke:none
@@ -61,7 +62,8 @@ flowchart TD
     reprieve["Woodland respite · Truth or Dare<br/>A missable Codex entry"]
     gunther["Gunther rematch after the market<br/>Branches rejoin; some changes carry over"]
     garret["Drinks in Garret’s office<br/>Includes the Sloth sequence"]
-    finish(["End of Public 14.6"])
+    gluttony["The Shard of Gluttony<br/>Continues after the reveal"]
+    finish(["End of Public 15.0"])
 
     first --> warehouse
     warehouse --> normal
@@ -80,7 +82,8 @@ flowchart TD
     bath --> reprieve
     reprieve --> gunther
     gunther --> garret
-    garret --> finish
+    garret --> gluttony
+    gluttony --> finish
 
     class warehouse,days,wolf branch
     class endings,wolfEnd terminal
@@ -100,6 +103,7 @@ flowchart TD
     click reprieve href "#truth-or-dare" "Truth or Dare: Sam’s Question" _self
     click gunther href "#gunther-rematch" "Gunther rematch after the market" _self
     click garret href "#garret-office" "Drinks in Garret’s office" _self
+    click gluttony href "#shard-of-gluttony" "The Shard of Gluttony" _self
 ```
 
 </div>
@@ -255,7 +259,7 @@ Save as Resnick enters and recognizes the two officers to compare both branches.
 
 Both branches later display Lust, but only one is usable. On Garret's branch, another optional opportunity appears after Garret leaves and Resnick is alone in the bath. It only changes this short passage; both versions rejoin the next day's story.
 
-Brigham's later Lust option is unavailable in Public 14.6. Clicking it only displays a future-update message; it neither performs an intervention nor opens another scene. Advance the text to continue the existing conversation and reach the next day.
+Brigham's later Lust option is unavailable in Public 15.0. Clicking it only displays a future-update message; it neither performs an intervention nor opens another scene. Advance the text to continue the existing conversation and reach the next day.
 
 ## Truth or Dare: Sam's Question {#truth-or-dare}
 
@@ -263,7 +267,7 @@ During the woodland respite, Edwin, Ludwig, Resnick and Sam sit together for Tru
 
 For **Exalted Donations**, leave the Wheel alone and advance the text. Sam will ask where Edwin's money comes from. You must then click the highlighted **Exalted Donations** phrase.
 
-**Lust** makes Sam ask a more personal question, which omits that link. Save before he begins thinking to compare both questions or avoid missing the entry. In the Public 14.6 main story, this link appears only in the no-intervention passage described here.
+**Lust** makes Sam ask a more personal question, which omits that link. Save before he begins thinking to compare both questions or avoid missing the entry. In the Public 15.0 main story, this link appears only in the no-intervention passage described here.
 
 ## Gunther Rematch After the Market {#gunther-rematch}
 
@@ -302,3 +306,11 @@ For all three images, follow Sloth → Sloth → Lust. You do not need to reload
 
 For the main dialogue branches, use an earlier save: save before the first three-way choice to compare no intervention, Lust and Sloth. On the Sloth branch, you can also save before the second Sloth opportunity and the final Lust opportunity.
 :::
+
+## The Shard of Gluttony {#shard-of-gluttony}
+
+In Public 14.6, the main story ended after [Gluttony Reveal](../collectibles/cg.md#gluttony-reveal). In Public 15.0, continue after the reveal to play the rest of the tavern sequence and the following day.
+
+The first two locked Wheels require **Lust** on Resnick's side. Both attempts fail in the story, but selecting Lust advances the scene. The next four Wheels are automatic: wait for Gluttony, then Lust. See the [six locked Wheels](../reference/interventions.md#gluttony-shard-wheels) for the order.
+
+If you took the day off with Edwin, he and Resnick have an extra exchange the following day about their earlier plans. It rejoins the same conversation and does not change the Wheel sequence or [Edwin's Viewer unlock](../collectibles/memorium.md#sprite-edwin-gluttony). Save before the [day-off choice](#day-off) if you want to compare the dialogue; a save before the tavern reveal lets you revisit the new chapter on your current route.

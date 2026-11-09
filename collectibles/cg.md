@@ -1,12 +1,12 @@
 ---
 title: "CG 场景索引"
-description: "心魔在焉 Public 14.6 主线中九个 CG 与特殊插画场景组的观看条件。"
+description: "心魔在焉 Public 15.0 主线 CG 与特殊插画的观看条件。"
 toc: true
 toc-depth: 2
 search: false
 ---
 
-本页整理 *心魔在焉* **Public 14.6 主线**中的 9 个 CG / 特殊插画场景组，并按玩家能够辨认的剧情位置说明观看条件。
+本页按剧情位置整理 *心魔在焉* **Public 15.0 主线**的 CG 和特殊插画，并说明观看条件。
 
 请注意目前版本无官方画廊，本站的查阅分类仅供参考。下文会涉及画面与剧情剧透。
 
@@ -20,7 +20,8 @@ search: false
 | [Officer Bath](#officer-bath) | 长官浴场 | 场景本身可见；人物呈现有分流 |
 | [篝火谈话](#campfire-conversation) | 林中休整的篝火晚餐 | 随主线到达即可观看 |
 | [Garret Asleep](#garret-asleep) | Garret 办公室喝酒后 | 懒惰 → 懒惰 → 色欲 |
-| [Gluttony Reveal](#gluttony-reveal) | Public 14.6 内容末端 | 到达当前主线末端 |
+| [Gluttony Reveal](#gluttony-reveal) | Resnick 离开酒馆后 | 沿共同主线到达揭示 |
+| [酒馆对峙](#gluttony-tavern-opening) | 暴食揭示之后 | 沿主线完成六处锁定轮，继续观看后半段 |
 
 ## First Night {#first-night}
 
@@ -68,10 +69,20 @@ Garret 一侧随后还有可执行的色欲差分；Brigham 一侧显示的色�
 
 在 Garret 办公室喝酒的场景中，先在三向窗口选择 **懒惰**，稍后再次对 Garret 选择 **懒惰**。他睡着后，前两种画面会在同一条流程中先后出现；再在后面的窗口选择 **色欲**，即可继续看到第三种画面。
 
-上述三种画面在 Public 14.6 中可连续看到，无需仅为这三张画面额外回档。若还想比较同一段的不干预文字或其他主要文字分支，仍需从更早的窗口回看。路线前提与分层存档建议见[Garret 办公室](../guide/choices.qmd#garret-office)。
+上述三种画面可连续看到，无需仅为这三张画面额外回档。若还想比较同一段的不干预文字或其他主要文字分支，仍需从更早的窗口回看。路线前提与分层存档建议见[Garret 办公室](../guide/choices.qmd#garret-office)。
 
 ## Gluttony Reveal {#gluttony-reveal}
 
-这一组位于 Public 14.6 当前主线内容的末端。酒馆剧情片段会根据之前的部分选择出现不同谈话对象，但这些变化都会汇入 Resnick 离开酒馆后的同一段揭示；无需在末端再选择本源。
+酒馆剧情会根据先前的选择出现不同谈话对象，但都汇入 Resnick 离开酒馆后的同一段揭示。这段揭示不需要选择本源。Edwin 的暴食异变在同一段展示中依次展开，无需为不同阶段回档。
 
-主要视觉阶段会在同一段动态展示中顺序播放，不需要为它们回档。画面明确表现 Edwin 出现与 Gluttony 有关的巨大虎形异变。随后本版本剧情结束。
+Public 14.6 的主线到此结束；Public 15.0 看完后会继续进入[暴食碎片](../guide/choices.qmd#shard-of-gluttony)。
+
+## 酒馆对峙 {#gluttony-tavern-opening}
+
+看完暴食揭示后，Edwin 与 Resnick 在酒馆内对峙，这组画面从这里开始。
+
+::: {#gluttony-tavern-return}
+沿主线完成[六处锁定轮](../reference/interventions.md#gluttony-shard-wheels)，就能看到同一场对峙的后半段。懒惰（Sloth）在这时介入，协助色欲（Lust）阻止暴食。整组画面随剧情顺序出现，无需回档。
+:::
+
+**Public 15.0 简体中文版。** 这段酒馆剧情中有连续三句旁白显示为英文，之后恢复中文。可以照常推进对白。

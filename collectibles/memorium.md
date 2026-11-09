@@ -1,18 +1,18 @@
 ---
 title: "辞书与 Sprite Viewer 查漏"
-description: "心魔在焉 Public 14.6 的辞书条目与 Sprite Viewer 状态查漏条件。"
+description: "心魔在焉 Public 15.0 的辞书条目与 Sprite Viewer 状态查漏条件。"
 toc: true
 toc-depth: 3
 search: false
 ---
 
-本页整理 *心魔在焉* **Public 14.6** 主线中的辞书与 Sprite Viewer 查漏条件。两者是不同记录：辞书收录人物、事件、环境与派系条目；Sprite Viewer 则在角色条目之外记录可查看的表情、衣着或特殊形态。这里不直接搬运辞书正文或游戏素材，但会涉及剧情剧透。
+本页整理 *心魔在焉* **Public 15.0** 主线中的辞书与 Sprite Viewer 查漏条件。两者是不同记录：辞书收录人物、事件、环境与派系条目；Sprite Viewer 则在角色条目之外记录可查看的表情、衣着或特殊形态。这里不直接搬运辞书正文或游戏素材，但会涉及剧情剧透。
 
 [跳到辞书](#memorium) · [跳到 Sprite Viewer](#sprite-viewer)
 
 ## 辞书 {#memorium}
 
-当前主线共有 **42 个辞书条目**：14 个角色、11 个事件、10 个环境和 7 个派系。其中 36 个要在正文中看到对应高亮词后**主动点击**；另外 6 个由剧情自动解锁。
+当前主线共有 **41 个辞书条目**：14 个角色、10 个事件、10 个环境和 7 个派系。其中 35 个要在正文中看到对应高亮词后**主动点击**；另外 6 个由剧情自动解锁。
 
 打开游戏内“记闻”中的“辞书”，确认类别、页码和空缺所在的行列，再点下表中的条目查看解锁条件。每页 **3 列 × 4 行**，从左到右、从上到下排列；「—」表示该位置没有条目。
 
@@ -20,7 +20,7 @@ search: false
 
 <div class="dw-tab-list" aria-label="辞书类别">
 <button type="button" id="memory-tab-characters" aria-controls="memory-panel-characters">角色 14 条目</button>
-<button type="button" id="memory-tab-events" aria-controls="memory-panel-events">事件 11 条目</button>
+<button type="button" id="memory-tab-events" aria-controls="memory-panel-events">事件 10 条目</button>
 <button type="button" id="memory-tab-environments" aria-controls="memory-panel-environments">环境 10 条目</button>
 <button type="button" id="memory-tab-factions" aria-controls="memory-panel-factions">派系 7 条目</button>
 </div>
@@ -66,7 +66,6 @@ search: false
 
 ```{=html}
 <div class="dw-slot-grid">
-<a href="#mem-dawn-tournament">破晓竞技赛</a>
 <a href="#mem-spare-days">休息日</a>
 <a href="#mem-resnick-s-favorite-book">Resnick喜欢的书</a>
 <a href="#mem-prank-on-edwin">捉弄Edwin</a>
@@ -77,6 +76,7 @@ search: false
 <a href="#mem-passing-out-in-the-baths">晕倒在浴室</a>
 <a href="#mem-captain-s-worst-punishment">队长最烂的惩罚</a>
 <a href="#mem-scary-sounds-at-night">夜中怪声</a>
+<span class="dw-slot-empty" aria-label="空槽">—</span>
 <span class="dw-slot-empty" aria-label="空槽">—</span>
 </div>
 ```
@@ -139,13 +139,17 @@ search: false
 ::: {.callout-note title="版本说明" #memorium-limit}
 Public 14.6 已修复红眼狼与红眼狐狸的辞书记录问题，并加入旧记录兼容支持。
 
+[破晓竞技赛（Public 14.6 旧条目）]{#mem-dawn-tournament}：在 14.6 中，康复段谈到骑士团比赛时，点击高亮词可以解锁。Public 15.0 已从辞书列表移除这项事件，英文对白也去掉了该链接，因此不计入 15.0 的收集清单。
+
+**Public 15.0 简体中文版：** 康复段的「破晓竞技赛」高亮链接点击后会触发 `TypeError`。直接推进对白即可，这项事件不计入当前版本的辞书收集。
+
 :::
 
 :::: {.dw-lookup-tabs .dw-condition-tabs}
 
 <div class="dw-tab-list" aria-label="辞书详细解锁条件">
 <button type="button" id="condition-tab-characters" aria-controls="condition-panel-characters">角色 14</button>
-<button type="button" id="condition-tab-events" aria-controls="condition-panel-events">事件 11</button>
+<button type="button" id="condition-tab-events" aria-controls="condition-panel-events">事件 10</button>
 <button type="button" id="condition-tab-environments" aria-controls="condition-panel-environments">环境 10</button>
 <button type="button" id="condition-tab-factions" aria-controls="condition-panel-factions">派系 7</button>
 </div>
@@ -180,7 +184,6 @@ Public 14.6 已修复红眼狼与红眼狐狸的辞书记录问题，并加入�
 
 | 条目 | 出现位置与操作 |
 |---|---|
-| [破晓竞技赛]{#mem-dawn-tournament} | 康复期间谈到骑士团的比赛时点击高亮词。 |
 | [休息日]{#mem-spare-days} | 仓库事件后的浴场谈话中，众人讨论休假日时点击高亮词。 |
 | [Resnick喜欢的书]{#mem-resnick-s-favorite-book} | Bear Day 的图书馆内，Ludwig 回来后一起挑书时点击书名。 |
 | [捉弄Edwin]{#mem-prank-on-edwin} | Bear Day 图书馆桌边连续互动的前三处中，任一处不干预，随后进入阅读收尾并点击两人回忆旧事时出现的高亮词。若前三处都选择色欲，剧情会进入另一种收尾并绕开该链接。 |
@@ -236,7 +239,7 @@ Public 14.6 已修复红眼狼与红眼狐狸的辞书记录问题，并加入�
 
 ## Sprite Viewer {#sprite-viewer}
 
-本页列出 **23 组 Sprite Viewer 状态**：其中 22 组可随当前正常主线解锁，另有 1 组目前没有已知的正常主线取得方法。每组可包含多个表情、衣着或身体状态，与角色的辞书条目分开解锁。
+本页列出 **24 组 Sprite Viewer 状态**：其中 23 组可随当前正常主线解锁，另有 1 组目前没有已知的正常主线取得方法。每组可包含多个表情、衣着或身体状态，与角色的辞书条目分开解锁。
 
 Viewer 的入口在辞书的角色条目中，需要先解锁相应条目，再打开角色介绍并点击眼睛图标。
 
@@ -298,6 +301,7 @@ Viewer 的入口在辞书的角色条目中，需要先解锁相应条目，再�
 |---|---|
 | [Edwin：第一晚状态]{#sprite-edwin-first-night} | 完成康复后的第一晚并进入共同收尾时自动解锁；双轮选谁、最后一处是否干预都不改变这组解锁。 |
 | [Edwin：浴场状态]{#sprite-edwin-baths} | 完成仓库事件后的哨所浴场段，在休假日分流前的共同收尾解锁。 |
+| [Edwin：暴食形态]{#sprite-edwin-gluttony} | Public 15.0：[暴食碎片](../guide/choices.qmd#shard-of-gluttony)推进到翌日，Resnick 回想酒馆事件时，形态会随共同剧情自动解锁，与 Edwin 的辞书条目分开。 |
 
 
 :::
@@ -324,6 +328,8 @@ Viewer 的入口在辞书的角色条目中，需要先解锁相应条目，再�
 | [Garret：浴场状态]{#sprite-garret-baths} | 完成仓库事件后的哨所浴场段，在休假日分流前的共同收尾解锁；这是前期哨所浴场，不是后来的长官浴场。 |
 | [Garret：便服状态]{#sprite-garret-casual} | 进入黑狼伏击章节的较早展示时解锁，发生在决定伏击结果的本源之轮之前。 |
 
+Public 15.0 在 Garret 的默认 Viewer 选项中增加两种姿势：一套着甲，一套裸上身。两种都没有额外解锁条件。
+
 
 :::
 
@@ -347,7 +353,7 @@ Viewer 的入口在辞书的角色条目中，需要先解锁相应条目，再�
 | Viewer 目标 | 取得位置与操作 |
 |---|---|
 | [Boris：Tiger Day 状态]{#sprite-boris-tiger-day} | 先进入 Tiger Day；酒馆后方的较早窗口选择色欲，把访客确定为 Boris。私人房间后段还要选择色欲开门，并在 Boris 自己的窗口再次选择色欲，之后才解锁。 |
-| [Boris：便服状态]{#sprite-boris-casual} | Public 14.6 暂无明确的正常主线取得方法。请勿将这组衣着视为 Boris / Jayden 访客分支的必得奖励。 |
+| [Boris：便服状态]{#sprite-boris-casual} | Public 15.0 暂无明确的正常主线取得方法。请勿将这组衣着视为 Boris / Jayden 访客分支的必得奖励。 |
 
 
 :::

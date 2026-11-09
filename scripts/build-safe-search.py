@@ -35,6 +35,9 @@ ALIASES = {
     '沼泽地': 'The Marshlands',
     '首都': 'The Capital',
     '破晓竞技赛': 'Dawn Tournament',
+    'Gluttony Reveal': '暴食揭示',
+    '暴食碎片': 'The Shard of Gluttony／暴食新章',
+    '暴食形态': 'Gluttony Edwin／Edwin Gluttony form／暴食 Edwin',
     '休息日': 'Spare Days',
     'Resnick喜欢的书': "Resnick's Favorite Book",
     '捉弄Edwin': 'Prank on Edwin',
@@ -60,6 +63,15 @@ PAGES = {
     'collectibles/cg.html': ('h2', '查看该场景组的出现位置、观看条件与变体。'),
     'collectibles/memorium.html': ('items', ''),
 }
+# Curated locator aliases only: no prose, conditions or outcomes are extracted.
+ANCHOR_ALIASES = {
+    'gluttony-shard-wheels': ('暴食圆盘／暴食轮盘／暴食失败／色欲注入失败／自动轮盘',),
+    'sprite-edwin-gluttony': ('Edwin 新形态／Edwin 新立绘',),
+    'gluttony-tavern-opening': ('暴食新CG／新CG／暴食CG／酒馆开场对峙／酒馆对峙后半段',),
+    'mem-dawn-tournament': ('破晓竞技赛报错／破晓竞技赛崩溃／中文旧链接／TypeError',),
+    'viewer-garret': ('Garret 新姿势／Garret 裸上身／Garret 着甲／Garret 新立绘',),
+}
+EXTRA_LOCATORS = {'collectibles/memorium.html': {'viewer-garret': 'Garret：新增姿势'}}
 FIELDS = {'objectID', 'href', 'title', 'section', 'text'}
 
 
@@ -121,7 +133,7 @@ class Names(HTMLParser):
 def record(page, names, anchor, name, summary, extra=()):
     if not name or anchor not in names.ids:
         raise ValueError('Missing name or anchor: ' + page + '#' + anchor)
-    aliases = list(extra)
+    aliases = [*extra, *ANCHOR_ALIASES.get(anchor, ())]
     for term, words in ALIASES.items():
         if term.casefold() in name.casefold():
             aliases.append(words)
@@ -139,6 +151,9 @@ def locators(output):
         names.feed((output / page).read_text(encoding='utf-8'))
         if not names.title:
             raise ValueError('Missing page title: ' + page)
+        for anchor, label in EXTRA_LOCATORS.get(page, {}).items():
+            if anchor in names.ids:
+                result.append(record(page, names, anchor, label, '查看该角色的 Sprite Viewer 说明。'))
         if level == 'items':
             for tag, anchor, name in names.headings:
                 if anchor in ('memorium', 'sprite-viewer'):
@@ -146,6 +161,8 @@ def locators(output):
             for anchor, name in names.items:
                 summary = ('查看该辞书条目的出现位置与解锁方式。' if anchor.startswith('mem-')
                            else '查看该 Sprite Viewer 状态的取得条件。')
+                if anchor == 'mem-dawn-tournament':
+                    summary = 'Public 15.0 辞书不再收录。'
                 result.append(record(page, names, anchor, name, summary))
             if not names.items:
                 raise ValueError('No anchored collection items: ' + page)

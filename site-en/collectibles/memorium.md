@@ -1,18 +1,18 @@
 ---
 title: "Memory Codex & Sprite Viewer Checklist"
-description: "Memory Codex entries and Sprite Viewer unlocks in Demons Within Public 14.6."
+description: "Memory Codex entries and Sprite Viewer unlocks in Demons Within Public 15.0."
 toc: true
 toc-depth: 3
 search: false
 ---
 
-This page covers the Memory Codex and Sprite Viewer unlocks in the **Public 14.6** main story of *Demons Within*. The Codex holds character, event, environment and faction entries; the Sprite Viewer separately records expressions, outfits and special forms. This guide does not reproduce the Codex text or game assets, but it does contain story spoilers.
+This page covers the Memory Codex and Sprite Viewer unlocks in the **Public 15.0** main story of *Demons Within*. The Codex holds character, event, environment and faction entries; the Sprite Viewer separately records expressions, outfits and special forms. This guide does not reproduce the Codex text or game assets, but it does contain story spoilers.
 
 [Memory Codex](#memorium) · [Sprite Viewer](#sprite-viewer)
 
 ## Memory Codex {#memorium}
 
-The main story has **42 Memory Codex entries**: 14 characters, 11 events, 10 environments and seven factions. Of these, 36 require you to **click** the highlighted term in the story; six unlock automatically.
+The main story has **41 Memory Codex entries**: 14 characters, 10 events, 10 environments and seven factions. Of these, 35 require you to **click** the highlighted term in the story; six unlock automatically.
 
 Open **Memorium → Memory Codex** in the game, check the category, page and missing slot, then select the matching entry below. Each page has **3 columns × 4 rows**, filled left to right, then top to bottom. “—” means there is no entry in that slot.
 
@@ -20,7 +20,7 @@ Open **Memorium → Memory Codex** in the game, check the category, page and mis
 
 <div class="dw-tab-list" aria-label="Memory Codex categories">
 <button type="button" id="memory-tab-characters" aria-controls="memory-panel-characters">Entities (14)</button>
-<button type="button" id="memory-tab-events" aria-controls="memory-panel-events">Events (11)</button>
+<button type="button" id="memory-tab-events" aria-controls="memory-panel-events">Events (10)</button>
 <button type="button" id="memory-tab-environments" aria-controls="memory-panel-environments">Environments (10)</button>
 <button type="button" id="memory-tab-factions" aria-controls="memory-panel-factions">Factions (7)</button>
 </div>
@@ -66,7 +66,6 @@ Rows 2–4 are empty.
 
 ```{=html}
 <div class="dw-slot-grid">
-<a href="#mem-dawn-tournament">Dawn Tournament</a>
 <a href="#mem-spare-days">Spare Days</a>
 <a href="#mem-resnick-s-favorite-book">Resnick's Favorite Book</a>
 <a href="#mem-prank-on-edwin">Prank on Edwin</a>
@@ -77,6 +76,7 @@ Rows 2–4 are empty.
 <a href="#mem-passing-out-in-the-baths">Passing Out in the Baths</a>
 <a href="#mem-captain-s-worst-punishment">Captain's Worst Punishment</a>
 <a href="#mem-scary-sounds-at-night">Scary Sounds at Night</a>
+<span class="dw-slot-empty" aria-label="Empty slot">—</span>
 <span class="dw-slot-empty" aria-label="Empty slot">—</span>
 </div>
 ```
@@ -139,13 +139,15 @@ Rows 2–4 are empty.
 ::: {.callout-note title="Version note" #memorium-limit}
 Public 14.6 fixes the Red-eyes Wolf and Red-eyes Fox Codex record issues and adds compatibility for older records.
 
+[Dawn Tournament (Public 14.6 only)]{#mem-dawn-tournament}: In 14.6, click the highlighted phrase when the Order’s competition comes up during recovery. Public 15.0 no longer lists this event in the Memory Codex.
+
 :::
 
 :::: {.dw-lookup-tabs .dw-condition-tabs}
 
 <div class="dw-tab-list" aria-label="Memory Codex unlock requirements">
 <button type="button" id="condition-tab-characters" aria-controls="condition-panel-characters">Entities (14)</button>
-<button type="button" id="condition-tab-events" aria-controls="condition-panel-events">Events (11)</button>
+<button type="button" id="condition-tab-events" aria-controls="condition-panel-events">Events (10)</button>
 <button type="button" id="condition-tab-environments" aria-controls="condition-panel-environments">Environments (10)</button>
 <button type="button" id="condition-tab-factions" aria-controls="condition-panel-factions">Factions (7)</button>
 </div>
@@ -180,7 +182,6 @@ Public 14.6 fixes the Red-eyes Wolf and Red-eyes Fox Codex record issues and add
 
 | Entry | Where and how to unlock |
 |---|---|
-| [Dawn Tournament]{#mem-dawn-tournament} | Click the highlighted phrase when the Order's competition is discussed during recovery. |
 | [Spare Days]{#mem-spare-days} | Click the highlighted phrase when the group discusses days off in the baths after the warehouse incident. |
 | [Resnick's Favorite Book]{#mem-resnick-s-favorite-book} | On Bear Day, click the book title while choosing books together after Ludwig returns to the library. |
 | [Prank on Edwin]{#mem-prank-on-edwin} | Leave any of the first three opportunities at the Bear Day library table alone. During the conversation after they return to reading, click the highlighted phrase as they recall the past. Lust at all three leads to a different conclusion without this link. |
@@ -236,7 +237,7 @@ Public 14.6 fixes the Red-eyes Wolf and Red-eyes Fox Codex record issues and add
 
 ## Sprite Viewer {#sprite-viewer}
 
-This page lists **23 groups of Sprite Viewer variations**. Twenty-two can be unlocked through normal play in the Public 14.6 main story; the remaining group has no known normal main-story unlock. Each group may include several expressions, outfits or forms, and unlocks separately from the character's Codex entry.
+This page lists **24 groups of Sprite Viewer variations**. Twenty-three can be unlocked through normal play in the Public 15.0 main story; the remaining group has no known normal main-story unlock. Each group may include several expressions, outfits or forms, and unlocks separately from the character's Codex entry.
 
 To open the Viewer, unlock the character's Memory Codex entry, open their profile and click the eye icon.
 
@@ -298,6 +299,7 @@ Viewer states unlock automatically at the story points below; you do not need to
 |---|---|
 | [Edwin: first-night states]{#sprite-edwin-first-night} | Complete the first night after recovery and reach its shared conclusion. The dual Wheel's target and the final intervention do not affect this unlock. |
 | [Edwin: bath states]{#sprite-edwin-baths} | Complete the Watch House bath scene after the warehouse incident; unlocks at the shared conclusion before the day-off branch. |
+| [Edwin: Gluttony form]{#sprite-edwin-gluttony} | Public 15.0: continue into the following day in [The Shard of Gluttony](../guide/choices.qmd#shard-of-gluttony), until Resnick reflects on the tavern incident. The form unlocks automatically in the shared story, separately from Edwin’s Codex entry. |
 
 
 :::
@@ -324,6 +326,8 @@ Viewer states unlock automatically at the story points below; you do not need to
 | [Garret: bath states]{#sprite-garret-baths} | Complete the Watch House bath scene after the warehouse incident; unlocks at the shared conclusion before the day-off branch. This is the early Watch House bath, not the later officers' bath. |
 | [Garret: casual clothes]{#sprite-garret-casual} | Unlocks early in the black wolf ambush chapter, before the Essence Wheel that determines the ambush outcome. |
 
+Public 15.0 adds two poses to Garret’s default Viewer options: one in armor and one shirtless. Neither has a separate unlock requirement.
+
 
 :::
 
@@ -347,7 +351,7 @@ Viewer states unlock automatically at the story points below; you do not need to
 | Viewer group | Where and how to unlock |
 |---|---|
 | [Boris: Tiger Day states]{#sprite-boris-tiger-day} | Enter Tiger Day and choose Lust at the earlier opportunity behind the tavern to select Boris as the visitor. Later in the private room, choose Lust to open the door, then Lust again at Boris's own Wheel to unlock this group. |
-| [Boris: casual clothes]{#sprite-boris-casual} | No known main-story unlock route is available for this outfit in Public 14.6. Don’t treat it as a guaranteed reward from the Boris / Jayden visitor branch. |
+| [Boris: casual clothes]{#sprite-boris-casual} | No known main-story unlock route is available for this outfit in Public 15.0. Don’t treat it as a guaranteed reward from the Boris / Jayden visitor branch. |
 
 
 :::
