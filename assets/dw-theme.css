@@ -372,3 +372,9 @@ main.content .dw-memory-tabs .dw-slot-grid > * { min-height:2.8rem; padding:.4re
 main.content .dw-memory-tabs > .dw-tab-panel { padding:1rem; }
 main.content .dw-memory-tabs .dw-tab-panel > p { margin-bottom:.65rem; }
 @media (max-width:575px) { main.content .dw-memory-tabs > .dw-tab-panel { padding:.8rem .65rem; } }
+
+/* Desktop reading blocks share the article edge; tables retain natural sizing. */
+@media (min-width: 1100px) {
+  main.content > :is(p, ul, ol, dl),
+  main.content section > :is(p, ul, ol, dl) { max-width: none; }
+}
