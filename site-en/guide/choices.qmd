@@ -6,7 +6,7 @@ toc-depth: 2
 search: false
 ---
 
-This page follows selected key scenes from the first night after recovery through drinks in Garret's office, with a broad story map. For a quick lookup of each Essence Wheel's target, available actions and immediate outcomes, use the [Full Essence Wheel Choice Index](../reference/interventions.md). For viewing requirements by image group, see the [CG Scene Index](../collectibles/cg.md).
+This page covers key scenes, choices and save points from the first night after recovery through The Shard of Gluttony and its conclusion the following day, with a story map. For a quick lookup of each Essence Wheel's target, available actions and immediate outcomes, use the [Full Essence Wheel Choice Index](../reference/interventions.md). For viewing requirements by image group, see the [CG Scene Index](../collectibles/cg.md).
 
 Use a separate save slot at the start of a scene or before a key choice so you can replay other outcomes.
 
