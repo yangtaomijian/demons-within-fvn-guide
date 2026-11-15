@@ -5,7 +5,7 @@ const reduceMotion=matchMedia('(prefers-reduced-motion:reduce)');
 document.body.classList.add('memory-waiting');let timer,frame;
 let diveLayer=null,diveSkip=null,diveAnimations=[],diveToken=0;
 function clearDive(){diveToken++;for(const a of diveAnimations)a.cancel();diveAnimations=[];diveLayer?.remove();diveSkip?.remove();diveLayer=diveSkip=null;main.style.transform='';main.style.transformOrigin=''}
-function finish(){clearTimeout(timer);cancelAnimationFrame(frame);clearDive();entrance.classList.add('hidden');document.body.classList.remove('memory-waiting');main.setAttribute('tabindex','-1');main.focus({preventScroll:true})}
+function finish(moveFocus=true){clearTimeout(timer);cancelAnimationFrame(frame);clearDive();entrance.classList.add('hidden');document.body.classList.remove('memory-waiting');if(moveFocus){main.setAttribute('tabindex','-1');main.focus({preventScroll:true})}}
 async function pupilDive(){
  const token=++diveToken;const NS='http://www.w3.org/2000/svg';
  const layer=document.createElement('div');layer.className='memory-camera';diveLayer=layer;
@@ -33,12 +33,12 @@ async function pupilDive(){
  const fade=layer.animate([{opacity:1},{opacity:0}],{duration:200,fill:'forwards'});diveAnimations.push(fade);try{await fade.finished;if(token===diveToken)finish()}catch(_){}
 }
 function enter(animate){if(!animate||matchMedia('(prefers-reduced-motion:reduce)').matches){finish();return}entrance.classList.add('entering');document.querySelector('#enter').disabled=true;const eye=document.querySelector('#eyeOpen'),iris=document.querySelector('#iris');const start=performance.now();function open(now){const t=Math.min(1,(now-start)/900),e=t*t*(3-2*t);eye.style.opacity=String(Math.min(1,t*5));eye.setAttribute('d',`M415 245 C490 ${225-28*e} 675 ${225-28*e} 785 ${245-10*e} Q600 ${225+100*e} 415 245Z`);iris.style.opacity=String(Math.max(0,(e-.2)/.8));iris.style.transform=`translate(0,${245*(1-e)}px) scale(1,${Math.max(.01,e)})`;if(t<1)frame=requestAnimationFrame(open);else pupilDive()}frame=requestAnimationFrame(open)}
-skip.onclick=finish;document.querySelector('#enter').onclick=()=>enter(true);document.querySelector('#still').onclick=finish;document.addEventListener('keydown',e=>{if(e.key==='Escape')finish()});if(alreadySeen||!storageOK||location.hash||reduceMotion.matches)finish();
+skip.onclick=finish;document.querySelector('#enter').onclick=()=>enter(true);document.querySelector('#still').onclick=finish;document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!entrance.classList.contains('hidden'))finish()});if(alreadySeen||!storageOK||location.hash||reduceMotion.matches)finish(false);
 const replay=document.createElement('button');replay.type='button';replay.className='memory-replay';replay.textContent=en?'Replay intro':'重看开场';
 replay.addEventListener('click',()=>{clearTimeout(timer);cancelAnimationFrame(frame);clearDive();resetGaze();entrance.classList.remove('hidden','entering','through');document.querySelector('#eyeOpen').style.opacity='0';document.querySelector('#iris').style.opacity='0';document.querySelector('#enter').disabled=false;document.body.classList.add('memory-waiting');window.scrollTo(0,0);document.querySelector('#enter').focus({preventScroll:true})});
 const quick=document.querySelector('.dw-home-fast-path');if(quick)quick.append(replay);else main.prepend(replay);
-window.addEventListener('pageshow',e=>{if(e.persisted)finish()});
-reduceMotion.addEventListener('change',e=>{if(e.matches)finish()});
+window.addEventListener('pageshow',e=>{if(e.persisted)finish(false)});
+reduceMotion.addEventListener('change',e=>{if(e.matches)finish(false)});
 
 // Event -> transform -> sleep; no permanent animation loop.
 const gaze=document.querySelector('#homeGaze'),room=grid;
