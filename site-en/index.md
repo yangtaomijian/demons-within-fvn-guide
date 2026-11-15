@@ -8,6 +8,9 @@ twitter-card:
 toc: false
 body-classes: dw-home
 comments: false
+css: assets/dw-home-scene.css
+include-after-body:
+  - text: '<script src="assets/dw-home-scene.js"></script>'
 ---
 
 *Demons Within* is a furry visual novel (FVN) by Sleth. This unofficial **Public 15.0** guide covers Essence Wheel choices, branch outcomes and endings, CG scenes, Memory Codex entries, and Sprite Viewer unlocks.

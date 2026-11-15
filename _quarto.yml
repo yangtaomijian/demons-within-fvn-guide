@@ -2,6 +2,9 @@ project:
   type: website
   output-dir: _site
   resources:
+    - assets/dw-home-scene.js
+    - assets/resnick-memory.webp
+    - assets/memory-environment.webp
     - assets/ai/
     - 404.html
     - googlef0776754787f4a8e.html
@@ -114,7 +117,6 @@ format:
       - assets/dw-reference-v2b.html
       - assets/cloudflare-web-analytics.html
       - assets/dw-search.html
-      - assets/dw-discussion-fixtures.html
       - assets/dw-discussion-remote.html
       - assets/dw-discussion-runtime.html
       - assets/dw-discussion-ui.html

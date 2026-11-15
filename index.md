@@ -9,6 +9,9 @@ twitter-card:
 toc: false
 body-classes: dw-home
 comments: false
+css: assets/dw-home-scene.css
+include-after-body:
+  - text: '<script src="assets/dw-home-scene.js"></script>'
 ---
 
 《心魔在焉（Demons Within）》是 Sleth 创作的 FVN（Furry Visual Novel，兽人视觉小说）。本站是面向 **Public 15.0** 主线的非官方中文攻略，整理本源之轮选择、分支结果与结局，以及 CG、辞书和 Sprite Viewer 的解锁条件。
