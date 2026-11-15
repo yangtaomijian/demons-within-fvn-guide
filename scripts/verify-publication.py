@@ -35,10 +35,10 @@ CLOUDFLARE_ANALYTICS_TOKEN = "b77469ef6c8b4b17af4a9f17ffdd8a65"
 ZH_SITE_NAME = "Demons Within 玩家攻略"
 EN_SITE_NAME = "Demons Within Player Guide"
 SOCIAL_IMAGES = {
-    "zh-CN": "assets/social/demons-within-zh.png",
-    "en": "assets/social/demons-within-en.png",
+    "zh-CN": "assets/social/demons-within-zh-d28493379097.png",
+    "en": "assets/social/demons-within-en-6fc420d4203f.png",
 }
-# Historical homepage OG image paths remain public compatibility aliases.
+# Keep legacy card bytes at historical URLs; new homepage cards use fingerprinted URLs.
 SOCIAL_IMAGE_ALIASES = {
     "assets/social/demons-within-public-14.6-zh.png": "assets/social/demons-within-zh.png",
     "en/assets/social/demons-within-public-14.6-en.png": "en/assets/social/demons-within-en.png",
@@ -145,7 +145,8 @@ def verify_social_image_aliases() -> None:
         current_image = SITE / current
         if not current_image.is_file():
             raise AssertionError(f"{current_image}: current social image missing")
-        for path in (source_alias, SITE / alias):
+        source_current = ROOT / current.replace("en/", "site-en/", 1) if current.startswith("en/") else ROOT / current
+        for path in (source_current, source_alias, SITE / alias):
             if not path.is_file() or path.read_bytes() != current_image.read_bytes():
                 raise AssertionError(f"{path}: historical social image missing or differs from current card")
 
@@ -554,7 +555,7 @@ def main() -> None:
     verify_shared_discussion_identity()
     verify_web_analytics()
     verify_public_docs()
-    print("Historical social image URLs published with current card bytes: 2/2")
+    print("Historical social image URLs preserved with legacy card bytes: 4/4")
     print(f"Indexable HTML pages: {content_count} ({len(PAGES)} Chinese + {len(PAGES)} English)")
     print(f"Canonical, description, language, OG, Twitter: {content_count}/{content_count}")
     print(f"Reciprocal hreflang pairs: {len(PAGES)}/{len(PAGES)}")

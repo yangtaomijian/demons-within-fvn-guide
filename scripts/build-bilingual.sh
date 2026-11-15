@@ -24,6 +24,8 @@ shutil.copy2(root / 'assets/dw-search-core.js', target_assets / 'dw-search-core.
 # Quarto does not copy unreferenced resources through site-en/assets's symlink.
 # Keep previously shared homepage image URLs in the assembled Pages artifact.
 for prefix, name in (
+    ('', 'demons-within-zh.png'),
+    ('en', 'demons-within-en.png'),
     ('', 'demons-within-public-14.6-zh.png'),
     ('en', 'demons-within-public-14.6-en.png'),
 ):

@@ -3,7 +3,7 @@ title: "心魔在焉（Demons Within）Public 15.0 中文攻略"
 pagetitle: "心魔在焉（Demons Within）Public 15.0 中文攻略"
 title-prefix: "心魔在焉（Demons Within）Public 15.0 中文攻略"
 description: "《心魔在焉（Demons Within）》Public 15.0 FVN 中文攻略，涵盖本源之轮选择、分支与结局、CG、辞书和 Sprite Viewer 解锁条件。"
-image: assets/social/demons-within-zh.png
+image: assets/social/demons-within-zh-d28493379097.png
 twitter-card:
   card-style: summary_large_image
 toc: false

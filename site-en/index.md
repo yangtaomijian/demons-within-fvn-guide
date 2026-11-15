@@ -2,7 +2,7 @@
 title: "Demons Within Public 15.0 Player Guide"
 title-prefix: "Demons Within Public 15.0 Player Guide"
 description: "Unofficial Demons Within Public 15.0 guide to Essence Wheel choices, branches, endings, CG scenes, Memory Codex entries and Sprite Viewer unlocks."
-image: assets/social/demons-within-en.png
+image: assets/social/demons-within-en-6fc420d4203f.png
 twitter-card:
   card-style: summary_large_image
 toc: false
