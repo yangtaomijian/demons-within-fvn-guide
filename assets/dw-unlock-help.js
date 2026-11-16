@@ -1,0 +1,16 @@
+(()=>{
+ const root=document.querySelector('#bear-day-lookup'); if(!root)return;
+ const en=document.documentElement.lang.startsWith('en'); const ids=['mem-the-marshlands','mem-red-eyes','mem-prank-on-edwin','sprite-ludwig-bear-day-expression','sprite-ludwig-bear-day-states','sprite-boris-tiger-day','sprite-jayden-tiger-day'];
+ const data=ids.map(id=>{const row=document.getElementById(id)?.closest('tr');const cells=row?.querySelectorAll('td');return cells?.length>=2?{id,name:cells[0].textContent.trim(),detail:cells[1].innerHTML}:null});
+ if(data.some(row=>!row))return;
+ document.querySelectorAll('[data-original-condition]').forEach(el=>{const row=data.find(r=>r.id===el.dataset.originalCondition);if(row)el.innerHTML=row.detail}); const body=root.querySelector('.bear-body');
+ const t=(zh,eng)=>en?eng:zh;
+ function rows(indices){return '<ul class="bear-records">'+indices.map(i=>`<li><strong>${data[i].name}</strong><div>${data[i].detail}<a class="bear-original" href="#${data[i].id}">${t('原条目','Original entry')} ↗</a></div></li>`).join('')+'</ul>'}
+ body.innerHTML=`<div class="bear-stage"><h3><span>01</span>${t('独自查资料：不要干预','Research alone: do not intervene')}</h3><p>${t('这一处比桌边选择更早，不决定之后走哪种收尾。','This earlier choice does not decide the later table ending.')}</p>${rows([0,1])}</div><div class="bear-stage"><h3><span>02</span>${t('桌边留档，分两次回看','Save at the table; revisit both endings')}</h3><div class="bear-switch" role="group" aria-label="${t('查看收尾','View an ending')}"><button type="button" data-mode="reading" aria-pressed="true">${t('阅读收尾 · 1 条辞书','Reading ending · 1 entry')}</button><button type="button" data-mode="viewer" aria-pressed="false">${t('后半互动 · 2 组 Viewer','Later interaction · 2 Viewer groups')}</button><button type="button" data-mode="both" aria-pressed="false">${t('并排核对','Compare both')}</button></div><div class="bear-endings" aria-live="polite"></div><p class="bear-caution">${t('进入后半互动后，第四或第五处不干预也不会返回阅读收尾。要补另一边，请读取桌边第一次圆盘前的存档。','Once the later interaction starts, skipping wheel 4 or 5 will not return to the reading ending. Reload the save before the first table wheel for the other ending.')}</p></div>`;
+
+ // Keep the two shared checkpoints compact; the branching decision stays open nearby.
+ body.querySelectorAll('.bear-stage').forEach((stage,i)=>{if(i>0)return;const list=stage.querySelector('.bear-records');const disclosure=document.createElement('details');const summary=document.createElement('summary');summary.textContent=[0,1].map(j=>data[j].name).join(' · ')+t(' · 查看条件',' · Show conditions');disclosure.append(summary,list);stage.append(disclosure);});
+ const endings=body.querySelector('.bear-endings');
+ function select(mode){body.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===mode)));endings.classList.toggle('bear-compare',mode==='both');endings.innerHTML=(mode!=='viewer'?`<div><h4>${t('前三处任一处不干预','Skip any of the first three wheels')}</h4>${rows([2])}</div>`:'')+(mode!=='reading'?`<div><h4>${t('前三处都选色欲，第四处也选色欲','Choose Lust at wheels 1–4')}</h4>${rows([3,4])}</div>`:'');}
+ body.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>select(b.dataset.mode)));select('reading');
+})();
