@@ -225,3 +225,8 @@
 html:has(body.dw-home){overflow-x:clip}body.dw-home{overflow-x:clip}
 /* Final accessibility check: small light-theme controls remain legible over the scene. */
 .dw-home.quarto-light .scene-controls,.dw-home.quarto-light .scene-spoiler-note{color:#160e1b}
+
+.memory-opening .dw-opening-actions { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 4px 16px; }
+.memory-opening .dw-opening-actions button { min-height: 44px; }
+.memory-opening .dw-opening-actions .quiet { text-underline-offset: 3px; }
+.memory-opening .dw-opening-actions button:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
